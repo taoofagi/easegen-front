@@ -111,6 +111,7 @@
         </template>
       </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="编码" align="center" prop="code" />
       <el-table-column label="姿势" align="center" prop="posture">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE" :value="scope.row.posture" />

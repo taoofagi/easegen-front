@@ -10,6 +10,9 @@
       <el-form-item label="名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入名称" />
       </el-form-item>
+      <el-form-item label="编码" prop="code">
+        <el-input v-model="formData.code" placeholder="请输入编码" />
+      </el-form-item>
       <el-form-item label="性别" prop="gender">
         <el-select v-model="formData.gender" placeholder="请选择性别">
           <el-option
@@ -88,6 +91,7 @@ const formData = ref({
   gender: undefined,
   matting: undefined,
   name: undefined,
+  code: undefined,
   pictureUrl: undefined,
   posture: undefined,
   snapshotHeight: undefined,
@@ -163,6 +167,7 @@ const resetForm = () => {
     gender: undefined,
     matting: undefined,
     name: undefined,
+    code: undefined,
     pictureUrl: undefined,
     posture: undefined,
     snapshotHeight: undefined,
