@@ -234,4 +234,6 @@ export enum DICT_TYPE {
   DIGITALCOURSE_DIGITALHUMAN_MATTING = 'digitalcourse_digitalhuman_matting', // 数字人是否抠图
   DIGITALCOURSE_DIGITALHUMAN_TYPE = 'digitalcourse_digitalhuman_type', // 数字人类型
   DIGITALCOURSE_BACKGROUNDS_TYPE = 'digitalcourse_backgrounds_type', // 数字人类型
+  DIGITALCOURSE_VOICES_LANGUAGE = 'digitalcourse_voices_language', // 声音语言类型
+  DIGITALCOURSE_VOICES_TYPE = 'digitalcourse_voices_type', // 声音类型
 }
