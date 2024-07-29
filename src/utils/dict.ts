@@ -227,5 +227,13 @@ export enum DICT_TYPE {
   AI_WRITE_LENGTH = 'ai_write_length', // AI 写作长度
   AI_WRITE_FORMAT = 'ai_write_format', // AI 写作格式
   AI_WRITE_TONE = 'ai_write_tone', // AI 写作语气
-  AI_WRITE_LANGUAGE = 'ai_write_language' // AI 写作语言
+  AI_WRITE_LANGUAGE = 'ai_write_language', // AI 写作语言
+
+  // ========== DIGITALCOURSE - 数字人课程模块  ==========
+  DIGITALCOURSE_DIGITALHUMAN_POSTURE = 'digitalcourse_digitalhuman_posture', // 数字人姿势
+  DIGITALCOURSE_DIGITALHUMAN_MATTING = 'digitalcourse_digitalhuman_matting', // 数字人是否抠图
+  DIGITALCOURSE_DIGITALHUMAN_TYPE = 'digitalcourse_digitalhuman_type', // 数字人类型
+  DIGITALCOURSE_BACKGROUNDS_TYPE = 'digitalcourse_backgrounds_type', // 数字人类型
+  DIGITALCOURSE_VOICES_LANGUAGE = 'digitalcourse_voices_language', // 声音语言类型
+  DIGITALCOURSE_VOICES_TYPE = 'digitalcourse_voices_type', // 声音类型
 }
