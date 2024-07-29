@@ -15,7 +15,7 @@ import { setupGlobCom } from '@/components'
 
 // 引入 element-plus
 import { setupElementPlus } from '@/plugins/elementPlus'
-
+import 'element-plus/dist/index.css'
 // 引入 form-create
 import { setupFormCreate } from '@/plugins/formCreate'
 

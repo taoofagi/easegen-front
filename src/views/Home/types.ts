@@ -11,7 +11,13 @@ export type Project = {
   personal: string
   time: Date | number | string
 }
-
+export type MDContent={
+  name: string
+  icon: string
+  message: string
+  personal: string
+  time: Date | number | string
+}
 export type Notice = {
   title: string
   type: string

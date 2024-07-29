@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card shadow="never">
+     <el-card shadow="never">
       <el-skeleton :loading="loading" animated>
         <el-row :gutter="16" justify="space-between">
           <el-col :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
@@ -175,14 +175,11 @@
 import { set } from 'lodash-es'
 import { EChartsOption } from 'echarts'
 import { formatTime } from '@/utils'
-
 import { useUserStore } from '@/store/modules/user'
 import { useWatermark } from '@/hooks/web/useWatermark'
 import type { WorkplaceTotal, Project, Notice, Shortcut } from './types'
 import { pieOptions, barOptions } from './echarts-data'
-
 defineOptions({ name: 'Home' })
-
 const { t } = useI18n()
 const userStore = useUserStore()
 const { setWatermark } = useWatermark()
