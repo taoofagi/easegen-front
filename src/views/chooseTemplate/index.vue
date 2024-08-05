@@ -27,41 +27,85 @@
     <div class="template-main">
       <div class="template-box template-left">
         <div class="page">
-          <div> 页面(1页) </div>
+          <div>页面(1页)</div>
           <div class="line"></div>
-          <div>
-            <el-upload ref="uploadRef" class="upload-demo" :before-upload='beforeUpload' :auto-upload="false">
-              <template #trigger>
-                <el-button type="primary" :icon="Upload" size="small">上传PPT</el-button>
+          <el-upload
+            ref="uploadRef"
+            class="upload-demo"
+            :limit="1"
+            :headers="headers"
+            :action="`${config.base_url}/infra/file/upload`"
+            :on-exceed="handleExceed"
+            :on-change="handleChange"
+            :on-success="handleSuccess"
+            :show-file-list="false"
+          >
+            <template #trigger>
+              <el-button type="primary" :icon="Upload">上传PPT</el-button>
+            </template>
+          </el-upload>
+        </div>
+        <div v-if="showLeftList" style="height: calc(100% - 86px);">
+          <div class="image-list">
+            <draggable
+              :list="PPTArr"
+              :disabled="false"
+              item-key="name"
+              ghost-class="ghost"
+              chosen-class="chosen"
+              @start="state.dragging = true"
+              @end="state.dragging = false"
+              animation="300"
+              @on-update="PPTListUpdate"
+            >
+              <template #item="{ element, index }">
+                <div class="mt-2 w-100%">
+                  <div class="list" @click="choosePPt(element, index)">
+                    <el-image class="ppt-bg" :src="element.url" fit="cover" />
+                    <el-image
+                      class="host"
+                      :style="{
+                        width: leftWidth,
+                        height: leftHeight,
+                        top: leftTop,
+                        left: leftLeft,
+                      }"
+                      :src="element.hosturl"
+                      fit="cover"
+                    />
+                    <div class="icon-content">
+                      <el-icon
+                        size="20"
+                        color="#ffffff"
+                        style="margin-right: 5px"
+                        @click.stop="copyDocument(element)"
+                      >
+                        <CopyDocument />
+                      </el-icon>
+                      <el-icon
+                        size="20"
+                        color="#ffffff"
+                        @click.stop="deleteDocument(element)"
+                      >
+                        <Delete />
+                      </el-icon>
+                    </div>
+                  </div>
+                </div>
               </template>
-            </el-upload>
+            </draggable>
+          </div>
+          <div class="page-btn">
+            <el-button type="primary" size="small" style="width: 90px" :icon="Plus" />
+            <el-button type="primary" size="small" :icon="Delete" />
           </div>
         </div>
-        <div class="image-list">
-          <draggable
-            :list="PPTArr"
-            :disabled="false"
-            item-key="name"
-            ghost-class="ghost"
-            chosen-class="chosen"
-            @start="state.dragging = true"
-            @end="state.dragging = false"
-            animation="300"
-            @on-update="PPTListUpdate"
-          >
-            <template #item="{ element, index }">
-              <div class="mt-2 w-100%">
-                <div class="list" @click="choosePPt(element, index)">
-                  <el-image class="ppt-bg" :src="element.pptbg" fit="contain" />
-                  <el-image class="host" :src="element.hosturl" fit="contain" />
-                </div>
-              </div>
-            </template>
-          </draggable>
-        </div>
-        <div class="page-btn">
-          <el-button type="primary" size="small" style="width: 90px" :icon="Plus" />
-          <el-button type="primary" size="small" :icon="Delete" />
+        <div class="left-upload-setting" v-if="!showLeftList">
+          <!-- <img src="" alt=""> -->
+          <div>ppt解析中...</div>
+          <el-progress :percentage="percentagePPT" />
+          <el-button>取消</el-button>
+          <div>PPT需要上传、解析等步骤处理，请耐心等待。</div>
         </div>
       </div>
       <div class="template-box template-middle">
@@ -78,11 +122,11 @@
         <div class="main-box">
           <div class="list">
             <div class="main-image-box">
-              <el-image class="ppt-bg" :src="mainObj.pptbg" fit="contain" />
+              <el-image class="ppt-bg" :src="mainObj.pptbg" fit="cover" />
               <Vue3DraggableResizable
                 :parent="true"
-                :initW="300"
-                :initH="200"
+                :initW="PPTpositon.w"
+                :initH="PPTpositon.h"
                 v-model:x="PPTpositon.x"
                 v-model:y="PPTpositon.y"
                 v-model:w="PPTpositon.w"
@@ -99,7 +143,7 @@
                 @drag-end="print('drag-end')"
                 @resize-end="print('resize-end')"
               >
-                <el-image class="minddle-host-image" :src="mainObj.hosturl" fit="contain" />
+                <el-image class="minddle-host-image" :src="mainObj.hosturl" fit="cover" />
               </Vue3DraggableResizable>
             </div>
           </div>
@@ -118,10 +162,10 @@
 
         <div class="middle-textarea">
           <el-input
-            v-model="textarea"
+            v-model="mainObj.text"
             :rows="3"
             type="textarea"
-            placeholder="请输入口部内容"
+            placeholder="请输入口播内容"
             show-word-limit
             maxlength="10000"
             resize="none"
@@ -139,12 +183,14 @@
               size="small"
             />
             <QuestionFilled style="width: 1em; height: 1em" />
-            <div> </div>
+            <div></div>
           </div>
-          <el-button type="primary" :icon="VideoPlay" size="small" @click="getList">试听</el-button>
+          <el-button type="primary" :icon="VideoPlay" size="small" @click="getList"
+            >试听</el-button
+          >
         </div>
       </div>
-      <div class="template-box template-right">
+      <div class="template-box template-right" v-if="!showHeadImageTool">
         <div class="tabs-1">
           <div
             class="tabs-item"
@@ -162,8 +208,9 @@
             v-for="item in tabs2"
             @click="tabs2Click(item)"
             :key="item.itemValue"
-            >{{ item.itemName }}</div
           >
+            {{ item.itemName }}
+          </div>
         </div>
         <div class="host-list">
           <div
@@ -172,23 +219,92 @@
             :key="index"
             @click="chooseHost(item)"
           >
-            <div class="host-name">{{ item.hostName }}</div>
-            <el-image class="ppt-bg" :src="item.hosturl" fit="contain" />
+            <div class="host-name">{{ item.name }}</div>
+            <el-image class="ppt-bg" :src="item.pictureUrl" fit="cover" />
           </div>
         </div>
       </div>
-      <div class="template-box template-tool"> </div>
+      <div class="template-box template-right image-setting" v-if="showHeadImageTool">
+        <div>图片属性</div>
+        <div class="img-setting">
+          <span class="setting-label">位置</span>
+          X <el-input v-model="PPTpositon.x" type="number" :min="20" :max="460" /> Y
+          <el-input v-model="PPTpositon.y" type="number" :min="20" :max="180" />
+        </div>
+        <div class="img-setting">
+          <span class="setting-label">层级</span>
+        </div>
+        <div class="img-setting">
+          <span class="setting-label">大小</span>
+          W <el-input v-model="PPTpositon.w" type="number" :min="20" :max="760" /> H
+          <el-input v-model="PPTpositon.h" type="number" :min="20" :max="360" />
+        </div>
+      </div>
+      <div class="template-box template-tool"></div>
     </div>
+    <el-dialog
+      title="PPT上传说明"
+      v-model="uploadFormVisible"
+      width="600px"
+      append-to-body
+      destroy-on-close
+      :close-on-click-modal="false"
+    >
+      <el-form :model="uploadForm" label-width="140px" ref="uploadFormRef">
+        <el-form-item label="是否覆盖已有场景:" prop="name">
+          <el-radio-group v-model="uploadForm.name" disabled>
+            <el-radio value="1">是，覆盖</el-radio>
+            <el-radio value="2">否，新增</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="图层模式:" prop="uploadType">
+          <el-radio-group v-model="uploadForm.uploadType" disabled>
+            <el-radio value="1">画中画</el-radio>
+            <el-radio value="2">背景</el-radio>
+          </el-radio-group>
+          <el-text>画中画模式可调整大小及位置;背景模式为固定铺满不可调整大小。</el-text>
+        </el-form-item>
+        <el-form-item label="口播稿:" prop="text">
+          <el-radio-group v-model="uploadForm.text" disabled>
+            <el-radio value="1">读取PPT备注</el-radio>
+            <el-radio value="2">AI创作</el-radio>
+            <el-radio value="3">手动录入</el-radio>
+          </el-radio-group>
+          <el-text>每页读取前3000字。</el-text>
+        </el-form-item>
+        <el-form-item label="备注润色:" prop="remark">
+          <el-switch
+            v-model="uploadForm.remark"
+            inline-prompt
+            active-text="开"
+            inactive-text="关"
+          />
+          <el-text
+            >会针对备注中文进行口语化润色，让数字人说话更自然，润色不会改变原意，建议开启。限时免费。</el-text
+          >
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="uploadFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="uploadSubmit">确 定</el-button>
+      </template>
+    </el-dialog>
+    <!-- <AudioSelect /> -->
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import draggable from 'vuedraggable'
+import { ref, reactive, onMounted } from "vue";
+import draggable from "vuedraggable";
 
-import Vue3DraggableResizable from 'vue3-draggable-resizable'
+import Vue3DraggableResizable from "vue3-draggable-resizable";
 //default styles
-import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
-
+import "vue3-draggable-resizable/dist/Vue3DraggableResizable.css";
+import { config } from "@/config/axios/config";
+import { genFileId } from "element-plus";
+import type { UploadRawFile } from "element-plus";
+import { getAccessToken, getTenantId } from "@/utils/auth";
+import * as pptTemplateApi from "@/api/pptTemplate";
+// import AudioSelect from "./audioSelect.vue"
 import {
   Edit,
   ArrowLeft,
@@ -198,151 +314,227 @@ import {
   Delete,
   Plus,
   QuestionFilled,
-  VideoPlay
-} from '@element-plus/icons-vue'
-const emit = defineEmits(['PPTListUpdate'])
-const templatename = ref('')
-const textarea = ref('')
-const choosePPtIndex = ref('0')
+  VideoPlay,
+  CopyDocument,
+} from "@element-plus/icons-vue";
+const message = useMessage();
+const emit = defineEmits(["PPTListUpdate"]);
+const templatename = ref("");
+const textarea = ref("");
+const choosePPtIndex = ref("0");
 const PPTpositon = reactive({
   x: 450,
   y: 150,
-  h: 100,
-  w: 100,
-  active: false
-})
+  h: 180,
+  w: 300,
+  active: false,
+});
+//PPT数字人头像设置
+const showHeadImageTool = ref(false);
+//左侧ppt数字人位置
+const leftWidth = computed(() => {
+  return PPTpositon.w / 3 + "px";
+});
+const leftHeight = computed(() => {
+  return PPTpositon.h / 3 + "px";
+});
+const leftTop = computed(() => {
+  return PPTpositon.y / 3 + "px";
+});
+const leftLeft = computed(() => {
+  return PPTpositon.x / 3 + "px";
+});
 const print = (val) => {
-  console.log(val)
-}
+  if (val == "activated") {
+    showHeadImageTool.value = true;
+  }
+  // else if(val == 'deactivated'){
+  //   showHeadImageTool.value = false
+  // }
+};
 const state = reactive({
   enabled: true,
   list: [
-    { name: '西瓜', id: 0 },
-    { name: '橙子', id: 1 },
-    { name: '草莓', id: 2 }
+    { name: "西瓜", id: 0 },
+    { name: "橙子", id: 1 },
+    { name: "草莓", id: 2 },
   ],
-  dragging: false
-})
+  dragging: false,
+});
 const tabs1 = [
   {
-    itemName: '模特',
-    itemValue: '1'
+    itemName: "模特",
+    itemValue: "1",
   },
   {
-    itemName: '我的',
-    itemValue: '2'
-  }
-]
-const tabs1ActiveNum = ref('1')
+    itemName: "我的",
+    itemValue: "2",
+  },
+];
+const tabs1ActiveNum = ref("1");
 const tabs2 = [
   {
-    itemName: '全部',
-    itemValue: '1'
+    itemName: "全部",
+    itemValue: "1",
   },
   {
-    itemName: '男',
-    itemValue: '2'
+    itemName: "男",
+    itemValue: "2",
   },
   {
-    itemName: '女',
-    itemValue: '3'
+    itemName: "女",
+    itemValue: "3",
   },
   {
-    itemName: '站姿',
-    itemValue: '4'
+    itemName: "站姿",
+    itemValue: "4",
   },
   {
-    itemName: '坐姿',
-    itemValue: '5'
+    itemName: "坐姿",
+    itemValue: "5",
+  },
+];
+const tabs2ActiveNum = ref("1");
+/** 查询数字人列表 */
+const hostList = ref();
+const loading = ref(true); // 列表的加载中
+const queryParams = reactive({
+  pageNo: 1,
+  pageSize: 100,
+});
+const getList = async () => {
+  loading.value = true;
+  try {
+    const data = await pptTemplateApi.pageList(queryParams);
+    hostList.value = data.list;
+  } finally {
+    loading.value = false;
   }
-]
-const tabs2ActiveNum = ref('1')
-const getList = () => {
-  console.log(PPTArr)
-}
-const PPTArr = reactive([
-  {
-    pptbg: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    hosturl: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    id: 1
-  },
-  {
-    pptbg: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-    hosturl: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    id: 2
-  },
-  {
-    pptbg: 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-    hosturl: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    id: 3
-  },
-  {
-    pptbg: 'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
-    hosturl: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    id: 4
-  }
-])
-const hostList = reactive([
-  {
-    hostName: '玉婉',
-    hosturl: 'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg'
-  },
-  {
-    hostName: '玉婉',
-    hosturl: 'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg'
-  },
-  {
-    hostName: '玉婉',
-    hosturl: 'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
-  }
-])
-const value = ref('1')
-const mainObj = ref({})
-const checked5 = ref(false)
+};
+const PPTArr = ref([]);
+//ppt解析进度
+const percentagePPT = ref(0);
+const showLeftList = ref(true);
+
+const value = ref("1");
+const mainObj = ref({});
+const checked5 = ref(false);
 const options = [
   {
-    value: '1',
-    label: '16:9'
+    value: "1",
+    label: "16:9",
   },
   {
-    value: '2',
-    label: '16:10'
-  }
-]
+    value: "2",
+    label: "16:10",
+  },
+];
+const uploadRef = ref();
+const headers = {
+  Accept: "application/json, text/plain, */*",
+  Authorization: "Bearer " + getAccessToken(),
+  "tenant-id": getTenantId(),
+};
+//上传弹框
+const uploadFormRef = ref();
+const uploadFormVisible = ref(false);
+const uploadForm = reactive({
+  name: "1",
+  uploadType: "1",
+  text: "1",
+  remark: false,
+});
+const handleExceed = (files) => {
+  uploadRef.value!.clearFiles();
+  const file = files[0] as UploadRawFile;
+  file.uid = genFileId();
+  uploadRef.value!.handleStart(file);
+};
+//上传文件对象
+const uploadFileObj = reactive({
+  filename: "",
+  size: null,
+  url: "",
+  md5: "16b4c5e61897159b11405883ebd6749c",
+  courseId: 23388,
+  docType: 1,
+  status: 0,
+  extInfo:
+    '{"addMode":true,"docType":1,"pptNotes":true,"pptContent":false,"notesPolish":false}',
+  resolveType: 1,
+});
+const handleChange = (files) => {
+  uploadFileObj.filename = files.name;
+  uploadFileObj.size = files.size;
+};
+const handleSuccess = (rawFile) => {
+  message.success("上传成功！");
+  uploadFileObj.url = rawFile.data;
+  uploadFormVisible.value = true;
+};
+const uploadSubmit = () => {
+  uploadFormVisible.value = false;
+  pptTemplateApi.createPPT(uploadFileObj).then((res) => {
+    if (res) {
+      schedulePPT(res);
+    }
+  });
+};
+//解析ppt
+const schedulePPTTimer = ref();
+const schedulePPT = (id) => {
+  showLeftList.value = false;
+  schedulePPTTimer.value = setInterval(() => {
+    pptTemplateApi.getSchedule(id).then((res) => {
+      if (res && typeof res == "number") {
+        percentagePPT.value = parseInt(res * 100);
+      } else if (res && res.length > 0) {
+        PPTArr.value = res;
+        showLeftList.value = true;
+        clearInterval(schedulePPTTimer.value);
+      }
+    });
+  }, 5000);
+};
+const copyDocument = (item) => {
+  item.id = "0" + item.id;
+  PPTArr.value.push(item);
+};
+const deleteDocument = (item) => {
+  const findItem = PPTArr.value.filter((child) => child.id === item.id);
+  PPTArr.value.splice(findItem.indexOf(findItem[0]), 1);
+};
+
 const tabs1Click = (item) => {
-  tabs1ActiveNum.value = item.itemValue
-}
+  tabs1ActiveNum.value = item.itemValue;
+};
 const tabs2Click = (item) => {
-  tabs2ActiveNum.value = item.itemValue
-}
+  tabs2ActiveNum.value = item.itemValue;
+};
 const choosePPt = (item, index) => {
-  console.log(item)
-  choosePPtIndex.value = index
-  mainObj.value = item
-  console.log(mainObj)
-}
+  choosePPtIndex.value = index;
+  mainObj.value = item;
+};
 const chooseHost = (item) => {
-  console.log(item.hosturl)
-  PPTArr.forEach((el) => {
-    el.hosturl = item.hosturl
-  })
-  mainObj.value = PPTArr[choosePPtIndex.value]
-}
+  console.log(item.hosturl);
+  PPTArr.value.forEach((el) => {
+    el.hosturl = item.hosturl;
+  });
+  mainObj.value = PPTArr[choosePPtIndex.value];
+};
 const PPTListUpdate = (data) => {
-  console.log(data)
-}
-const beforeUpload=(file,fileList)=>{
-  console.log(file)
-  console.log(fileList)
-}
-onMounted(() => {
-  console.log(PPTArr)
-  mainObj.value = PPTArr[choosePPtIndex.value]
-})
+  console.log(data);
+};
+onMounted(async () => {
+  console.log(PPTArr);
+  // mainObj.value = PPTArr[choosePPtIndex.value];
+  await getList();
+});
 </script>
 <style scoped lang="scss">
 .pages {
   background-color: #f5f7fa;
+  height: 100%;
 }
 .minddle-host-image {
   width: 100%;
@@ -353,8 +545,10 @@ onMounted(() => {
   justify-content: space-between;
   box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
   background-color: #ffffff;
-  padding: 20px 30px;
+  padding: 0 30px;
   border: 1px solid #ebeef5;
+  line-height: 60px;
+  height: 60px;
   .top-left {
     display: flex;
     align-items: center;
@@ -377,6 +571,7 @@ onMounted(() => {
   }
 }
 .template-main {
+  height: calc(100% - 82px);
   display: flex;
   padding: 10px 10px;
   justify-content: space-around;
@@ -384,7 +579,7 @@ onMounted(() => {
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     border: 1px solid #ebeef5;
     background-color: #ffffff;
-    width: 12%;
+    width: 15%;
     position: relative;
     .page {
       margin: 0;
@@ -402,18 +597,40 @@ onMounted(() => {
         margin: 0;
         padding: 0;
       }
+      .upload-demo {
+        text-align: center;
+      }
+    }
+    .left-upload-setting {
+      height: calc(100% - 86px);
+      display: flex;
+      isplay: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+      text-align: center;
+      div {
+        line-height: 40px;
+      }
+      ::v-deep(.el-progress-bar) {
+        width: 180px;
+      }
+      .el-button {
+        margin: 20px 0;
+      }
     }
     .image-list {
       border-bottom: 1px solid #ebeef5;
-      height: 460px;
+      height: calc(100% - 70px);
       overflow-y: auto;
       overflow-x: hidden;
       padding: 10px;
       .list {
         position: relative;
         margin: 10px 0;
-        width: 100%;
-        height: 105px;
+        width: 260px;
+        height: 120px;
         .list-index {
           position: absolute;
           top: 10px;
@@ -435,10 +652,12 @@ onMounted(() => {
         }
         .host {
           position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 30%;
-          height: 30%;
+        }
+        .icon-content {
+          position: absolute;
+          top: 5px;
+          right: 10px;
+          cursor: pointer;
         }
       }
     }
@@ -471,8 +690,9 @@ onMounted(() => {
       .list {
         width: 95%;
         height: 360px;
-
         position: relative;
+        display: flex;
+        justify-content: center;
       }
       .ppt-bg {
         width: 100%;
@@ -490,15 +710,15 @@ onMounted(() => {
       justify-content: space-between;
       padding: 10px;
       .voice-item {
-        height: 24px;
+        height: 30px;
         border-radius: 12px;
         overflow: hidden;
-        width: 130px;
+        width: 180px;
         background-color: #c9c9c9;
         span {
           display: inline-block;
-          height: 24px;
-          line-height: 24px;
+          height: 30px;
+          line-height: 30px;
           width: 48%;
           text-align: center;
         }
@@ -561,10 +781,10 @@ onMounted(() => {
       display: flex;
       justify-content: space-around;
       div {
-        width: 45px;
+        width: 60px;
         text-align: center;
-        line-height: 24px;
-        height: 24px;
+        line-height: 30px;
+        height: 30px;
         border-radius: 5px;
         cursor: pointer;
       }
@@ -599,6 +819,25 @@ onMounted(() => {
           font-size: 10px;
           border-radius: 5px;
         }
+        .ppt-bg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .image-setting {
+    padding: 10px 20px;
+    .img-setting {
+      display: flex;
+      align-items: center;
+      line-height: 40px;
+      .setting-label {
+        width: 120px;
+      }
+      ::v-deep(.el-input) {
+        width: 170px;
+        margin-left: 10px;
       }
     }
   }
