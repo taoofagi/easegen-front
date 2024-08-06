@@ -30,3 +30,19 @@ export const videlPageList = async(params: PageParam) => {
 export const realtime = async(data: PPTCreateVO) => {
   return await request.post({ url: '/api/audition/realtime', data })
 }
+
+//课程中心列表
+export const courseList = async(params: PageParam) => {
+  return await request.get({ url: '/digitalcourse/courses/page', params })
+}
+//生成课程id
+export interface coursesVO {
+  accountId: string
+}
+export const coursesCreate = async(data: coursesVO) => {
+  return await request.post({ url: '/digitalcourse/courses/create', data })
+}
+//更新课程
+export const coursesUpdate = async(data) => {
+  return await request.post({ url: '/digitalcourse/courses/update', data })
+}

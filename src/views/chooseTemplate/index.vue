@@ -32,6 +32,7 @@
           <el-upload
             ref="uploadRef"
             class="upload-demo"
+            accept=".ppt,.pptx"
             :limit="1"
             :headers="headers"
             :action="`${config.base_url}/infra/file/upload`"
@@ -45,7 +46,7 @@
             </template>
           </el-upload>
         </div>
-        <div v-if="showLeftList" style="height: calc(100% - 86px);">
+        <div v-if="showLeftList" style="height: calc(100% - 86px)">
           <div class="image-list">
             <draggable
               :list="PPTArr"
@@ -85,7 +86,7 @@
                       <el-icon
                         size="20"
                         color="#ffffff"
-                        @click.stop="deleteDocument(element)"
+                        @click.stop="deleteDocument(index)"
                       >
                         <Delete />
                       </el-icon>
@@ -151,43 +152,75 @@
         <div class="voice-main">
           <el-text class="mx-1" type="primary" size="small">口播内容</el-text>
           <div class="voice-item">
-            <span class="active-item">文本驱动</span>
-            <span>声音驱动</span>
+            <span
+              :class="item.isActive ? 'active-item' : ''"
+              v-for="(item, index) in driveType"
+              :key="index"
+              @click="driveTypeChange(item)"
+              >{{ item.name }}</span
+            >
           </div>
           <div class="media-box">
-            <el-button type="primary" :icon="Mic" size="small">晓晨</el-button>
+            <el-button type="primary" :icon="Mic" size="small" @click="openSelect"
+              >晓晨</el-button
+            >
             <el-button type="success" :icon="Headset" size="small" />
           </div>
         </div>
-
-        <div class="middle-textarea">
-          <el-input
-            v-model="mainObj.text"
-            :rows="3"
-            type="textarea"
-            placeholder="请输入口播内容"
-            show-word-limit
-            maxlength="10000"
-            resize="none"
-          />
-        </div>
-        <div class="tool-box">
-          <div class="tool-btn">
-            <el-button type="primary" size="small">停顿</el-button>
-            <el-button type="primary" size="small">多音字</el-button>
-            <el-button type="primary" size="small">数字</el-button>
-            <el-checkbox
-              v-model="checked5"
-              style="margin-left: 10px"
-              label="多音字检测"
-              size="small"
+        <div v-if="selectDriveType.itemValue == '0'">
+          <div class="middle-textarea">
+            <el-input
+              v-model="mainObj.text"
+              :rows="3"
+              type="textarea"
+              placeholder="请输入口播内容"
+              show-word-limit
+              maxlength="10000"
+              resize="none"
             />
-            <QuestionFilled style="width: 1em; height: 1em" />
-            <div></div>
           </div>
-          <el-button type="primary" :icon="VideoPlay" size="small" @click="getList"
-            >试听</el-button
+          <div class="tool-box">
+            <div class="tool-btn">
+              <el-button type="primary" size="small">停顿</el-button>
+              <el-button type="primary" size="small">多音字</el-button>
+              <el-button type="primary" size="small">数字</el-button>
+              <el-checkbox
+                v-model="checked5"
+                style="margin-left: 10px"
+                label="多音字检测"
+                size="small"
+              />
+              <QuestionFilled style="width: 1em; height: 1em" />
+              <div></div>
+            </div>
+            <el-button type="primary" :icon="VideoPlay" size="small" @click="getList"
+              >试听</el-button
+            >
+          </div>
+        </div>
+        <div v-else class="audio-upload">
+          <el-tooltip
+            effect="dark"
+            content="支持mp3,wav等格式;1GB以内;时长60分钟以内"
+            placement="top"
           >
+            <el-upload
+              ref="uploadAudioRef"
+              class="upload-demo"
+              accept=".wav,.mp3"
+              :limit="1"
+              :headers="headers"
+              :action="`${config.base_url}/infra/file/upload`"
+              :on-exceed="handleAudioExceed"
+              :on-change="handleAudioChange"
+              :on-success="handleAudioSuccess"
+              :show-file-list="false"
+            >
+              <template #trigger>
+                <el-button type="primary" :icon="Upload">上传音频</el-button>
+              </template>
+            </el-upload>
+          </el-tooltip>
         </div>
       </div>
       <div class="template-box template-right" v-if="!showHeadImageTool">
@@ -211,6 +244,14 @@
           >
             {{ item.itemName }}
           </div>
+          <div
+            :class="{ 'tabs-active': tabs3ActiveNum == item.itemValue }"
+            v-for="item in tabs3"
+            @click="tabs3Click(item)"
+            :key="item.itemValue"
+          >
+            {{ item.itemName }}
+          </div>
         </div>
         <div class="host-list">
           <div
@@ -222,74 +263,49 @@
             <div class="host-name">{{ item.name }}</div>
             <el-image class="ppt-bg" :src="item.pictureUrl" fit="cover" />
           </div>
-        </div>
-      </div>
-      <div class="template-box template-right image-setting" v-if="showHeadImageTool">
-        <div>图片属性</div>
-        <div class="img-setting">
-          <span class="setting-label">位置</span>
-          X <el-input v-model="PPTpositon.x" type="number" :min="20" :max="460" /> Y
-          <el-input v-model="PPTpositon.y" type="number" :min="20" :max="180" />
-        </div>
-        <div class="img-setting">
-          <span class="setting-label">层级</span>
-        </div>
-        <div class="img-setting">
-          <span class="setting-label">大小</span>
-          W <el-input v-model="PPTpositon.w" type="number" :min="20" :max="760" /> H
-          <el-input v-model="PPTpositon.h" type="number" :min="20" :max="360" />
-        </div>
-      </div>
-      <div class="template-box template-tool"></div>
-    </div>
-    <el-dialog
-      title="PPT上传说明"
-      v-model="uploadFormVisible"
-      width="600px"
-      append-to-body
-      destroy-on-close
-      :close-on-click-modal="false"
-    >
-      <el-form :model="uploadForm" label-width="140px" ref="uploadFormRef">
-        <el-form-item label="是否覆盖已有场景:" prop="name">
-          <el-radio-group v-model="uploadForm.name" disabled>
-            <el-radio value="1">是，覆盖</el-radio>
-            <el-radio value="2">否，新增</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="图层模式:" prop="uploadType">
-          <el-radio-group v-model="uploadForm.uploadType" disabled>
-            <el-radio value="1">画中画</el-radio>
-            <el-radio value="2">背景</el-radio>
-          </el-radio-group>
-          <el-text>画中画模式可调整大小及位置;背景模式为固定铺满不可调整大小。</el-text>
-        </el-form-item>
-        <el-form-item label="口播稿:" prop="text">
-          <el-radio-group v-model="uploadForm.text" disabled>
-            <el-radio value="1">读取PPT备注</el-radio>
-            <el-radio value="2">AI创作</el-radio>
-            <el-radio value="3">手动录入</el-radio>
-          </el-radio-group>
-          <el-text>每页读取前3000字。</el-text>
-        </el-form-item>
-        <el-form-item label="备注润色:" prop="remark">
-          <el-switch
-            v-model="uploadForm.remark"
-            inline-prompt
-            active-text="开"
-            inactive-text="关"
+          <Pagination
+            small="true"
+            :total="total"
+            v-model:page="queryParams.pageNo"
+            v-model:limit="queryParams.pageSize"
+            @pagination="getList"
           />
-          <el-text
-            >会针对备注中文进行口语化润色，让数字人说话更自然，润色不会改变原意，建议开启。限时免费。</el-text
-          >
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="uploadFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="uploadSubmit">确 定</el-button>
-      </template>
-    </el-dialog>
-    <!-- <AudioSelect /> -->
+        </div>
+      </div>
+      <div class="template-box template-right" v-if="showHeadImageTool">
+        <div class="image-setting">
+          <div>图片属性</div>
+          <div class="img-setting">
+            <span class="setting-label">位置</span>
+            X <el-input v-model="PPTpositon.x" type="number" :min="20" :max="460" /> Y
+            <el-input v-model="PPTpositon.y" type="number" :min="20" :max="180" />
+          </div>
+          <div class="img-setting">
+            <span class="setting-label">层级</span>
+          </div>
+          <div class="img-setting">
+            <span class="setting-label">大小</span>
+            W <el-input v-model="PPTpositon.w" type="number" :min="20" :max="760" /> H
+            <el-input v-model="PPTpositon.h" type="number" :min="20" :max="360" />
+          </div>
+        </div>
+      </div>
+      <div class="template-box template-tool">
+        <div
+          v-for="(item, index) in rightTools"
+          :key="index"
+          class="tool-item"
+          @click="handleChangeTool(item)"
+        >
+          <img :src="item.isActive ? item.activeUrl : item.url" alt="" />
+          <div class="tool-name" :style="item.isActive ? 'color:#0088fe' : ''">
+            {{ item.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <uploadExplain ref="uploadExplainRef" @success="uploadSubmit" />
+    <AudioSelect ref="audioSelect" @success="selectAudio" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -297,14 +313,20 @@ import { ref, reactive, onMounted } from "vue";
 import draggable from "vuedraggable";
 
 import Vue3DraggableResizable from "vue3-draggable-resizable";
-//default styles
 import "vue3-draggable-resizable/dist/Vue3DraggableResizable.css";
 import { config } from "@/config/axios/config";
 import { genFileId } from "element-plus";
 import type { UploadRawFile } from "element-plus";
 import { getAccessToken, getTenantId } from "@/utils/auth";
 import * as pptTemplateApi from "@/api/pptTemplate";
-// import AudioSelect from "./audioSelect.vue"
+import uploadExplain from "./uploadExplain.vue";
+import AudioSelect from "./audioSelect.vue";
+import user from "@/assets/imgs/user.png";
+import userActive from "@/assets/imgs/user-active.png";
+import bg from "@/assets/imgs/bg.png";
+import bgActive from "@/assets/imgs/bg-active.png";
+//用户信息
+import { useUserStore } from "@/store/modules/user";
 import {
   Edit,
   ArrowLeft,
@@ -317,10 +339,12 @@ import {
   VideoPlay,
   CopyDocument,
 } from "@element-plus/icons-vue";
+//用户信息
+const userStore = useUserStore();
+const userId = computed(() => userStore.user.id);
 const message = useMessage();
 const emit = defineEmits(["PPTListUpdate"]);
 const templatename = ref("");
-const textarea = ref("");
 const choosePPtIndex = ref("0");
 const PPTpositon = reactive({
   x: 450,
@@ -344,73 +368,118 @@ const leftTop = computed(() => {
 const leftLeft = computed(() => {
   return PPTpositon.x / 3 + "px";
 });
-const print = (val) => {
-  if (val == "activated") {
-    showHeadImageTool.value = true;
-  }
-  // else if(val == 'deactivated'){
-  //   showHeadImageTool.value = false
-  // }
-};
+const print = (val) => {};
 const state = reactive({
-  enabled: true,
-  list: [
-    { name: "西瓜", id: 0 },
-    { name: "橙子", id: 1 },
-    { name: "草莓", id: 2 },
-  ],
   dragging: false,
 });
+//数字人tab
 const tabs1 = [
   {
     itemName: "模特",
-    itemValue: "1",
+    itemValue: "0",
   },
   {
     itemName: "我的",
-    itemValue: "2",
+    itemValue: "1",
   },
 ];
-const tabs1ActiveNum = ref("1");
+const tabs1ActiveNum = ref("0");
+const tabs2ActiveNum = ref("");
 const tabs2 = [
   {
     itemName: "全部",
-    itemValue: "1",
+    itemValue: "",
   },
   {
     itemName: "男",
-    itemValue: "2",
+    itemValue: "1",
   },
   {
     itemName: "女",
-    itemValue: "3",
+    itemValue: "2",
   },
+];
+const tabs3ActiveNum = ref();
+const tabs3 = [
   {
     itemName: "站姿",
-    itemValue: "4",
+    itemValue: "1",
   },
   {
     itemName: "坐姿",
-    itemValue: "5",
+    itemValue: "2",
   },
 ];
-const tabs2ActiveNum = ref("1");
-/** 查询数字人列表 */
-const hostList = ref();
-const loading = ref(true); // 列表的加载中
-const queryParams = reactive({
-  pageNo: 1,
-  pageSize: 100,
+const tabs1Click = (item) => {
+  tabs1ActiveNum.value = item.itemValue;
+  getList();
+};
+const tabs2Click = (item) => {
+  tabs2ActiveNum.value = item.itemValue;
+  getList();
+};
+const tabs3Click = (item) => {
+  tabs3ActiveNum.value = item.itemValue;
+  getList();
+};
+//驱动类型
+const selectDriveType = ref({
+  name: "文本驱动",
+  itemValue: "0",
+  isActive: true,
 });
-const getList = async () => {
-  loading.value = true;
-  try {
-    const data = await pptTemplateApi.pageList(queryParams);
-    hostList.value = data.list;
-  } finally {
-    loading.value = false;
+const driveType = reactive([
+  {
+    name: "文本驱动",
+    itemValue: "0",
+    isActive: true,
+  },
+  {
+    name: "声音驱动",
+    isActive: false,
+    itemValue: "1",
+  },
+]);
+const driveTypeChange = (item) => {
+  selectDriveType.value = item;
+  driveType.forEach((child) => {
+    if (child.name == item.name) {
+      child.isActive = true;
+    } else {
+      child.isActive = false;
+    }
+  });
+};
+//右侧设置
+const rightTools = reactive([
+  {
+    name: "数字人",
+    url: user,
+    activeUrl: userActive,
+    isActive: true,
+  },
+  {
+    name: "背景",
+    url: bg,
+    activeUrl: bgActive,
+    isActive: false,
+  },
+]);
+const handleChangeTool = (item) => {
+  rightTools.forEach((child) => {
+    if (child.name == item.name) {
+      child.isActive = true;
+    } else {
+      child.isActive = false;
+    }
+  });
+  if (item.name == "背景") {
+    showHeadImageTool.value = true;
+  } else {
+    showHeadImageTool.value = false;
   }
 };
+
 const PPTArr = ref([]);
 //ppt解析进度
 const percentagePPT = ref(0);
@@ -435,25 +504,10 @@ const headers = {
   Authorization: "Bearer " + getAccessToken(),
   "tenant-id": getTenantId(),
 };
-//上传弹框
-const uploadFormRef = ref();
-const uploadFormVisible = ref(false);
-const uploadForm = reactive({
-  name: "1",
-  uploadType: "1",
-  text: "1",
-  remark: false,
-});
-const handleExceed = (files) => {
-  uploadRef.value!.clearFiles();
-  const file = files[0] as UploadRawFile;
-  file.uid = genFileId();
-  uploadRef.value!.handleStart(file);
-};
 //上传文件对象
 const uploadFileObj = reactive({
   filename: "",
-  size: null,
+  size: 0,
   url: "",
   md5: "16b4c5e61897159b11405883ebd6749c",
   courseId: 23388,
@@ -463,17 +517,43 @@ const uploadFileObj = reactive({
     '{"addMode":true,"docType":1,"pptNotes":true,"pptContent":false,"notesPolish":false}',
   resolveType: 1,
 });
+const handleExceed = (files) => {
+  uploadRef.value!.clearFiles();
+  const file = files[0] as UploadRawFile;
+  file.uid = genFileId();
+  uploadRef.value!.handleStart(file);
+};
 const handleChange = (files) => {
   uploadFileObj.filename = files.name;
   uploadFileObj.size = files.size;
 };
+const uploadExplainRef = ref();
 const handleSuccess = (rawFile) => {
   message.success("上传成功！");
   uploadFileObj.url = rawFile.data;
-  uploadFormVisible.value = true;
+  uploadExplainRef.value.open();
 };
-const uploadSubmit = () => {
-  uploadFormVisible.value = false;
+//上传音频
+const uploadAudioRef = ref();
+const handleAudioExceed = (files) => {
+  uploadAudioRef.value!.clearFiles();
+  const file = files[0] as UploadRawFile;
+  file.uid = genFileId();
+  uploadAudioRef.value!.handleStart(file);
+};
+const handleAudioChange = (files) => {
+  console.log("-------", files);
+  // uploadFileObj.filename = files.name;
+  // uploadFileObj.size = files.size;
+};
+const handleAudioSuccess = (rawFile) => {
+  message.success("上传成功！");
+  console.log("-------", rawFile);
+  // uploadFileObj.url = rawFile.data;
+};
+//ppt上传说明回调
+const uploadSubmit = (uploadForm) => {
+  console.log("-------ppt上传说明", uploadForm);
   pptTemplateApi.createPPT(uploadFileObj).then((res) => {
     if (res) {
       schedulePPT(res);
@@ -487,6 +567,8 @@ const schedulePPT = (id) => {
   schedulePPTTimer.value = setInterval(() => {
     pptTemplateApi.getSchedule(id).then((res) => {
       if (res && typeof res == "number") {
+        console.log(typeof percentagePPT.value);
+        console.log(typeof res);
         percentagePPT.value = parseInt(res * 100);
       } else if (res && res.length > 0) {
         PPTArr.value = res;
@@ -497,19 +579,36 @@ const schedulePPT = (id) => {
   }, 5000);
 };
 const copyDocument = (item) => {
-  item.id = "0" + item.id;
   PPTArr.value.push(item);
 };
-const deleteDocument = (item) => {
-  const findItem = PPTArr.value.filter((child) => child.id === item.id);
+const deleteDocument = (index) => {
+  const findItem = PPTArr.value[index];
   PPTArr.value.splice(findItem.indexOf(findItem[0]), 1);
 };
-
-const tabs1Click = (item) => {
-  tabs1ActiveNum.value = item.itemValue;
-};
-const tabs2Click = (item) => {
-  tabs2ActiveNum.value = item.itemValue;
+/** 查询数字人列表 */
+const hostList = ref();
+const loading = ref(true); // 列表的加载中
+const total = ref(0);
+const queryParams = reactive({
+  pageNo: 1,
+  pageSize: 100,
+  type: "",
+  gender: "",
+  posture: "",
+});
+const getList = async () => {
+  loading.value = true;
+  try {
+    queryParams.type = tabs1ActiveNum.value;
+    queryParams.gender = tabs2ActiveNum.value;
+    queryParams.posture = tabs3ActiveNum.value;
+    const data = await pptTemplateApi.pageList(queryParams);
+    hostList.value = data.list;
+    total.value = data.total;
+    // mainObj.value = PPTArr[choosePPtIndex.value];
+  } finally {
+    loading.value = false;
+  }
 };
 const choosePPt = (item, index) => {
   choosePPtIndex.value = index;
@@ -525,9 +624,25 @@ const chooseHost = (item) => {
 const PPTListUpdate = (data) => {
   console.log(data);
 };
+//打开弹框
+const audioSelect = ref();
+const openSelect = () => {
+  audioSelect.value.open();
+};
+const selectAudio = (data) => {
+  console.log("------声音模型弹框数据", data);
+};
+//生成课程id
+const coursesCreate = () => {
+  const params = {
+    accountId: userId.value,
+  };
+  pptTemplateApi.coursesCreate(params).then((res) => {
+    console.log(res);
+  });
+};
 onMounted(async () => {
-  console.log(PPTArr);
-  // mainObj.value = PPTArr[choosePPtIndex.value];
+  coursesCreate();
   await getList();
 });
 </script>
@@ -715,11 +830,12 @@ onMounted(async () => {
         overflow: hidden;
         width: 180px;
         background-color: #c9c9c9;
+        cursor: pointer;
         span {
           display: inline-block;
           height: 30px;
           line-height: 30px;
-          width: 48%;
+          width: 50%;
           text-align: center;
         }
         .active-item {
@@ -739,6 +855,12 @@ onMounted(async () => {
         }
       }
     }
+    .audio-upload {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+    }
     .middle-textarea {
       padding: 5px 20px;
     }
@@ -757,6 +879,7 @@ onMounted(async () => {
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     width: 20%;
     background-color: #ffffff;
+    position: relative;
     .tabs-1 {
       display: flex;
       justify-content: space-around;
@@ -845,7 +968,26 @@ onMounted(async () => {
     width: 6%;
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     background-color: #ffffff;
+    padding: 10px;
+    .tool-item {
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      img {
+        width: 32px;
+        height: 32px;
+      }
+      .tool-name {
+        line-height: 30px;
+      }
+    }
   }
+}
+::v-deep(.el-pagination) {
+  position: absolute;
+  bottom: 0;
 }
 /* 滚动条样式 */
 ::-webkit-scrollbar {
