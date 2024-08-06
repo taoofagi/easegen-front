@@ -594,6 +594,50 @@ const remainingRouter: AppRouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/ppt',
+    component: Layout,
+    name: 'ppt',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'ppt/index',
+        component: () => import('@/views/ppt/index.vue'),
+        name: 'pptIndex',
+        meta: {
+          title: '智能PPT',
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          icon: '',
+          activeMenu: '/ppt/index'
+        }
+      }
+    ]
+  },
+  {
+    path: '/ai',
+    component: Layout,
+    name: 'Ai',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'image/square',
+        component: () => import('@/views/ai/image/square/index.vue'),
+        name: 'AiImageSquare',
+        meta: {
+          title: '绘图作品',
+          icon: 'ep:home-filled',
+          noCache: false,
+          affix: true
+        }
+      }
+    ]
   }
 ]
 
