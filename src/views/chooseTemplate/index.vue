@@ -76,7 +76,7 @@
                         top: leftTop,
                         left: leftLeft,
                       }"
-                      :src="selectHost.pictureUrl"
+                      :src="selectHost ? selectHost.pictureUrl : ''"
                       fit="cover"
                     />
                     <div class="icon-content">
@@ -151,7 +151,7 @@
               >
                 <el-image
                   class="minddle-host-image"
-                  :src="selectHost.pictureUrl"
+                  :src="selectHost ? selectHost.pictureUrl : ''"
                   fit="cover"
                 />
               </Vue3DraggableResizable>
