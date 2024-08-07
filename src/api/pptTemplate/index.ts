@@ -37,7 +37,7 @@ export const courseList = async(params: PageParam) => {
 }
 //生成课程id
 export interface coursesVO {
-  accountId: string
+  accountId: number
 }
 export const coursesCreate = async(data: coursesVO) => {
   return await request.post({ url: '/digitalcourse/courses/create', data })
@@ -45,4 +45,12 @@ export const coursesCreate = async(data: coursesVO) => {
 //更新课程
 export const coursesUpdate = async(data) => {
   return await request.post({ url: '/digitalcourse/courses/update', data })
+}
+//生成试听文件
+export const createAudio = async(data) => {
+  return await request.post({ url: '/digitalcourse/voices/audition', data })
+}
+//保存场景
+export const coursesSave = async(data) => {
+  return await request.post({ url: '/digitalcourse/course-scenes/create', data })
 }

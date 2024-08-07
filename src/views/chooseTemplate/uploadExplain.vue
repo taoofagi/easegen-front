@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts"> 
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive } from "vue";
 const uploadFormVisible = ref(false);
 const uploadForm = reactive({
   resolveType: "1",

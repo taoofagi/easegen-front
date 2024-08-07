@@ -46,9 +46,6 @@
                 <span>{{ item.name }}</span>
                 <span>{{ item.introduction }}</span>
               </div>
-              <audio preload="auto" style="display: none" controls>
-                <source :src="item.auditionUrl" type="audio/mpeg" />
-              </audio>
               <img
                 class="play-img"
                 v-if="item.isHover && !item.isPlay"

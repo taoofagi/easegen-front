@@ -22,7 +22,7 @@
         </div>
         <div class="page-model">ppt</div>
         <div class="item-name">{{ item.name }}</div>
-        <div class="item-time">{{ item.createTime }}</div>
+        <div class="item-time">{{ formatDate(item.createTime) }}</div>
       </div>
     </div>
     <Pagination
@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatDate } from '@/utils/formatTime'
 import { ref, reactive, onMounted } from "vue";
 import * as pptTemplateApi from "@/api/pptTemplate";
 import { useRouter } from 'vue-router'
@@ -53,7 +54,6 @@ const getList = async () => {
     const data = await pptTemplateApi.courseList(queryParams);
     courseList.value = data.list;
     total.value = data.total;
-    // mainObj.value = PPTArr[choosePPtIndex.value];
   } finally {
     loading.value = false;
   }
@@ -87,20 +87,22 @@ onMounted(async () => {
   }
 }
 .content-list {
-  padding: 16px 30px;
+  padding: 16px 0px;
   .content-head {
     line-height: 14px;
     border-left: 4px solid #0088fe;
     padding-left: 10px;
     margin-bottom: 16px;
+    margin-left: 16px;
     font-size: 18px;
   }
   .content {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
     .content-item {
       width: 15%;
-      margin: 0 30px 30px 0;
+      margin-bottom: 30px;
       position: relative;
       .item-img {
         border: 2px solid #e9e9e9;

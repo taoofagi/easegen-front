@@ -20,7 +20,7 @@
       </div>
       <div class="top-right">
         <span>16:55:14 已保存</span>
-        <el-button size="small">保存</el-button>
+        <el-button size="small" @click="saveSubmit">保存</el-button>
         <el-button type="primary" size="small">合成视频</el-button>
       </div>
     </div>
@@ -61,8 +61,13 @@
             >
               <template #item="{ element, index }">
                 <div class="mt-2 w-100%">
-                  <div class="list" @click="choosePPt(element, index)">
-                    <el-image class="ppt-bg" :src="element.url" fit="cover" />
+                  <div class="list" @click="choosePPt(element)">
+                    <el-image
+                      class="ppt-bg"
+                      :style="element.isActive ? 'border-color: #0683ee' : ''"
+                      :src="element.pictureUrl"
+                      fit="cover"
+                    />
                     <el-image
                       class="host"
                       :style="{
@@ -71,7 +76,7 @@
                         top: leftTop,
                         left: leftLeft,
                       }"
-                      :src="element.hosturl"
+                      :src="selectHost.pictureUrl"
                       fit="cover"
                     />
                     <div class="icon-content">
@@ -111,19 +116,19 @@
       </div>
       <div class="template-box template-middle">
         <div class="middle-top">
-          <el-select v-model="value" placeholder="Select" style="width: 140px">
+          <el-select v-model="selectScreen" placeholder="Select" style="width: 140px">
             <el-option
               v-for="item in options"
-              :key="item.value"
+              :key="item.label"
               :label="item.label"
-              :value="item.value"
+              :value="item.label"
             />
           </el-select>
         </div>
         <div class="main-box">
           <div class="list">
             <div class="main-image-box">
-              <el-image class="ppt-bg" :src="mainObj.pptbg" fit="cover" />
+              <el-image class="ppt-bg" :src="selectPPT.pictureUrl" fit="cover" />
               <Vue3DraggableResizable
                 :parent="true"
                 :initW="PPTpositon.w"
@@ -144,7 +149,11 @@
                 @drag-end="print('drag-end')"
                 @resize-end="print('resize-end')"
               >
-                <el-image class="minddle-host-image" :src="mainObj.hosturl" fit="cover" />
+                <el-image
+                  class="minddle-host-image"
+                  :src="selectHost.pictureUrl"
+                  fit="cover"
+                />
               </Vue3DraggableResizable>
             </div>
           </div>
@@ -167,16 +176,18 @@
             <el-button type="success" :icon="Headset" size="small" />
           </div>
         </div>
-        <div v-if="selectDriveType.itemValue == '0'">
+        <div v-if="selectDriveType.itemValue == '0'" style="position: relative">
           <div class="middle-textarea">
             <el-input
-              v-model="mainObj.text"
+              v-model="selectPPT.pptRemark"
+              ref="textareaRef"
               :rows="3"
               type="textarea"
               placeholder="请输入口播内容"
               show-word-limit
               maxlength="10000"
               resize="none"
+              @blur="selectPPTText"
             />
           </div>
           <div class="tool-box">
@@ -193,9 +204,13 @@
               <QuestionFilled style="width: 1em; height: 1em" />
               <div></div>
             </div>
-            <el-button type="primary" :icon="VideoPlay" size="small" @click="getList"
+            <el-button type="primary" :icon="VideoPlay" size="small" @click="createAudio"
               >试听</el-button
             >
+          </div>
+          <div class="audio-play" v-if="showAudioPlay">
+            <div>试听中...</div>
+            <el-button @click="pauseAudio">取消试听</el-button>
           </div>
         </div>
         <div v-else class="audio-upload">
@@ -345,7 +360,6 @@ const userId = computed(() => userStore.user.id);
 const message = useMessage();
 const emit = defineEmits(["PPTListUpdate"]);
 const templatename = ref("");
-const choosePPtIndex = ref("0");
 const PPTpositon = reactive({
   x: 450,
   y: 150,
@@ -368,7 +382,9 @@ const leftTop = computed(() => {
 const leftLeft = computed(() => {
   return PPTpositon.x / 3 + "px";
 });
-const print = (val) => {};
+const print = (val) => {
+  console.log(val);
+};
 const state = reactive({
   dragging: false,
 });
@@ -480,13 +496,16 @@ const handleChangeTool = (item) => {
   }
 };
 
-const PPTArr = ref([]);
+const PPTArr = ref();
 //ppt解析进度
 const percentagePPT = ref(0);
 const showLeftList = ref(true);
 
-const value = ref("1");
-const mainObj = ref({});
+const selectScreen = ref("16:9"); //选择屏幕比例
+const selectPPT = ref({
+  pictureUrl: "",
+  pptRemark: "",
+}); //选择的PPT
 const checked5 = ref(false);
 const options = [
   {
@@ -567,11 +586,14 @@ const schedulePPT = (id) => {
   schedulePPTTimer.value = setInterval(() => {
     pptTemplateApi.getSchedule(id).then((res) => {
       if (res && typeof res == "number") {
-        console.log(typeof percentagePPT.value);
-        console.log(typeof res);
-        percentagePPT.value = parseInt(res * 100);
+        percentagePPT.value = parseInt(`${res * 100}`);
       } else if (res && res.length > 0) {
+        res.forEach((item) => {
+          item.isActive = false;
+        });
         PPTArr.value = res;
+        PPTArr.value[0].isActive = true;
+        selectPPT.value = PPTArr.value[0];
         showLeftList.value = true;
         clearInterval(schedulePPTTimer.value);
       }
@@ -582,7 +604,7 @@ const copyDocument = (item) => {
   PPTArr.value.push(item);
 };
 const deleteDocument = (index) => {
-  const findItem = PPTArr.value[index];
+  const findItem: any = PPTArr.value[index];
   PPTArr.value.splice(findItem.indexOf(findItem[0]), 1);
 };
 /** 查询数字人列表 */
@@ -603,33 +625,49 @@ const getList = async () => {
     queryParams.gender = tabs2ActiveNum.value;
     queryParams.posture = tabs3ActiveNum.value;
     const data = await pptTemplateApi.pageList(queryParams);
+    data.list.forEach((item) => {
+      item.isActive = false;
+    });
     hostList.value = data.list;
+    selectHost.value = hostList.value[0];
     total.value = data.total;
-    // mainObj.value = PPTArr[choosePPtIndex.value];
   } finally {
     loading.value = false;
   }
 };
-const choosePPt = (item, index) => {
-  choosePPtIndex.value = index;
-  mainObj.value = item;
-};
-const chooseHost = (item) => {
-  console.log(item.hosturl);
-  PPTArr.value.forEach((el) => {
-    el.hosturl = item.hosturl;
+const choosePPt = (item) => {
+  PPTArr.value.forEach((child) => {
+    if (child.id == item.id) {
+      child.isActive = true;
+    } else {
+      child.isActive = false;
+    }
   });
-  mainObj.value = PPTArr[choosePPtIndex.value];
+  selectPPT.value = item;
+};
+const selectHost = ref(); // 选择的数字人
+const chooseHost = (item) => {
+  console.log(item.pictureUrl);
+  hostList.value.forEach((el) => {
+    if (el.id == item.id) {
+      el.isActive = true;
+    } else {
+      el.isActive = false;
+    }
+  });
+  selectHost.value = item;
 };
 const PPTListUpdate = (data) => {
   console.log(data);
 };
 //打开弹框
 const audioSelect = ref();
+const audioSelectData = ref();
 const openSelect = () => {
   audioSelect.value.open();
 };
 const selectAudio = (data) => {
+  audioSelectData.value = data;
   console.log("------声音模型弹框数据", data);
 };
 //生成课程id
@@ -640,6 +678,132 @@ const coursesCreate = () => {
   pptTemplateApi.coursesCreate(params).then((res) => {
     console.log(res);
   });
+};
+//保存课程
+const saveSubmitForm = reactive({
+  accountId: userId.value,
+  aspect: selectScreen.value,
+  duration: 11916,
+  height: 360,
+  id: 23388,
+  matting: 1,
+  name: "未命名草稿",
+  pageMode: 2,
+  ppt: [],
+  scenes: [],
+  status: 0,
+  updateTime: "2024-07-24 15:13:44",
+  width: 760,
+  pageInfo: JSON.stringify(uploadFileObj),
+  subtitlesStyle: {},
+});
+const saveSubmit = () => {
+  //组装数据
+  const scenes: any = []
+  PPTArr.value.forEach((item) => {
+    const formatItem = {
+      background: {
+        backgroundType: item.backgroundType,
+        entityId: "",
+        width: item.width,
+        height: item.height,
+        depth: "",
+        src: "",
+        cover: "",
+        originWidth: "",
+        originHeight: "",
+        color: "#ffffff",
+      },
+      components: {
+        name: selectHost.value.name,
+        src: selectHost.value.pictureUrl,
+        cover: '',
+        width: leftWidth,
+        height: leftHeight,
+        originWidth: '',
+        originHeight: '',
+        category: selectHost.value.type,
+        depth: '',
+        top: leftTop,
+        left: leftLeft,
+        entityId: selectHost.value.id,
+        entityType: 1,
+        businessId: '',
+        digitbotType: tabs1ActiveNum.value,
+        matting: 1,
+        marker: false
+      },
+      driverType: '',
+      duration: '',
+      id: '',
+      orderNo: '',
+      textDriver: {
+        pitch: '',
+        speed: '',
+        volume: '',
+        smartSpeed: '',
+        textJson: ''
+      },
+      audioDriver: {
+        audioId: '',
+        useVideoBackgroundAudio: ''
+      },
+      voice: {
+        entityId: '',
+        tonePitch: '',
+        voiceType: '',
+        speechRate: '',
+        name: '',
+      },
+      businessId: ''
+    };
+    scenes.push(formatItem)
+  });
+  saveSubmitForm.scenes = scenes;
+  pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {
+    console.log("-------", res);
+  });
+};
+//生成试听问价
+const showAudioPlay = ref(false); //显示试听
+const textareaRef = ref();
+const selectTextarea = ref();
+const selectPPTText = () => {
+  if (textareaRef.value) {
+    textareaRef.value.focus();
+    const selection = window.getSelection() || document.getSelection();
+    selectTextarea.value = selection.toString();
+  }
+};
+const currentAudio = ref();
+const createAudio = () => {
+  if (!audioSelectData.value || audioSelectData.value.length == 0) {
+    message.warning("请选择声音模型！");
+    return false;
+  }
+  showAudioPlay.value = true;
+  const params = {
+    text: selectTextarea.value,
+    speed: 18,
+    pitch: 17,
+    volume: 45,
+    voiceType: 37,
+    voiceTypeId: 51,
+    voiceId: audioSelectData.value[0].id,
+    smartSpeed: 34,
+  };
+  pptTemplateApi.createAudio(params).then((res) => {
+    if (res) {
+      currentAudio.value = new Audio(res);
+      currentAudio.value.play();
+    }
+  });
+};
+//取消试听
+const pauseAudio = () => {
+  currentAudio.value.pause();
+  currentAudio.value = null;
+  showAudioPlay.value = false;
 };
 onMounted(async () => {
   coursesCreate();
@@ -763,7 +927,7 @@ onMounted(async () => {
           width: 100%;
           height: 100%;
           box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
-          border: 1px solid #ebeef5;
+          border: 2px solid #ffffff;
         }
         .host {
           position: absolute;
@@ -873,6 +1037,21 @@ onMounted(async () => {
         display: flex;
         align-items: center;
       }
+    }
+    .audio-play {
+      width: 100%;
+      height: 100%;
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      line-height: 40px;
+      background: #000;
+      opacity: 0.5;
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #ffffff;
     }
   }
   .template-right {
