@@ -235,4 +235,6 @@ export enum DICT_TYPE {
   DIGITALCOURSE_BACKGROUNDS_TYPE = 'digitalcourse_backgrounds_type', // 数字人类型
   DIGITALCOURSE_VOICES_LANGUAGE = 'digitalcourse_voices_language', // 声音语言类型
   DIGITALCOURSE_VOICES_TYPE = 'digitalcourse_voices_type', // 声音类型
+  VIDEO_STATUS = 'video_status', //合成视频状态
+  MEDIA_TYPE = 'media_type' //媒体类型
 }

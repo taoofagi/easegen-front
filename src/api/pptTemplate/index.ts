@@ -52,5 +52,22 @@ export const createAudio = async(data) => {
 }
 //保存场景
 export const coursesSave = async(data) => {
-  return await request.post({ url: '/digitalcourse/course-scenes/create', data })
+  return await request.post({ url: '/digitalcourse/courses/update', data })
+}
+//课程详情
+export const coursesDetail = async(id: number) => {
+  return await request.get({ url: '/digitalcourse/courses/get?id=' + id })
+}
+//ppt复制
+export const copyPPT = async(id: number) => {
+  return await request.get({ url: '/digitalcourse/ppt-materials/copy?id=' + id })
+}
+
+//我的课程列表
+export const myCourseList = async(params: PageParam) => {
+  return await request.get({ url: '/digitalcourse/course-media/page', params })
+}
+//删除我的课程
+export const deleteMyCourse = async(id: string) => {
+  return await request.delete({ url: `/digitalcourse/course-media/delete?id=${id}` })
 }

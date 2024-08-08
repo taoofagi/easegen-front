@@ -5,17 +5,16 @@
         <div style="font-size: 16px" class="top-icon">
           <ArrowLeft style="width: 1em; height: 1em" />
         </div>
-        <span class="back-text">返回</span>
+        <span class="back-text" @click="goBack">返回</span>
 
         <el-input
-          v-model="templatename"
+          v-model="courseInfo.name"
           style="width: 140px"
-          disabled
           size="small"
-          placeholder="未命名草稿"
+          placeholder="请输入课程名称"
           :prefix-icon="Edit"
         />
-        <span>时长:00:00:05</span>
+        <span>时长: {{ courseInfo.duration }}</span>
         <span>总字数:28</span>
       </div>
       <div class="top-right">
@@ -57,7 +56,6 @@
               @start="state.dragging = true"
               @end="state.dragging = false"
               animation="300"
-              @on-update="PPTListUpdate"
             >
               <template #item="{ element, index }">
                 <div class="mt-2 w-100%">
@@ -79,19 +77,25 @@
                       :src="selectHost ? selectHost.pictureUrl : ''"
                       fit="cover"
                     />
+                    <div
+                      class="list-index"
+                      :style="element.isActive ? 'background: #409eff' : ''"
+                    >
+                      {{ index + 1 }}
+                    </div>
                     <div class="icon-content">
                       <el-icon
                         size="20"
                         color="#ffffff"
                         style="margin-right: 5px"
-                        @click.stop="copyDocument(element)"
+                        @click.stop="copyDocument(element, index)"
                       >
                         <CopyDocument />
                       </el-icon>
                       <el-icon
                         size="20"
                         color="#ffffff"
-                        @click.stop="deleteDocument(index)"
+                        @click.stop="deleteDocument(element)"
                       >
                         <Delete />
                       </el-icon>
@@ -110,13 +114,17 @@
           <!-- <img src="" alt=""> -->
           <div>ppt解析中...</div>
           <el-progress :percentage="percentagePPT" />
-          <el-button>取消</el-button>
+          <el-button @click="cancelAnalyze">取消</el-button>
           <div>PPT需要上传、解析等步骤处理，请耐心等待。</div>
         </div>
       </div>
       <div class="template-box template-middle">
         <div class="middle-top">
-          <el-select v-model="selectScreen" placeholder="Select" style="width: 140px">
+          <el-select
+            v-model="courseInfo.aspect"
+            placeholder="Select"
+            style="width: 140px"
+          >
             <el-option
               v-for="item in options"
               :key="item.label"
@@ -176,7 +184,7 @@
             <el-button type="success" :icon="Headset" size="small" />
           </div>
         </div>
-        <div v-if="selectDriveType.itemValue == '0'" style="position: relative">
+        <div v-if="selectDriveType.itemValue == 1" style="position: relative">
           <div class="middle-textarea">
             <el-input
               v-model="selectPPT.pptRemark"
@@ -226,8 +234,6 @@
               :limit="1"
               :headers="headers"
               :action="`${config.base_url}/infra/file/upload`"
-              :on-exceed="handleAudioExceed"
-              :on-change="handleAudioChange"
               :on-success="handleAudioSuccess"
               :show-file-list="false"
             >
@@ -354,18 +360,40 @@ import {
   VideoPlay,
   CopyDocument,
 } from "@element-plus/icons-vue";
+import { generateUUID } from "@/utils";
+import { useRoute, useRouter } from "vue-router";
+import { cloneDeep } from "lodash-es";
+const router = useRouter(); // 路由
+const route = useRoute(); //
 //用户信息
 const userStore = useUserStore();
 const userId = computed(() => userStore.user.id);
 const message = useMessage();
-const emit = defineEmits(["PPTListUpdate"]);
-const templatename = ref("");
+//课程基本信息
+const courseInfo = ref({
+  id: 0,
+  accountId: "",
+  aspect: "16:9",
+  name: "未命名草稿",
+  duration: 0,
+  status: 0,
+  pageMode: 2,
+  matting: 1,
+  height: 1080,
+  width: 1920,
+});
 const PPTpositon = reactive({
   x: 450,
   y: 150,
   h: 180,
   w: 300,
   active: false,
+});
+const componentsInfo = reactive({
+  width: PPTpositon.w / 3,
+  height: PPTpositon.h / 3,
+  marginLeft: PPTpositon.x / 3,
+  top: PPTpositon.y / 3,
 });
 //PPT数字人头像设置
 const showHeadImageTool = ref(false);
@@ -441,19 +469,19 @@ const tabs3Click = (item) => {
 //驱动类型
 const selectDriveType = ref({
   name: "文本驱动",
-  itemValue: "0",
+  itemValue: 1,
   isActive: true,
 });
 const driveType = reactive([
   {
     name: "文本驱动",
-    itemValue: "0",
+    itemValue: 1,
     isActive: true,
   },
   {
     name: "声音驱动",
     isActive: false,
-    itemValue: "1",
+    itemValue: 2,
   },
 ]);
 const driveTypeChange = (item) => {
@@ -501,7 +529,6 @@ const PPTArr = ref();
 const percentagePPT = ref(0);
 const showLeftList = ref(true);
 
-const selectScreen = ref("16:9"); //选择屏幕比例
 const selectPPT = ref({
   pictureUrl: "",
   pptRemark: "",
@@ -551,24 +578,15 @@ const handleSuccess = (rawFile) => {
   message.success("上传成功！");
   uploadFileObj.url = rawFile.data;
   uploadExplainRef.value.open();
+  uploadRef.value!.clearFiles();
 };
 //上传音频
 const uploadAudioRef = ref();
-const handleAudioExceed = (files) => {
-  uploadAudioRef.value!.clearFiles();
-  const file = files[0] as UploadRawFile;
-  file.uid = genFileId();
-  uploadAudioRef.value!.handleStart(file);
-};
-const handleAudioChange = (files) => {
-  console.log("-------", files);
-  // uploadFileObj.filename = files.name;
-  // uploadFileObj.size = files.size;
-};
+const uploadAudioUrl = ref();
 const handleAudioSuccess = (rawFile) => {
   message.success("上传成功！");
-  console.log("-------", rawFile);
-  // uploadFileObj.url = rawFile.data;
+  uploadAudioUrl.value.url = rawFile.data;
+  uploadAudioRef.value!.clearFiles();
 };
 //ppt上传说明回调
 const uploadSubmit = (uploadForm) => {
@@ -585,11 +603,12 @@ const schedulePPT = (id) => {
   showLeftList.value = false;
   schedulePPTTimer.value = setInterval(() => {
     pptTemplateApi.getSchedule(id).then((res) => {
-      if (res && typeof res == "number") {
-        percentagePPT.value = parseInt(`${res * 100}`);
+      if (res && typeof res == "string") {
+        percentagePPT.value = parseInt(`${Number(res) * 100}`);
       } else if (res && res.length > 0) {
         res.forEach((item) => {
           item.isActive = false;
+          item.businessId = generateUUID();
         });
         PPTArr.value = res;
         PPTArr.value[0].isActive = true;
@@ -600,12 +619,23 @@ const schedulePPT = (id) => {
     });
   }, 5000);
 };
-const copyDocument = (item) => {
-  PPTArr.value.push(item);
+//取消解析ppt
+const cancelAnalyze = () => {
+  showLeftList.value = true;
+  clearInterval(schedulePPTTimer.value);
 };
-const deleteDocument = (index) => {
-  const findItem: any = PPTArr.value[index];
-  PPTArr.value.splice(findItem.indexOf(findItem[0]), 1);
+const copyDocument = (item, index) => {
+  let copyItem = cloneDeep(item);
+  pptTemplateApi.copyPPT(item.id).then((res) => {
+    if (res) {
+      copyItem.id = res;
+      copyItem.isActive = false;
+      PPTArr.value.splice(index + 1, 0, copyItem);
+    }
+  });
+};
+const deleteDocument = (item) => {
+  PPTArr.value = PPTArr.value.filter((child) => child.id !== item.id);
 };
 /** 查询数字人列表 */
 const hostList = ref();
@@ -657,9 +687,6 @@ const chooseHost = (item) => {
   });
   selectHost.value = item;
 };
-const PPTListUpdate = (data) => {
-  console.log(data);
-};
 //打开弹框
 const audioSelect = ref();
 const audioSelectData = ref();
@@ -668,7 +695,6 @@ const openSelect = () => {
 };
 const selectAudio = (data) => {
   audioSelectData.value = data;
-  console.log("------声音模型弹框数据", data);
 };
 //生成课程id
 const coursesCreate = () => {
@@ -677,91 +703,109 @@ const coursesCreate = () => {
   };
   pptTemplateApi.coursesCreate(params).then((res) => {
     console.log(res);
+    if (res) {
+      courseInfo.value.id = res;
+    }
   });
 };
 //保存课程
 const saveSubmitForm = reactive({
-  accountId: userId.value,
-  aspect: selectScreen.value,
-  duration: 11916,
-  height: 360,
-  id: 23388,
-  matting: 1,
-  name: "未命名草稿",
-  pageMode: 2,
+  accountId: courseInfo.value.accountId,
+  aspect: courseInfo.value.aspect,
+  duration: courseInfo.value.duration,
+  height: courseInfo.value.height,
+  id: 0,
+  matting: courseInfo.value.matting,
+  name: courseInfo.value.name,
+  pageMode: courseInfo.value.pageMode,
   ppt: [],
   scenes: [],
-  status: 0,
-  updateTime: "2024-07-24 15:13:44",
-  width: 760,
-  pageInfo: JSON.stringify(uploadFileObj),
-  subtitlesStyle: {},
+  status: courseInfo.value.status,
+  width: courseInfo.value.width,
+  pageInfo: "",
+  subtitlesStyle: "{}",
 });
 const saveSubmit = () => {
+  saveSubmitForm.id = courseInfo.value.id;
   //组装数据
-  const scenes: any = []
-  PPTArr.value.forEach((item) => {
+  const scenes: any = [];
+  const pageInfo = {
+    docInfo: {
+      docType: 1,
+      fileName: uploadFileObj.filename,
+      fileSize: uploadFileObj.size,
+    },
+    scenes: [] as any[],
+  };
+  const components = [
+    {
+      name: selectHost.value.name,
+      src: selectHost.value.pictureUrl,
+      cover: selectHost.value.pictureUrl,
+      width: componentsInfo.width,
+      height: componentsInfo.height,
+      originWidth: componentsInfo.width,
+      originHeight: componentsInfo.height,
+      category: 1,
+      depth: 100,
+      top: componentsInfo.top,
+      marginLeft: componentsInfo.marginLeft,
+      entityId: selectHost.value.id,
+      entityType: 1,
+      businessId: generateUUID(),
+      digitbotType: tabs1ActiveNum.value,
+      matting: 1,
+      marker: 1,
+    },
+  ];
+  PPTArr.value.forEach((item, index) => {
+    pageInfo.scenes.push(item.businessId);
     const formatItem = {
       background: {
         backgroundType: item.backgroundType,
         entityId: "",
         width: item.width,
         height: item.height,
-        depth: "",
-        src: "",
-        cover: "",
-        originWidth: "",
-        originHeight: "",
+        depth: 0,
+        src: item.pictureUrl,
+        cover: item.pictureUrl,
+        originWidth: item.width,
+        originHeight: item.height,
         color: "#ffffff",
       },
-      components: {
-        name: selectHost.value.name,
-        src: selectHost.value.pictureUrl,
-        cover: '',
-        width: leftWidth,
-        height: leftHeight,
-        originWidth: '',
-        originHeight: '',
-        category: selectHost.value.type,
-        depth: '',
-        top: leftTop,
-        left: leftLeft,
-        entityId: selectHost.value.id,
-        entityType: 1,
-        businessId: '',
-        digitbotType: tabs1ActiveNum.value,
-        matting: 1,
-        marker: false
-      },
-      driverType: '',
-      duration: '',
-      id: '',
-      orderNo: '',
+      components: components,
+      driverType: selectDriveType.value.itemValue,
+      duration: "",
+      orderNo: index + 1,
       textDriver: {
-        pitch: '',
-        speed: '',
-        volume: '',
-        smartSpeed: '',
-        textJson: ''
+        pitch: "",
+        speed: "",
+        volume: "",
+        smartSpeed: "",
+        textJson: "",
       },
       audioDriver: {
-        audioId: '',
-        useVideoBackgroundAudio: ''
+        audioId: "",
+        audioUrl: "",
+        useVideoBackgroundAudio: "",
       },
       voice: {
-        entityId: '',
-        tonePitch: '',
-        voiceType: '',
-        speechRate: '',
-        name: '',
+        entityId: audioSelectData.value && audioSelectData.value[0].id,
+        tonePitch: "",
+        voiceType: "",
+        speechRate: "",
+        name: audioSelectData.value && audioSelectData.value[0].name,
       },
-      businessId: ''
+      businessId: item.businessId,
     };
-    scenes.push(formatItem)
+    scenes.push(formatItem);
   });
+  saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
   saveSubmitForm.scenes = scenes;
   pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {
-    console.log("-------", res);
+    if (res) {
+      message.success("保存成功！");
+    }
   });
 };
 //生成试听问价
@@ -772,7 +816,9 @@ const selectPPTText = () => {
   if (textareaRef.value) {
     textareaRef.value.focus();
     const selection = window.getSelection() || document.getSelection();
-    selectTextarea.value = selection.toString();
+    if (selection) {
+      selectTextarea.value = selection.toString();
+    }
   }
 };
 const currentAudio = ref();
@@ -805,9 +851,67 @@ const pauseAudio = () => {
   currentAudio.value = null;
   showAudioPlay.value = false;
 };
+//返回
+const goBack = () => {
+  router.go(-1);
+};
+const getCourseDetail = (id) => {
+  pptTemplateApi.coursesDetail(id).then((res) => {
+    console.log(res);
+    if (res) {
+      //回显数据处理
+      if(res.scenes && res.scenes.length > 0){
+        //左侧数据列表
+        res.scenes.forEach(item => {
+          item.isActive = false;
+          item.pictureUrl =  item.background.src;
+          item.pptRemark = item.background.pptRemark;
+          item.backgroundType = item.background.backgroundType;
+          item.width = item.background.width;
+          item.height = item.background.height;
+
+        })
+        PPTArr.value = res.scenes;
+        PPTArr.value[0].isActive = true;
+        selectPPT.value = PPTArr.value[0];
+         //选择的数字人信息
+        const hostInfo = res.scenes[0].components[0];
+        selectHost.value.name =  hostInfo.name;
+        selectHost.value.pictureUrl = hostInfo.src;
+        selectHost.value.id = hostInfo.entityId;
+        //数字人位置信息
+        componentsInfo.width = hostInfo.width;
+        componentsInfo.height = hostInfo.height;
+        componentsInfo.top = hostInfo.top;
+        componentsInfo.marginLeft = hostInfo.marginLeft;
+        //数字人类型
+        tabs1ActiveNum.value = hostInfo.digitbotType;
+        driveType.forEach((child) => {
+          if (child.name == hostInfo.driverType) {
+            selectDriveType.value = child
+          }
+        });
+        audioSelectData.value = [{
+          id: hostInfo.entityId,
+          name: hostInfo.name
+        }]
+      }
+      // 课程基本信息
+      courseInfo.value = res;
+      //上传文件信息
+      const pageInfo = JSON.parse(res.pageInfo)
+      uploadFileObj.filename = pageInfo.docInfo.fileName;
+      uploadFileObj.size = pageInfo.docInfo.fileSize
+    }
+  });
+};
 onMounted(async () => {
-  coursesCreate();
   await getList();
+  if (route.query.id) {
+    await getCourseDetail(route.query.id);
+  } else {
+    coursesCreate();
+  }
 });
 </script>
 <style scoped lang="scss">
@@ -838,6 +942,7 @@ onMounted(async () => {
     .back-text {
       margin-left: 10px;
       margin-right: 20px;
+      cursor: pointer;
     }
     span {
       margin: 0 25px;
@@ -920,7 +1025,7 @@ onMounted(async () => {
           text-align: center;
           line-height: 25px;
           border-radius: 5px;
-          background: #409eff;
+          background: #122121;
           color: #ffffff;
         }
         .ppt-bg {

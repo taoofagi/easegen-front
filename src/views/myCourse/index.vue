@@ -33,20 +33,28 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="视频名称" align="center" prop="id" />
-      <el-table-column label="视频时长" align="center" prop="name" />
-      <el-table-column label="课程名称" align="center" prop="packageId" />
+      <el-table-column label="视频名称" align="center" prop="name" />
+      <el-table-column label="视频时长" align="center" prop="duration" />
+      <el-table-column label="课程名称" align="center" prop="courseName">
+        <template #default="scope">
+          <el-link type="primary" @click="goDetail(scope.row.id)">{{scope.row.courseName}}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         label="合成时间"
         align="center"
-        prop="expireTime"
+        prop="finishTime"
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="媒体类型" align="center" prop="contactMobile" />
+      <el-table-column label="媒体类型" align="center" prop="mediaType">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.MEDIA_TYPE" :value="scope.row.mediaType" />
+        </template>  
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
+          <dict-tag :type="DICT_TYPE.VIDEO_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="110" fixed="right">
@@ -61,7 +69,7 @@
           <el-button
             link
             type="primary"
-            @click="handleDownload(scope.row.id)"
+            @click="handleDownload(scope.row.previewUrl)"
           >
             下载
           </el-button>
@@ -90,9 +98,9 @@
 import { DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import * as TenantApi from '@/api/system/tenant'
-defineOptions({ name: 'SystemTenant' })
-
+import * as pptTemplateApi from '@/api/pptTemplate'
+import { useRouter } from 'vue-router'
+const router = useRouter() // 路由
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
@@ -101,12 +109,8 @@ const total = ref(0) // 列表的总页数
 const list = ref([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
-  name: undefined,
-  contactName: undefined,
-  contactMobile: undefined,
-  status: undefined,
-  createTime: []
+  pageSize: 20,
+  name: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 
@@ -114,7 +118,7 @@ const queryFormRef = ref() // 搜索的表单
 const getList = async () => {
   loading.value = true
   try {
-    const data = await TenantApi.getTenantPage(queryParams)
+    const data = await pptTemplateApi.myCourseList(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -144,7 +148,7 @@ const handleDelete = async (id: number) => {
     // 删除的二次确认
     await message.delConfirm()
     // 发起删除
-    await TenantApi.deleteTenant(id)
+    await pptTemplateApi.deleteMyCourse(id)
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
@@ -152,10 +156,18 @@ const handleDelete = async (id: number) => {
 }
 
 /** 下载按钮操作 */
-const handleDownload = async (data) => {
-  download.excel(data, '租户列表.xls')
+const handleDownload = async (url) => {
+  if(url){
+    download.excel(url)
+  }else{
+    message.warning('暂无下载资源')
+  }
 }
-
+const goDetail = (id) => {
+  router.push(
+    { path: '/chooseTemplate/index', query: { id }}
+  )
+}
 /** 初始化 **/
 onMounted(async () => {
   await getList()

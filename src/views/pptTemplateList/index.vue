@@ -14,7 +14,7 @@
   <div class="content-list">
     <div class="content-head">我的项目</div>
     <div class="content">
-      <div class="content-item" v-for="item in courseList" :key="item.id">
+      <div class="content-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
         <div class="item-img">
           <div class="item-bg"></div>
           <img src="@/assets/imgs/ppt3.png" alt="" />
@@ -61,6 +61,11 @@ const getList = async () => {
 const createPPT = () => {
   router.push('/chooseTemplate/index')
 }
+const detailPPT = (id) => {
+  router.push(
+    { path: '/chooseTemplate/index', query: { id }}
+  )
+}
 onMounted(async () => {
   await getList();
 });
@@ -99,10 +104,11 @@ onMounted(async () => {
   .content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    // justify-content: space-around;
     .content-item {
       width: 15%;
       margin-bottom: 30px;
+      margin-right: 20px;
       position: relative;
       .item-img {
         border: 2px solid #e9e9e9;
