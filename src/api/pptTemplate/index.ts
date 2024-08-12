@@ -71,3 +71,7 @@ export const myCourseList = async(params: PageParam) => {
 export const deleteMyCourse = async(id: string) => {
   return await request.delete({ url: `/digitalcourse/course-media/delete?id=${id}` })
 }
+//合成视频
+export const megerMedia = async(data) => {
+  return await request.post({ url: '/digitalcourse/course-media/megerMedia', data })
+}

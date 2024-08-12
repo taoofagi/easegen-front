@@ -14,13 +14,13 @@
           placeholder="请输入课程名称"
           :prefix-icon="Edit"
         />
-        <span>时长: {{ courseInfo.duration }}</span>
-        <span>总字数:28</span>
+        <span>时长: {{ videoDuration }}</span>
+        <span>总字数:{{ videoText }}</span>
       </div>
       <div class="top-right">
-        <span>16:55:14 已保存</span>
-        <el-button size="small" @click="saveSubmit">保存</el-button>
-        <el-button type="primary" size="small">合成视频</el-button>
+        <span v-if="saveTime">{{ saveTime }} 已保存</span>
+        <el-button size="small" @click="saveSubmit('save')">保存</el-button>
+        <el-button type="primary" size="small" @click="saveSubmit()">合成视频</el-button>
       </div>
     </div>
     <div class="template-main">
@@ -303,6 +303,7 @@
           </div>
           <div class="img-setting">
             <span class="setting-label">层级</span>
+            <el-input v-model="PPTpositon.depth" type="number" :min="0" :max="999" />
           </div>
           <div class="img-setting">
             <span class="setting-label">大小</span>
@@ -387,6 +388,7 @@ const PPTpositon = reactive({
   y: 150,
   h: 180,
   w: 300,
+  depth: 0,
   active: false,
 });
 const componentsInfo = reactive({
@@ -394,6 +396,7 @@ const componentsInfo = reactive({
   height: PPTpositon.h / 3,
   marginLeft: PPTpositon.x / 3,
   top: PPTpositon.y / 3,
+  depth: PPTpositon.depth,
 });
 //PPT数字人头像设置
 const showHeadImageTool = ref(false);
@@ -615,9 +618,44 @@ const schedulePPT = (id) => {
         selectPPT.value = PPTArr.value[0];
         showLeftList.value = true;
         clearInterval(schedulePPTTimer.value);
+        //轮询保存课程
+        saveInter();
       }
     });
   }, 5000);
+};
+//视频总字数、时长
+const videoText = ref();
+const videoDuration = ref();
+watch(
+  () => PPTArr.value,
+  (val) => {
+    if (!val) {
+      return;
+    }
+    // 计算
+    videoText.value = val.reduce((prev, curr) => prev + curr.pptRemark.length, 0);
+    //视频时长换算
+    let videoTime = (videoText.value / 200) * 60 ;
+    videoDuration.value = formateVideoTime(Math.ceil(videoTime));
+  },
+  { deep: true }
+);
+//视频时长换算
+const formateVideoTime = (times) => {
+  let hours = parseInt(times / 60 / 60); // 计算小时数
+  let restMinutes = parseInt(times / 60 % 60); // 分钟数取余，得到剩余分钟数
+  let seconds =  parseInt(times % 60); // 将剩余分钟数转换为秒数
+  if (hours < 10) {
+    hours = "0" + hours;
+  }
+  if (restMinutes < 10) {
+    restMinutes = "0" + restMinutes;
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
+  return hours + ":" + restMinutes + ":" + seconds;
 };
 //取消解析ppt
 const cancelAnalyze = () => {
@@ -725,7 +763,25 @@ const saveSubmitForm = reactive({
   pageInfo: "",
   subtitlesStyle: "{}",
 });
-const saveSubmit = () => {
+//获取保存时间
+const saveTime = ref();
+const getSaveTime = () => {
+  const date = new Date();
+  let h = date.getHours(); //hour
+  let m = date.getMinutes(); //minute
+  let s = date.getSeconds(); //second
+  if (h < 10) {
+    h = "0" + h;
+  }
+  if (m < 10) {
+    m = "0" + m;
+  }
+  if (s < 10) {
+    s = "0" + s;
+  }
+  return h + ":" + m + ":" + s;
+};
+const saveSubmit = (type) => {
   saveSubmitForm.id = courseInfo.value.id;
   //组装数据
   const scenes: any = [];
@@ -747,7 +803,7 @@ const saveSubmit = () => {
       originWidth: componentsInfo.width,
       originHeight: componentsInfo.height,
       category: 1,
-      depth: 100,
+      depth: componentsInfo.depth,
       top: componentsInfo.top,
       marginLeft: componentsInfo.marginLeft,
       entityId: selectHost.value.id,
@@ -802,13 +858,31 @@ const saveSubmit = () => {
   });
   saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
   saveSubmitForm.scenes = scenes;
-  pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {
-    if (res) {
-      message.success("保存成功！");
-    }
-  });
+  if (type == "save") {
+    pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {
+      if (res) {
+        message.success("保存成功！");
+        saveTime.value = getSaveTime();
+      }
+    });
+  } else {
+    //合成视频
+    pptTemplateApi.megerMedia(saveSubmitForm).then((res) => {
+      console.log("---------", res);
+      if (res) {
+        message.success("视频合成成功！");
+      }
+    });
+  }
 };
-//生成试听问价
+//定时保存
+const saveTimer = ref();
+const saveInter = () => {
+  saveTimer.value = setInterval(() => {
+    saveSubmit("save");
+  }, 10000);
+};
+//生成试听
 const showAudioPlay = ref(false); //显示试听
 const textareaRef = ref();
 const selectTextarea = ref();
@@ -860,23 +934,22 @@ const getCourseDetail = (id) => {
     console.log(res);
     if (res) {
       //回显数据处理
-      if(res.scenes && res.scenes.length > 0){
+      if (res.scenes && res.scenes.length > 0) {
         //左侧数据列表
-        res.scenes.forEach(item => {
+        res.scenes.forEach((item) => {
           item.isActive = false;
-          item.pictureUrl =  item.background.src;
+          item.pictureUrl = item.background.src;
           item.pptRemark = item.background.pptRemark;
           item.backgroundType = item.background.backgroundType;
           item.width = item.background.width;
           item.height = item.background.height;
-
-        })
+        });
         PPTArr.value = res.scenes;
         PPTArr.value[0].isActive = true;
         selectPPT.value = PPTArr.value[0];
-         //选择的数字人信息
+        //选择的数字人信息
         const hostInfo = res.scenes[0].components[0];
-        selectHost.value.name =  hostInfo.name;
+        selectHost.value.name = hostInfo.name;
         selectHost.value.pictureUrl = hostInfo.src;
         selectHost.value.id = hostInfo.entityId;
         //数字人位置信息
@@ -884,24 +957,27 @@ const getCourseDetail = (id) => {
         componentsInfo.height = hostInfo.height;
         componentsInfo.top = hostInfo.top;
         componentsInfo.marginLeft = hostInfo.marginLeft;
+        componentsInfo.depth = hostInfo.depth;
         //数字人类型
         tabs1ActiveNum.value = hostInfo.digitbotType;
         driveType.forEach((child) => {
           if (child.name == hostInfo.driverType) {
-            selectDriveType.value = child
+            selectDriveType.value = child;
           }
         });
-        audioSelectData.value = [{
-          id: hostInfo.entityId,
-          name: hostInfo.name
-        }]
+        audioSelectData.value = [
+          {
+            id: hostInfo.entityId,
+            name: hostInfo.name,
+          },
+        ];
       }
       // 课程基本信息
       courseInfo.value = res;
       //上传文件信息
-      const pageInfo = JSON.parse(res.pageInfo)
+      const pageInfo = res.pageInfo ? JSON.parse(res.pageInfo) : "";
       uploadFileObj.filename = pageInfo.docInfo.fileName;
-      uploadFileObj.size = pageInfo.docInfo.fileSize
+      uploadFileObj.size = pageInfo.docInfo.fileSize;
     }
   });
 };
@@ -912,6 +988,9 @@ onMounted(async () => {
   } else {
     coursesCreate();
   }
+});
+onUnmounted(() => {
+  clearInterval(saveTimer.value);
 });
 </script>
 <style scoped lang="scss">

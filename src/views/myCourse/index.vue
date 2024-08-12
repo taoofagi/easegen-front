@@ -62,7 +62,7 @@
           <el-button
             link
             type="primary"
-            @click="openPreview()"
+            @click="openPreview(scope.row.previewUrl)"
           >
             预览
           </el-button>
@@ -91,8 +91,8 @@
       @pagination="getList"
     />
   </ContentWrap>
-
-  <!-- 表单弹窗：添加/修改 -->
+  <!-- 视频播放弹框 -->
+  <videoDialog ref="videoRef" />
 </template>
 <script lang="ts" setup>
 import { DICT_TYPE } from '@/utils/dict'
@@ -100,6 +100,7 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import * as pptTemplateApi from '@/api/pptTemplate'
 import { useRouter } from 'vue-router'
+import videoDialog from "./videoDialog.vue"
 const router = useRouter() // 路由
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
@@ -139,7 +140,11 @@ const resetQuery = () => {
 }
 
 /** 预览按钮*/
-const openPreview = () => {
+const videoRef = ref()
+const openPreview = (url) => {
+  if(url){
+    videoRef.value.open(url);
+  }
 }
 
 /** 删除按钮操作 */
