@@ -6,7 +6,6 @@
           <ArrowLeft style="width: 1em; height: 1em" />
         </div>
         <span class="back-text" @click="goBack">返回</span>
-
         <el-input
           v-model="courseInfo.name"
           style="width: 140px"
@@ -20,13 +19,15 @@
       <div class="top-right">
         <span v-if="saveTime">{{ saveTime }} 已保存</span>
         <el-button size="small" @click="saveSubmit('save')">保存</el-button>
-        <el-button type="primary" size="small" @click="saveSubmit()">合成视频</el-button>
+        <el-button type="primary" size="small" @click="saveSubmit('')"
+          >合成视频</el-button
+        >
       </div>
     </div>
     <div class="template-main">
       <div class="template-box template-left">
         <div class="page">
-          <div>页面(1页)</div>
+          <div>页面({{ PPTArr ? PPTArr.length : 1 }}页)</div>
           <div class="line"></div>
           <el-upload
             ref="uploadRef"
@@ -95,10 +96,12 @@
                       <el-icon
                         size="20"
                         color="#ffffff"
+                        style="margin-right: 5px"
                         @click.stop="deleteDocument(element)"
                       >
                         <Delete />
                       </el-icon>
+                      <el-checkbox v-model="element.isChecked" size="large" />
                     </div>
                   </div>
                 </div>
@@ -106,8 +109,12 @@
             </draggable>
           </div>
           <div class="page-btn">
-            <el-button type="primary" size="small" style="width: 90px" :icon="Plus" />
-            <el-button type="primary" size="small" :icon="Delete" />
+            <el-button
+              type="primary"
+              size="small"
+              :icon="Delete"
+              @click.stop="deleteMore"
+            />
           </div>
         </div>
         <div class="left-upload-setting" v-if="!showLeftList">
@@ -195,7 +202,6 @@
               show-word-limit
               maxlength="10000"
               resize="none"
-              @blur="selectPPTText"
             />
           </div>
           <div class="tool-box">
@@ -356,7 +362,6 @@ import {
   Mic,
   Headset,
   Delete,
-  Plus,
   QuestionFilled,
   VideoPlay,
   CopyDocument,
@@ -611,6 +616,7 @@ const schedulePPT = (id) => {
       } else if (res && res.length > 0) {
         res.forEach((item) => {
           item.isActive = false;
+          item.isChecked = false;
           item.businessId = generateUUID();
         });
         PPTArr.value = res;
@@ -634,18 +640,21 @@ watch(
       return;
     }
     // 计算
-    videoText.value = val.reduce((prev, curr) => prev + curr.pptRemark.length, 0);
+    videoText.value = val.reduce(
+      (prev, curr) => (prev + curr.pptRemark ? curr.pptRemark.length : 0),
+      0
+    );
     //视频时长换算
-    let videoTime = (videoText.value / 200) * 60 ;
+    let videoTime = (videoText.value / 200) * 60;
     videoDuration.value = formateVideoTime(Math.ceil(videoTime));
   },
   { deep: true }
 );
 //视频时长换算
-const formateVideoTime = (times) => {
-  let hours = parseInt(times / 60 / 60); // 计算小时数
-  let restMinutes = parseInt(times / 60 % 60); // 分钟数取余，得到剩余分钟数
-  let seconds =  parseInt(times % 60); // 将剩余分钟数转换为秒数
+const formateVideoTime = (times: any) => {
+  let hours: any = parseInt(`${times / 60 / 60}`); // 计算小时数
+  let restMinutes: any = parseInt(`${(times / 60) % 60}`); // 分钟数取余，得到剩余分钟数
+  let seconds: any = parseInt(`${times % 60}`); // 将剩余分钟数转换为秒数
   if (hours < 10) {
     hours = "0" + hours;
   }
@@ -674,6 +683,16 @@ const copyDocument = (item, index) => {
 };
 const deleteDocument = (item) => {
   PPTArr.value = PPTArr.value.filter((child) => child.id !== item.id);
+};
+//删除多个ppt
+const deleteMore = () => {
+  let selected = PPTArr.value.filter((child) => child.isChecked == true);
+  if (selected.length == 0) {
+    message.warning("请先选择要删除的ppt");
+  } else {
+    let newPPTArr = PPTArr.value.filter((child) => child.isChecked !== true);
+    PPTArr.value = newPPTArr;
+  }
 };
 /** 查询数字人列表 */
 const hostList = ref();
@@ -746,30 +765,14 @@ const coursesCreate = () => {
     }
   });
 };
-//保存课程
-const saveSubmitForm = reactive({
-  accountId: courseInfo.value.accountId,
-  aspect: courseInfo.value.aspect,
-  duration: courseInfo.value.duration,
-  height: courseInfo.value.height,
-  id: 0,
-  matting: courseInfo.value.matting,
-  name: courseInfo.value.name,
-  pageMode: courseInfo.value.pageMode,
-  ppt: [],
-  scenes: [],
-  status: courseInfo.value.status,
-  width: courseInfo.value.width,
-  pageInfo: "",
-  subtitlesStyle: "{}",
-});
+
 //获取保存时间
 const saveTime = ref();
 const getSaveTime = () => {
   const date = new Date();
-  let h = date.getHours(); //hour
-  let m = date.getMinutes(); //minute
-  let s = date.getSeconds(); //second
+  let h: any = date.getHours(); //hour
+  let m: any = date.getMinutes(); //minute
+  let s: any = date.getSeconds(); //second
   if (h < 10) {
     h = "0" + h;
   }
@@ -782,6 +785,23 @@ const getSaveTime = () => {
   return h + ":" + m + ":" + s;
 };
 const saveSubmit = (type) => {
+  //保存课程
+  let saveSubmitForm = {
+    accountId: courseInfo.value.accountId,
+    aspect: courseInfo.value.aspect,
+    duration: courseInfo.value.duration,
+    height: courseInfo.value.height,
+    id: 0,
+    matting: courseInfo.value.matting,
+    name: courseInfo.value.name,
+    pageMode: courseInfo.value.pageMode,
+    ppt: [],
+    scenes: [],
+    status: courseInfo.value.status,
+    width: courseInfo.value.width,
+    pageInfo: "",
+    subtitlesStyle: "{}",
+  };
   saveSubmitForm.id = courseInfo.value.id;
   //组装数据
   const scenes: any = [];
@@ -828,6 +848,7 @@ const saveSubmit = (type) => {
         originWidth: item.width,
         originHeight: item.height,
         color: "#ffffff",
+        pptRemark: item.pptRemark,
       },
       components: components,
       driverType: selectDriveType.value.itemValue,
@@ -896,12 +917,16 @@ const selectPPTText = () => {
   }
 };
 const currentAudio = ref();
-const createAudio = () => {
+const createAudio = async () => {
+  await selectPPTText();
   if (!audioSelectData.value || audioSelectData.value.length == 0) {
     message.warning("请选择声音模型！");
     return false;
   }
-  showAudioPlay.value = true;
+  if (!selectTextarea.value || selectTextarea.value.length == 0) {
+    message.warning("请划选至少一个汉字");
+    return false;
+  }
   const params = {
     text: selectTextarea.value,
     speed: 18,
@@ -914,6 +939,7 @@ const createAudio = () => {
   };
   pptTemplateApi.createAudio(params).then((res) => {
     if (res) {
+      showAudioPlay.value = true;
       currentAudio.value = new Audio(res);
       currentAudio.value.play();
     }
@@ -938,6 +964,7 @@ const getCourseDetail = (id) => {
         //左侧数据列表
         res.scenes.forEach((item) => {
           item.isActive = false;
+          item.isChecked = false;
           item.pictureUrl = item.background.src;
           item.pptRemark = item.background.pptRemark;
           item.backgroundType = item.background.backgroundType;
@@ -976,8 +1003,8 @@ const getCourseDetail = (id) => {
       courseInfo.value = res;
       //上传文件信息
       const pageInfo = res.pageInfo ? JSON.parse(res.pageInfo) : "";
-      uploadFileObj.filename = pageInfo.docInfo.fileName;
-      uploadFileObj.size = pageInfo.docInfo.fileSize;
+      uploadFileObj.filename = pageInfo ? pageInfo.docInfo.fileName : "";
+      uploadFileObj.size = pageInfo ? pageInfo.docInfo.fileSize : "";
     }
   });
 };
@@ -1121,6 +1148,8 @@ onUnmounted(() => {
           top: 5px;
           right: 10px;
           cursor: pointer;
+          display: flex;
+          align-items: center;
         }
       }
     }
