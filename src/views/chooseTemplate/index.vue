@@ -842,14 +842,14 @@ const saveSubmit = (type) => {
       name: selectHost.value.name,
       src: selectHost.value.pictureUrl,
       cover: selectHost.value.pictureUrl,
-      width: componentsInfo.width,
-      height: componentsInfo.height,
-      originWidth: componentsInfo.width,
-      originHeight: componentsInfo.height,
+      width: PPTpositon.w / 3,
+      height: PPTpositon.h / 3,
+      originWidth: PPTpositon.w / 3,
+      originHeight: PPTpositon.h / 3,
       category: 1,
       depth: componentsInfo.depth,
-      top: componentsInfo.top,
-      marginLeft: componentsInfo.marginLeft,
+      top: PPTpositon.y / 3,
+      marginLeft: PPTpositon.x / 3,
       entityId: selectHost.value.id,
       entityType: 1,
       businessId: generateUUID(),
@@ -1052,6 +1052,10 @@ const getCourseDetail = (id) => {
         // selectHost.value.name = hostInfo.name;
         // selectHost.value.pictureUrl = hostInfo.src;
         // selectHost.value.id = hostInfo.entityId;
+        PPTpositon.x = hostInfo.marginLeft * 3;
+        PPTpositon.y = hostInfo.top * 3;
+        PPTpositon.w = hostInfo.width * 3;
+        PPTpositon.h = hostInfo.height * 3;
         //数字人位置信息
         componentsInfo.width = hostInfo.width;
         componentsInfo.height = hostInfo.height;
