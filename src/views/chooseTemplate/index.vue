@@ -227,7 +227,11 @@
             <el-button @click="pauseAudio">取消试听</el-button>
           </div>
         </div>
-        <div v-else class="audio-upload">
+        <div v-else class="audio-upload" style="position: relative">
+          <div class="audio-play" v-if="startAudioPlay">
+            <div>播放中...</div>
+            <el-button @click="cancelAudio">取消播放</el-button>
+          </div>
           <el-tooltip
             effect="dark"
             content="支持mp3,wav等格式;1GB以内;时长60分钟以内"
@@ -241,7 +245,9 @@
               :headers="headers"
               :action="`${config.base_url}/infra/file/upload`"
               :on-success="handleAudioSuccess"
-              :show-file-list="false"
+              :on-preview="audioPlay"
+              :on-exceed="audioExceed"
+              :show-file-list="true"
             >
               <template #trigger>
                 <el-button type="primary" :icon="Upload">上传音频</el-button>
@@ -593,8 +599,8 @@ const uploadAudioRef = ref();
 const uploadAudioUrl = ref();
 const handleAudioSuccess = (rawFile) => {
   message.success("上传成功！");
-  uploadAudioUrl.value.url = rawFile.data;
-  uploadAudioRef.value!.clearFiles();
+  uploadAudioUrl.value = rawFile.data;
+  // uploadAudioRef.value!.clearFiles();
 };
 //ppt上传说明回调
 const uploadSubmit = (uploadForm) => {
@@ -905,6 +911,8 @@ const saveInter = () => {
 };
 //生成试听
 const showAudioPlay = ref(false); //显示试听
+//显示声音驱动的文件播放弹框
+const startAudioPlay = ref(false);
 const textareaRef = ref();
 const selectTextarea = ref();
 const selectPPTText = () => {
@@ -915,6 +923,10 @@ const selectPPTText = () => {
       selectTextarea.value = selection.toString();
     }
   }
+};
+//上传音频文件超出限制后的提示
+const audioExceed = () => {
+  message.warning("最多上传一个声音驱动文件！");
 };
 const currentAudio = ref();
 const createAudio = async () => {
@@ -950,6 +962,44 @@ const pauseAudio = () => {
   currentAudio.value.pause();
   currentAudio.value = null;
   showAudioPlay.value = false;
+};
+//声音驱动的文件
+const currentAudioFile = ref();
+//声音驱动的文件播放
+const audioPlay = (file) => {
+  // 确保 file.response.data 是一个有效的 URL
+  if (!file.response.data) {
+    message.error("未获取到文件");
+    return;
+  }
+  // 停止当前播放的音频（如果存在）
+  if (currentAudioFile.value) {
+    currentAudioFile.value.pause();
+    currentAudioFile.value.currentTime = 0; // 重置播放位置
+  }
+
+  // 创建新的 Audio 实例
+  const audio = new Audio(file.response.data);
+  currentAudioFile.value = audio;
+
+  // 监听播放结束事件
+  audio.addEventListener('ended', () => {
+    cancelAudio();
+  });
+
+  // 开始播放
+  startAudioPlay.value = true;
+  audio.play();
+};
+//取消声音驱动的文件播放
+const cancelAudio = () => {
+  if (currentAudioFile.value) {
+    currentAudioFile.value.pause();
+    // 可选：重置播放位置
+    currentAudioFile.value.currentTime = 0;
+    currentAudioFile.value = null;
+  }
+  startAudioPlay.value = false;
 };
 //返回
 const goBack = () => {
@@ -1018,6 +1068,10 @@ onMounted(async () => {
 });
 onUnmounted(() => {
   clearInterval(saveTimer.value);
+  if (currentAudioFile.value) {
+    currentAudioFile.value.removeEventListener('ended', cancelAudio);
+    currentAudioFile.value = null;
+  }
 });
 </script>
 <style scoped lang="scss">

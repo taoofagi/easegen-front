@@ -13,8 +13,11 @@
       <el-form-item label="声音编码" prop="code">
         <el-input v-model="formData.code" placeholder="请输入声音编码" />
       </el-form-item>
+      <el-form-item label="头像" prop="avatarUrl">
+        <UploadFile v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
+      </el-form-item>
       <el-form-item label="试听音频" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess"/>
+        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
       <el-form-item label="语言类型" prop="language">
         <el-select v-model="formData.language" placeholder="请选择语言类型">
@@ -85,6 +88,7 @@ const formData = ref({
   id: undefined,
   name: undefined,
   code: undefined,
+  avatarUrl: undefined,
   auditionUrl: undefined,
   language: undefined,
   gender: undefined,
@@ -96,6 +100,7 @@ const formData = ref({
 const formRules = reactive({
   name: [{ required: true, message: '声音名称不能为空', trigger: 'blur' }],
   code: [{ required: true, message: '声音编码不能为空', trigger: 'blur' }],
+  avatarUrl: [{ required: true, message: '头像不能为空', trigger: 'blur' }],
   auditionUrl: [{ required: true, message: '试听URL不能为空', trigger: 'blur' }],
   language: [{ required: true, message: '语言类型不能为空', trigger: 'change' }],
   gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
@@ -153,6 +158,7 @@ const resetForm = () => {
     id: undefined,
     name: undefined,
     code: undefined,
+    avatarUrl: undefined,
     auditionUrl: undefined,
     language: undefined,
     gender: undefined,
@@ -165,10 +171,16 @@ const resetForm = () => {
 }
 
 // 处理文件上传成功
-const handleFileSuccess = (response) => {
+const handleFileSuccess = (fileType,response) => {
   // 假设 response.data 是后端返回的文件 URL
   // 更新 formData.auditionUrl 为上传成功的第一个文件的 URL
   console.log('upload file response:',response);
-  formData.value.auditionUrl = response.data;
+  console.log('upload file fileType:',fileType);
+  if (fileType === 'audition') {
+    formData.value.auditionUrl = response.data;
+  }
+  if (fileType === 'avatar') {
+    formData.value.avatarUrl = response.data;
+  }
 };
 </script>
