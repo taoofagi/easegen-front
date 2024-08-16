@@ -395,10 +395,10 @@ const courseInfo = ref({
   width: 1920,
 });
 const PPTpositon = reactive({
-  x: 450,
-  y: 150,
-  h: 180,
-  w: 300,
+  x: 560,
+  y: 210,
+  h: 150,
+  w: 200,
   depth: 0,
   active: false,
 });
@@ -723,6 +723,8 @@ const getList = async () => {
     });
     hostList.value = data.list;
     selectHost.value = hostList.value[0];
+    // 切换数字人姿势条件时，修改数字人在ppt的位置
+    initHumanPositon(selectHost.value);
     total.value = data.total;
   } finally {
     loading.value = false;
@@ -749,6 +751,22 @@ const chooseHost = (item) => {
     }
   });
   selectHost.value = item;
+  // 点击数字人列表中的图像时，修改数字人在ppt的位置
+  initHumanPositon(item);
+};
+// 根据数字人的不同姿势初始化其在ppt的位置
+const initHumanPositon = (data) => {
+  if(data.posture === 1) {
+    PPTpositon.x = 610;
+    PPTpositon.y = 160;
+    PPTpositon.w = 150;
+    PPTpositon.h = 200;
+  } else if(data.posture === 2) {
+    PPTpositon.x = 560;
+    PPTpositon.y = 210;
+    PPTpositon.w = 200;
+    PPTpositon.h = 150;
+  }
 };
 //打开弹框
 const audioSelect = ref();
@@ -1026,9 +1044,14 @@ const getCourseDetail = (id) => {
         selectPPT.value = PPTArr.value[0];
         //选择的数字人信息
         const hostInfo = res.scenes[0].components[0];
-        selectHost.value.name = hostInfo.name;
-        selectHost.value.pictureUrl = hostInfo.src;
-        selectHost.value.id = hostInfo.entityId;
+        hostList.value.forEach((item) => {
+          if (item.id == hostInfo.entityId) {
+            selectHost.value = item;
+          }
+        });
+        // selectHost.value.name = hostInfo.name;
+        // selectHost.value.pictureUrl = hostInfo.src;
+        // selectHost.value.id = hostInfo.entityId;
         //数字人位置信息
         componentsInfo.width = hostInfo.width;
         componentsInfo.height = hostInfo.height;
@@ -1363,7 +1386,7 @@ onUnmounted(() => {
       }
     }
     .host-list {
-      height: 500px;
+      height: 90%;
       overflow-y: auto;
       border-top: 1px solid #ebeef5;
       .host-item {
@@ -1373,7 +1396,7 @@ onUnmounted(() => {
         position: relative;
         display: inline-block;
         cursor: pointer;
-        height: 90px;
+        height: 200px;
         .host-name {
           position: absolute;
 
