@@ -1,6 +1,4 @@
 <template>
-  <doc-alert title="【交易】售后退款" url="https://doc.iocoder.cn/mall/trade-aftersale/" />
-
   <!-- 搜索 -->
   <ContentWrap>
     <el-form ref="queryFormRef" :inline="true" :model="queryParams" label-width="68px">
@@ -140,7 +138,6 @@
           <span>{{ fenToYuan(scope.row.refundPrice) }} 元</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="买家" prop="user.nickname" />
       <el-table-column align="center" label="申请时间" prop="createTime" width="180">
         <template #default="scope">
           <span>{{ formatDate(scope.row.createTime) }}</span>
@@ -180,10 +177,12 @@ import { TabsPaneContext } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 import { fenToYuan } from '@/utils'
 
-defineOptions({ name: 'TradeAfterSale' })
+defineOptions({ name: 'UserAfterSaleList' })
 
 const { push } = useRouter() // 路由跳转
-
+const { userId } = defineProps<{
+  userId: number
+}>()
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
 const list = ref<AfterSaleApi.TradeAfterSaleVO[]>([]) // 列表的数据
@@ -195,9 +194,10 @@ const statusTabs = ref([
 ])
 const queryFormRef = ref() // 搜索的表单
 // 查询参数
-const queryParams = reactive({
+const queryParams = ref({
   pageNo: 1,
   pageSize: 10,
+  userId,
   no: null,
   status: '0',
   orderNo: null,
@@ -211,12 +211,13 @@ const queryParams = reactive({
 const getList = async () => {
   loading.value = true
   try {
-    const data = cloneDeep(queryParams)
+    const data = cloneDeep(queryParams.value)
     // 处理掉全部的状态，不传就是全部
     if (data.status === '0') {
       delete data.status
     }
     // 执行查询
+    // TODO @芋艿：接口需要通过userId进行筛选返回值
     const res = await AfterSaleApi.getAfterSalePage(data)
     list.value = res.list as AfterSaleApi.TradeAfterSaleVO[]
     total.value = res.total
@@ -227,19 +228,20 @@ const getList = async () => {
 
 /** 搜索按钮操作 */
 const handleQuery = async () => {
-  queryParams.pageNo = 1
+  queryParams.value.pageNo = 1
   await getList()
 }
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields()
+  queryParams.value.userId = userId
   handleQuery()
 }
 
 /** tab 切换 */
 const tabClick = async (tab: TabsPaneContext) => {
-  queryParams.status = tab.paneName
+  queryParams.value.status = tab.paneName
   await getList()
 }
 
