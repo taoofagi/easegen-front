@@ -196,7 +196,7 @@ const loginData = reactive({
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE !== 'false',
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE !== 'false',
   loginForm: {
-    tenantName: '芋道源码',
+    tenantName: '宁夏通信学会',
     username: 'admin',
     password: 'admin123',
     captchaVerification: '',
