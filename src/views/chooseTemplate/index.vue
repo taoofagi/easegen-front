@@ -177,7 +177,7 @@
           <el-text class="mx-1" type="primary" size="small">口播内容</el-text>
           <div class="voice-item">
             <span
-              :class="item.isActive ? 'active-item' : ''"
+              :class="selectPPT.driverType == item.itemValue ? 'active-item' : ''"
               v-for="(item, index) in driveType"
               :key="index"
               @click="driveTypeChange(item)"
@@ -191,7 +191,7 @@
             <el-button type="success" :icon="Headset" size="small" />
           </div>
         </div>
-        <div v-if="selectDriveType.itemValue == 1" style="position: relative">
+        <div v-if="selectPPT.driverType == 1" style="position: relative">
           <div class="middle-textarea">
             <el-input
               v-model="selectPPT.pptRemark"
@@ -238,6 +238,7 @@
             placement="top"
           >
             <el-upload
+              v-model:file-list="selectPPT.fileList"
               ref="uploadAudioRef"
               class="upload-demo"
               accept=".wav,.mp3"
@@ -245,6 +246,7 @@
               :headers="headers"
               :action="`${config.base_url}/infra/file/upload`"
               :on-success="handleAudioSuccess"
+              :on-change="handleAudioChange"
               :on-preview="audioPlay"
               :on-exceed="audioExceed"
               :show-file-list="true"
@@ -340,6 +342,7 @@
     </div>
     <uploadExplain ref="uploadExplainRef" @success="uploadSubmit" />
     <AudioSelect ref="audioSelect" @success="selectAudio" />
+    <mergeWarningDialog ref="warningDialog" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -355,6 +358,7 @@ import { getAccessToken, getTenantId } from "@/utils/auth";
 import * as pptTemplateApi from "@/api/pptTemplate";
 import uploadExplain from "./uploadExplain.vue";
 import AudioSelect from "./audioSelect.vue";
+import mergeWarningDialog from "./mergeWarningDialog.vue";
 import user from "@/assets/imgs/user.png";
 import userActive from "@/assets/imgs/user-active.png";
 import bg from "@/assets/imgs/bg.png";
@@ -438,8 +442,8 @@ const tabs1 = [
   },
   {
     itemName: "我的",
-    itemValue: "1",
-  },
+    itemValue: "1"
+  }
 ];
 const tabs1ActiveNum = ref("0");
 const tabs2ActiveNum = ref("");
@@ -499,14 +503,7 @@ const driveType = reactive([
   },
 ]);
 const driveTypeChange = (item) => {
-  selectDriveType.value = item;
-  driveType.forEach((child) => {
-    if (child.name == item.name) {
-      child.isActive = true;
-    } else {
-      child.isActive = false;
-    }
-  });
+  selectPPT.value.driverType = item.itemValue
 };
 //右侧设置
 const rightTools = reactive([
@@ -546,6 +543,13 @@ const showLeftList = ref(true);
 const selectPPT = ref({
   pictureUrl: "",
   pptRemark: "",
+  driverType: 1,
+  uploadAudioUrl: '',
+  fileList: [] as any,
+  selectAudio: {
+    id: '',
+    name: ''
+  }
 }); //选择的PPT
 const checked5 = ref(false);
 const options = [
@@ -596,12 +600,22 @@ const handleSuccess = (rawFile) => {
 };
 //上传音频
 const uploadAudioRef = ref();
-const uploadAudioUrl = ref();
 const handleAudioSuccess = (rawFile) => {
+  console.log('--------',rawFile)
   message.success("上传成功！");
-  uploadAudioUrl.value = rawFile.data;
+  selectPPT.value.uploadAudioUrl = rawFile.data;
   // uploadAudioRef.value!.clearFiles();
+  selectPPT.value.fileList = [
+    {
+      name: uploadAudioFile.value,
+      url: rawFile.data
+    }
+  ]
 };
+const uploadAudioFile = ref();
+const handleAudioChange = (files) => {
+  uploadAudioFile.value = files.name
+}
 //ppt上传说明回调
 const uploadSubmit = (uploadForm) => {
   console.log("-------ppt上传说明", uploadForm);
@@ -623,6 +637,10 @@ const schedulePPT = (id) => {
         res.forEach((item) => {
           item.isActive = false;
           item.isChecked = false;
+          item.driverType = 1;
+          item.selectAudio = {};
+          item.uploadAudioUrl = '';
+          item.fileList = [];
           item.businessId = generateUUID();
         });
         PPTArr.value = res;
@@ -775,7 +793,8 @@ const openSelect = () => {
   audioSelect.value.open();
 };
 const selectAudio = (data) => {
-  audioSelectData.value = data;
+  // audioSelectData.value = data;
+  selectPPT.value.selectAudio = data[0]
 };
 //生成课程id
 const coursesCreate = () => {
@@ -808,6 +827,7 @@ const getSaveTime = () => {
   }
   return h + ":" + m + ":" + s;
 };
+const warningDialog = ref();
 const saveSubmit = (type) => {
   //保存课程
   let saveSubmitForm = {
@@ -815,7 +835,6 @@ const saveSubmit = (type) => {
     aspect: courseInfo.value.aspect,
     duration: courseInfo.value.duration,
     height: courseInfo.value.height,
-    id: 0,
     matting: courseInfo.value.matting,
     name: courseInfo.value.name,
     pageMode: courseInfo.value.pageMode,
@@ -826,7 +845,12 @@ const saveSubmit = (type) => {
     pageInfo: "",
     subtitlesStyle: "{}",
   };
-  saveSubmitForm.id = courseInfo.value.id;
+  if(type == "save"){
+    Reflect.set(saveSubmitForm, "id", courseInfo.value.id);
+  }else{
+    Reflect.set(saveSubmitForm, "courseMediaId", courseInfo.value.id);
+  }
+  
   //组装数据
   const scenes: any = [];
   const pageInfo = {
@@ -858,49 +882,52 @@ const saveSubmit = (type) => {
       marker: 1,
     },
   ];
-  PPTArr.value.forEach((item, index) => {
-    pageInfo.scenes.push(item.businessId);
-    const formatItem = {
-      background: {
-        backgroundType: item.backgroundType,
-        entityId: "",
-        width: item.width,
-        height: item.height,
-        depth: 0,
-        src: item.pictureUrl,
-        cover: item.pictureUrl,
-        originWidth: item.width,
-        originHeight: item.height,
-        color: "#ffffff",
-        pptRemark: item.pptRemark,
-      },
-      components: components,
-      driverType: selectDriveType.value.itemValue,
-      duration: "",
-      orderNo: index + 1,
-      textDriver: {
-        pitch: "",
-        speed: "",
-        volume: "",
-        smartSpeed: "",
-        textJson: "",
-      },
-      audioDriver: {
-        audioId: "",
-        audioUrl: "",
-        useVideoBackgroundAudio: "",
-      },
-      voice: {
-        entityId: audioSelectData.value && audioSelectData.value[0].id,
-        tonePitch: "",
-        voiceType: "",
-        speechRate: "",
-        name: audioSelectData.value && audioSelectData.value[0].name,
-      },
-      businessId: item.businessId,
-    };
-    scenes.push(formatItem);
-  });
+  if(PPTArr.value && PPTArr.value.length > 0) {
+    PPTArr.value.forEach((item, index) => {
+      pageInfo.scenes.push(item.businessId);
+      const formatItem = {
+        background: {
+          backgroundType: item.backgroundType,
+          entityId: "",
+          width: item.width,
+          height: item.height,
+          depth: 0,
+          src: item.pictureUrl,
+          cover: item.pictureUrl,
+          originWidth: item.width,
+          originHeight: item.height,
+          color: "#ffffff",
+          pptRemark: item.pptRemark,
+        },
+        components: components,
+        driverType: item.driverType,
+        duration: "",
+        orderNo: index + 1,
+        textDriver: {
+          pitch: "",
+          speed: "",
+          volume: "",
+          smartSpeed: "",
+          textJson: "",
+        },
+        audioDriver: {
+          fileName: item.fileList && item.fileList[0]?.name,
+          audioId: "",
+          audioUrl: item.uploadAudioUrl,
+          useVideoBackgroundAudio: "",
+        },
+        voice: {
+          entityId: item.selectAudio && item.selectAudio.id,
+          tonePitch: "",
+          voiceType: "",
+          speechRate: "",
+          name: item.selectAudio && item.selectAudio.name,
+        },
+        businessId: item.businessId,
+      };
+      scenes.push(formatItem);
+    });
+ }
   saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
   saveSubmitForm.scenes = scenes;
   if (type == "save") {
@@ -911,6 +938,27 @@ const saveSubmit = (type) => {
       }
     });
   } else {
+    // 校验场景数据
+    if(!PPTArr.value || PPTArr.value.length == 0){
+      message.warning("请先上传ppt!");
+      return false;
+    }
+    let warningStrArr:any = []
+    PPTArr.value.forEach((item,index) => {
+      if(item.driverType == 1){
+        if(!item.pptRemark){
+          warningStrArr.push(`场景${index + 1}无驱动内容`)
+        }
+      }else{
+        if(!item.uploadAudioUrl){
+          warningStrArr.push(`场景${index + 1}无驱动内容`)
+        }
+      }
+    })
+    if(warningStrArr.length > 0){
+      warningDialog.value.open(warningStrArr.join(';'))
+      return;
+    }
     //合成视频
     pptTemplateApi.megerMedia(saveSubmitForm).then((res) => {
       console.log("---------", res);
@@ -1042,6 +1090,16 @@ const getCourseDetail = (id) => {
         PPTArr.value = res.scenes;
         PPTArr.value[0].isActive = true;
         selectPPT.value = PPTArr.value[0];
+        selectPPT.value.uploadAudioUrl = PPTArr.value[0].audioDriver?.audioUrl;
+        selectPPT.value.selectAudio = PPTArr.value[0].voice;
+        if(PPTArr.value[0].audioDriver?.fileName && PPTArr.value[0].audioDriver?.audioUrl){
+          selectPPT.value.fileList = [
+            {
+              name: PPTArr.value[0].audioDriver?.fileName,
+              url: PPTArr.value[0].audioDriver?.audioUrl
+            }
+          ]
+        }
         //选择的数字人信息
         const hostInfo = res.scenes[0].components[0];
         hostList.value.forEach((item) => {
