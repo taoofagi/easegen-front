@@ -65,7 +65,29 @@ const download = {
       a.download = 'image.png'
       a.click()
     }
+  },
+  downloadVideo:(item) => {
+    const url = item.url; // 视频文件的URL
+    const fileName = item.title; // 下载的文件名，可以根据需要自定义
+  
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob"; // 设置响应类型为blob
+  
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const downloadUrl = window.URL.createObjectURL(new Blob([blob], { type: "video/mp4" })); // 根据视频类型设置MIME类型
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = fileName + ".mp4"; // 设置下载的文件名，可以根据需要自定义后缀名
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click(); // 模拟点击下载
+        a.remove(); // 下载完成后移除元素
+      }
+    };
+    xhr.send();
   }
 }
-
 export default download

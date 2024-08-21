@@ -69,7 +69,7 @@
           <el-button
             link
             type="primary"
-            @click="handleDownload(scope.row.previewUrl)"
+            @click="handleDownload(scope.row.previewUrl,scope.row.courseName)"
           >
             下载
           </el-button>
@@ -161,9 +161,12 @@ const handleDelete = async (id: number) => {
 }
 
 /** 下载按钮操作 */
-const handleDownload = async (url) => {
+const handleDownload = async (url,courseName) => {
   if(url){
-    download.excel(url)
+    download.downloadVideo({
+      url: url,
+      title: courseName
+    })
   }else{
     message.warning('暂无下载资源')
   }
