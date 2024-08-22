@@ -547,7 +547,7 @@ const selectPPT = ref({
   uploadAudioUrl: '',
   fileList: [] as any,
   selectAudio: {
-    id: '',
+    code: '',
     name: ''
   }
 }); //选择的PPT
@@ -917,7 +917,7 @@ const saveSubmit = (type) => {
           useVideoBackgroundAudio: "",
         },
         voice: {
-          entityId: item.selectAudio && item.selectAudio.id,
+          entityId: item.selectAudio && item.selectAudio.code,
           tonePitch: "",
           voiceType: "",
           speechRate: "",
