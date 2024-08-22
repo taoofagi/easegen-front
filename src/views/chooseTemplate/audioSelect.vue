@@ -265,16 +265,18 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   .table-list {
+    width: calc(20% - 30px);
     display: flex;
     align-items: center;
     padding: 5px;
     position: relative;
     border: 2px solid #ffffff;
+    margin-right: 16px;
     .item-head {
       width: 80px;
       height: 80px;
       position: relative;
-      margin-right: 10px;
+      margin-right: 20px;
       img {
         width: 100%;
         height: 100%;
