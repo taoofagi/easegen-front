@@ -186,7 +186,7 @@
           </div>
           <div class="media-box">
             <el-button type="primary" :icon="Mic" size="small" @click="openSelect"
-              >{{ selectPPT.selectAudio ? selectPPT.selectAudio.name : '' }}</el-button
+              >{{ selectPPT.selectAudio ? selectPPT.selectAudio.name : '晓晨' }}</el-button
             >
             <el-button type="success" :icon="Headset" size="small" />
           </div>
