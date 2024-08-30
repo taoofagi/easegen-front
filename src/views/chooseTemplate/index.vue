@@ -186,7 +186,7 @@
           </div>
           <div class="media-box">
             <el-button type="primary" :icon="Mic" size="small" @click="openSelect"
-              >{{ selectPPT.selectAudio ? selectPPT.selectAudio.name : '晓晨' }}</el-button
+              >{{ selectPPT.selectAudio ? selectPPT.selectAudio.name : '未选择' }}</el-button
             >
             <el-button type="success" :icon="Headset" size="small" />
           </div>
@@ -407,26 +407,26 @@ const PPTpositon = reactive({
   active: false,
 });
 const componentsInfo = reactive({
-  width: PPTpositon.w / 3,
-  height: PPTpositon.h / 3,
-  marginLeft: PPTpositon.x / 3,
-  top: PPTpositon.y / 3,
+  width: PPTpositon.w / 5,
+  height: PPTpositon.h / 4,
+  marginLeft: PPTpositon.x / 4,
+  top: PPTpositon.y / 4.5,
   depth: PPTpositon.depth,
 });
 //PPT数字人头像设置
 const showHeadImageTool = ref(false);
 //左侧ppt数字人位置
 const leftWidth = computed(() => {
-  return PPTpositon.w / 3 + "px";
+  return PPTpositon.w / 5 + "px";
 });
 const leftHeight = computed(() => {
-  return PPTpositon.h / 3 + "px";
+  return PPTpositon.h / 4 + "px";
 });
 const leftTop = computed(() => {
-  return PPTpositon.y / 3 + "px";
+  return PPTpositon.y / 4 + "px";
 });
 const leftLeft = computed(() => {
-  return PPTpositon.x / 3 + "px";
+  return PPTpositon.x / 4.5 + "px";
 });
 const print = (val) => {
   console.log(val);
@@ -628,6 +628,9 @@ const uploadSubmit = (uploadForm) => {
 //解析ppt
 const schedulePPTTimer = ref();
 const schedulePPT = (id) => {
+  if (schedulePPTTimer.value) {
+    clearInterval(schedulePPTTimer.value);
+  }
   showLeftList.value = false;
   schedulePPTTimer.value = setInterval(() => {
     pptTemplateApi.getSchedule(id).then((res) => {
@@ -652,7 +655,7 @@ const schedulePPT = (id) => {
         saveInter();
       }
     });
-  }, 5000);
+  }, 10000);
 };
 //视频总字数、时长
 const videoText = ref();
@@ -793,8 +796,12 @@ const openSelect = () => {
   audioSelect.value.open();
 };
 const selectAudio = (data) => {
-  // audioSelectData.value = data;
-  selectPPT.value.selectAudio = data[0]
+  audioSelectData.value = data;
+  // selectPPT.value.selectAudio = data[0]
+  // 遍历所有场景，应用相同的声音模型
+  PPTArr.value.forEach(scene => {
+    scene.selectAudio = data[0];
+  });
 };
 //生成课程id
 const coursesCreate = () => {
@@ -829,6 +836,11 @@ const getSaveTime = () => {
 };
 const warningDialog = ref();
 const saveSubmit = (type) => {
+  // 检查场景是否为空
+  if (!PPTArr.value || PPTArr.value.length === 0) {
+    message.warning("场景为空，请先上传PPT！");
+    return;
+  }
   //保存课程
   let saveSubmitForm = {
     accountId: courseInfo.value.accountId,
@@ -870,12 +882,12 @@ const saveSubmit = (type) => {
       height: PPTpositon.h / 3,
       originWidth: PPTpositon.w / 3,
       originHeight: PPTpositon.h / 3,
-      category: 1,
+      category: 2,//1: PPT, 2: 数字人, 3: 其他
       depth: componentsInfo.depth,
       top: PPTpositon.y / 3,
       marginLeft: PPTpositon.x / 3,
-      entityId: selectHost.value.id,
-      entityType: 1,
+      entityId: selectHost.value.code,
+      entityType: selectHost.value.type,// 如果是数字人，则是数字人类型 0: 普通, 1: 专属
       businessId: generateUUID(),
       digitbotType: tabs1ActiveNum.value,
       matting: 1,
@@ -884,6 +896,7 @@ const saveSubmit = (type) => {
   ];
   if(PPTArr.value && PPTArr.value.length > 0) {
     PPTArr.value.forEach((item, index) => {
+      console.log("PPTArr.value:",item)
       pageInfo.scenes.push(item.businessId);
       const formatItem = {
         background: {
@@ -908,7 +921,7 @@ const saveSubmit = (type) => {
           speed: "",
           volume: "",
           smartSpeed: "",
-          textJson: "",
+          textJson: item.pptRemark,
         },
         audioDriver: {
           fileName: item.fileList && item.fileList[0]?.name,
@@ -963,7 +976,7 @@ const saveSubmit = (type) => {
     pptTemplateApi.megerMedia(saveSubmitForm).then((res) => {
       console.log("---------", res);
       if (res) {
-        message.success("视频合成成功！");
+        message.success("合成视频任务提交成功，请到我的视频中查看！");
       }
     });
   }
@@ -971,9 +984,12 @@ const saveSubmit = (type) => {
 //定时保存
 const saveTimer = ref();
 const saveInter = () => {
+  if (saveTimer.value) {
+    clearInterval(saveTimer.value);
+  }
   saveTimer.value = setInterval(() => {
     saveSubmit("save");
-  }, 10000);
+  }, 60000);
 };
 //生成试听
 const showAudioPlay = ref(false); //显示试听
@@ -1147,12 +1163,14 @@ onMounted(async () => {
   await getList();
   if (route.query.id) {
     await getCourseDetail(route.query.id);
+    saveInter();  // 启动定时保存
   } else {
     coursesCreate();
   }
 });
 onUnmounted(() => {
   clearInterval(saveTimer.value);
+  clearInterval(schedulePPTTimer.value);
   if (currentAudioFile.value) {
     currentAudioFile.value.removeEventListener('ended', cancelAudio);
     currentAudioFile.value = null;
@@ -1208,7 +1226,7 @@ onUnmounted(() => {
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     border: 1px solid #ebeef5;
     background-color: #ffffff;
-    width: 15%;
+    width: 180px;
     position: relative;
     .page {
       margin: 0;
@@ -1258,8 +1276,8 @@ onUnmounted(() => {
       .list {
         position: relative;
         margin: 10px 0;
-        width: 260px;
-        height: 120px;
+        width: 152px;
+        height: 86px;
         .list-index {
           position: absolute;
           top: 10px;
@@ -1303,8 +1321,12 @@ onUnmounted(() => {
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     width: 56%;
     background-color: #ffffff;
+    flex-grow: 1; // 确保中间区域可以自适应高度
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     .middle-top {
-      padding: 10px 20px;
+      padding: 5px 20px;
     }
     .main-box {
       padding: 10px 50px;
@@ -1496,7 +1518,7 @@ onUnmounted(() => {
     }
   }
   .template-tool {
-    width: 6%;
+    width: 60px;
     box-shadow: 0px 3px 6px rgba(175, 175, 175, 0.16);
     background-color: #ffffff;
     padding: 10px;
@@ -1511,7 +1533,11 @@ onUnmounted(() => {
         height: 32px;
       }
       .tool-name {
-        line-height: 30px;
+        line-height: 10px;
+        font-size: 14px;
+        width: 60px;
+        text-align: center;
+        margin-top: 6px;
       }
     }
   }

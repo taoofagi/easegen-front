@@ -34,7 +34,7 @@
         <div class="name-row">
           <div class="name">{{ item.name }}</div>
           <div>{{ formatDate(item.createTime) }}</div>
-        </div>e
+        </div>
       </div>
     </div>
     <Pagination
@@ -59,7 +59,7 @@ const loading = ref(true);
 const total = ref(0);
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 12,
+  pageSize: 10,
 });
 
 const getList = async () => {
