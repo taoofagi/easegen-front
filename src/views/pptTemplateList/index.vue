@@ -1,28 +1,40 @@
 <template>
-  <div class="head-imgs">
-    <div class="head-item" @click="createPPT">
-      <img src="@/assets/imgs/ppt1.png" alt="" />
+  <div class="content">
+    <div class="header">
+      <div class="header-item" @click="createPPT">
+        <img src="@/assets/imgs/create_course.png" alt="PPT模式创作" />
+        <div class="header-text">PPT模式创作</div>
+      </div>
+<!--      <div class="header-item">-->
+<!--        <img src="https://console-ai.bokecc.com/static/create_digitbot@2x.5e536992.png" alt="标准模式创作" />-->
+<!--        <div class="header-text">标准模式创作</div>-->
+<!--      </div>-->
+<!--      <a class="header-item" href="https://console-ai.bokecc.com/help/video" target="_blank" rel="noreferrer noopener">-->
+<!--        <img src="https://console-ai.bokecc.com/static/video_couse@2x.62b27923.png" alt="视频教程" />-->
+<!--        <div class="header-text" style="color: #fff;">视频教程</div>-->
+<!--      </a>-->
     </div>
-    <div class="head-item">
-      <img src="@/assets/imgs/ppt2.png" alt="" />
-    </div>
-    <div class="head-item">
-      <img src="@/assets/imgs/ppt3.png" alt="" />
-    </div>
-  </div>
-  <el-divider />
-  <div class="content-list">
-    <div class="content-head">我的项目</div>
-    <div class="content">
-      <div class="content-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
-        <div class="item-img">
-          <div class="item-bg"></div>
-          <img src="@/assets/imgs/ppt3.png" alt="" />
-          <div class="item-bg"></div>
+    <div class="title">我的项目</div>
+    <div class="project-list">
+      <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
+        <div class="img-box">
+          <div class="scene-item-box" :style="{ backgroundImage: `url(${item.background})` }">
+            <img v-if="item.portrait" :src="item.portrait" class="portrait" />
+          </div>
         </div>
-        <div class="page-model">ppt</div>
-        <div class="item-name">{{ item.name }}</div>
-        <div class="item-time">{{ formatDate(item.createTime) }}</div>
+        <div class="type">PPT</div>
+        <div class="icons">
+          <div class="icon" @click.stop="deleteItem(item.id)">
+            <span role="img" class="anticon"><svg width="1m" height="1em" fill="currentColor" aria-hidden="true" focusable="false"><use xlink:href="#icon-shanchu"/></svg></span>
+          </div>
+          <div class="icon" @click.stop="copyItem(item.id)">
+            <span role="img" class="anticon"><svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false"><use xlink:href="#icon-fuzhi"/></svg></span>
+          </div>
+        </div>
+        <div class="name-row">
+          <div class="name">{{ item.name }}</div>
+          <div>{{ formatDate(item.createTime) }}</div>
+        </div>e
       </div>
     </div>
     <Pagination
@@ -35,19 +47,21 @@
 </template>
 
 <script setup lang="ts">
-import { formatDate } from '@/utils/formatTime'
-import { ref, reactive, onMounted } from "vue";
-import * as pptTemplateApi from "@/api/pptTemplate";
-import { useRouter } from 'vue-router'
-const router = useRouter() // 路由
-/** 查询数字人列表 */
-const courseList = ref();
-const loading = ref(true); // 列表的加载中
+import { formatDate } from '@/utils/formatTime';
+import { ref, reactive, onMounted } from 'vue';
+import * as pptTemplateApi from '@/api/pptTemplate';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const courseList = ref([]);
+const loading = ref(true);
 const total = ref(0);
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 12,
 });
+
 const getList = async () => {
   loading.value = true;
   try {
@@ -58,88 +72,147 @@ const getList = async () => {
     loading.value = false;
   }
 };
+
 const createPPT = () => {
-  router.push('/chooseTemplate/index')
-}
+  router.push('/chooseTemplate/index');
+};
+
 const detailPPT = (id) => {
-  router.push(
-    { path: '/chooseTemplate/index', query: { id }}
-  )
-}
+  router.push({ path: '/chooseTemplate/index', query: { id } });
+};
+
+const deleteItem = (id) => {
+  console.log('删除项目', id);
+};
+
+const copyItem = (id) => {
+  console.log('复制项目', id);
+};
+
 onMounted(async () => {
   await getList();
 });
 </script>
 
 <style scoped lang="scss">
-.head-imgs {
-  width: 100%;
-  height: 200px;
+.content {
+  padding: 20px;
+}
+
+.header {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: space-around;
-  .head-item {
-    width: 30%;
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin-bottom: 20px;
+
+  .header-item {
+    position: relative; /* 确保文字可以覆盖在图片上 */
+    max-width: 344px;
+    min-width: 221px;
+    margin-right: 16px;
+    border-radius: 4px;
     cursor: pointer;
+
     img {
       width: 100%;
-      height: 100%;
+      height: auto;
+      border-radius: 4px; /* 确保图片也有圆角 */
+    }
+
+    .header-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* 将文字居中 */
+      color: #333;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap; /* 防止文字换行 */
     }
   }
 }
-.content-list {
-  padding: 16px 0px;
-  .content-head {
-    line-height: 14px;
-    border-left: 4px solid #0088fe;
-    padding-left: 10px;
-    margin-bottom: 16px;
-    margin-left: 16px;
-    font-size: 18px;
-  }
-  .content {
-    display: flex;
-    flex-wrap: wrap;
-    // justify-content: space-around;
-    .content-item {
-      width: 15%;
-      margin-bottom: 30px;
-      margin-right: 20px;
-      position: relative;
-      .item-img {
-        border: 2px solid #e9e9e9;
-        border-radius: 10px;
-        .item-bg {
-          width: 100%;
-          height: 40px;
-          background: #f5f5f5;
-        }
-        img {
-          width: 100%;
-          height: 160px;
-        }
+
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.project-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .project-item {
+    width: calc(18% - 16px);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    position: relative;
+
+    .img-box {
+      height: 120px;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+
+      .scene-item-box {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-size: cover;
+        background-position: center;
       }
-      .page-model {
-        padding: 5px 10px;
-        background: #c4dff7;
-        color: #4094fd;
-        border-radius: 5px 5px 20px 0;
+
+      .portrait {
         position: absolute;
-        top: 0;
-        left: 0;
+        bottom: 0;
+        left: 8px;
+        width: 40px;
+        height: 60px;
       }
-      .item-name {
-        font-size: 18px;
-        line-height: 30px;
+    }
+
+    .type {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #4094fd;
+      background: #c4dff7;
+      padding: 3px 6px;
+      border-radius: 3px;
+      text-align: center;
+      width: 50px;
+    }
+
+    .icons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+
+      .icon {
+        margin-left: 8px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+
+    .name-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #333;
+
+      .name {
         font-weight: bold;
-      }
-      .item-time {
-        color: #959595;
-        line-height: 30px;
       }
     }
   }
