@@ -958,13 +958,16 @@ const saveSubmit = (type) => {
     }
     let warningStrArr:any = []
     PPTArr.value.forEach((item,index) => {
+      if(!item.selectAudio || item.selectAudio.code){
+        warningStrArr.push(`场景${index + 1}没有选择声音模型`)
+      }
       if(item.driverType == 1){
         if(!item.pptRemark){
-          warningStrArr.push(`场景${index + 1}无驱动内容`)
+          warningStrArr.push(`场景${index + 1}无文本内容`)
         }
       }else{
         if(!item.uploadAudioUrl){
-          warningStrArr.push(`场景${index + 1}无驱动内容`)
+          warningStrArr.push(`场景${index + 1}无音频内容`)
         }
       }
     })
