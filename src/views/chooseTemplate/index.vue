@@ -1106,8 +1106,14 @@ const getCourseDetail = (id) => {
         PPTArr.value = res.scenes;
         PPTArr.value[0].isActive = true;
         selectPPT.value = PPTArr.value[0];
-        selectPPT.value.uploadAudioUrl = PPTArr.value[0].audioDriver?.audioUrl;
-        selectPPT.value.selectAudio = PPTArr.value[0].voice;
+        // selectPPT.value.uploadAudioUrl = PPTArr.value[0].audioDriver?.audioUrl;
+        // selectPPT.value.selectAudio = PPTArr.value[0].voice;
+        // 遍历所有场景，应用相同的声音模型
+        PPTArr.value.forEach((scene, index) => {
+          scene.selectAudio = res.scenes[index].voice;
+          scene.selectAudio.code = res.scenes[index].voice.entityId;
+          scene.uploadAudioUrl = res.scenes[index].audioDriver?.audioUrl;
+        });
         if(PPTArr.value[0].audioDriver?.fileName && PPTArr.value[0].audioDriver?.audioUrl){
           selectPPT.value.fileList = [
             {
@@ -1119,7 +1125,7 @@ const getCourseDetail = (id) => {
         //选择的数字人信息
         const hostInfo = res.scenes[0].components[0];
         hostList.value.forEach((item) => {
-          if (item.id == hostInfo.entityId) {
+          if (item.code == hostInfo.entityId) {
             selectHost.value = item;
           }
         });
