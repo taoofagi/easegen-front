@@ -3,7 +3,7 @@
     <div class="template-top">
       <div class="top-left">
         <div style="font-size: 16px" class="top-icon">
-          <ArrowLeft @click="goBack" style="width: 1em; height: 1em" />
+          <ArrowLeft @click="goBack" style="width: 1em; height: 1em; cursor: pointer" />
         </div>
         <span class="back-text" @click="goBack">返回</span>
         <el-input
@@ -686,19 +686,18 @@ const schedulePPT = (id) => {
   }, 5000);
 };
 //视频总字数、时长
-const videoText = ref();
-const videoDuration = ref();
+const videoText = ref(0);
+const videoDuration = ref("");
 watch(
   () => PPTArr.value,
   (val) => {
     if (!val) {
       return;
     }
-    // 计算
-    videoText.value = val.reduce(
-      (prev, curr) => (prev + curr.pptRemark ? curr.pptRemark.length : 0),
-      0
-    );
+    // 计算总字数
+    videoText.value = val.reduce((prev, curr) => {
+      return prev + (curr.pptRemark ? curr.pptRemark.length : 0);
+    }, 0);
     //视频时长换算
     let videoTime = (videoText.value / 200) * 60;
     videoDuration.value = formateVideoTime(Math.ceil(videoTime));
