@@ -3,16 +3,25 @@
     <div class="template-top">
       <div class="top-left">
         <div style="font-size: 16px" class="top-icon">
-          <ArrowLeft style="width: 1em; height: 1em" />
+          <ArrowLeft @click="goBack" style="width: 1em; height: 1em" />
         </div>
         <span class="back-text" @click="goBack">返回</span>
         <el-input
-          v-model="courseInfo.name"
-          style="width: 140px"
+          v-if="isEditing"
+          ref="inputRef"
+          v-model="editName"
+          style="width: 300px"
           size="small"
           placeholder="请输入课程名称"
-          :prefix-icon="Edit"
+          @blur="saveEdit"
+          @keydown.enter="saveEdit"
         />
+
+        <!-- 如果不在编辑，显示文本 -->
+        <div v-else @click="toggleEdit" :prefix-icon="Edit" style="display: flex; align-items: center; cursor: pointer;">
+
+          <span>{{ courseInfo.name }}</span>
+        </div>
         <span>时长: {{ videoDuration }}</span>
         <span>总字数:{{ videoText }}</span>
       </div>
@@ -385,6 +394,21 @@ const route = useRoute(); //
 const userStore = useUserStore();
 const userId = computed(() => userStore.user.id);
 const message = useMessage();
+const isEditing = ref(false);
+const inputRef = ref(null);
+// 切换到编辑模式
+const toggleEdit = () => {
+  isEditing.value = true;
+  editName.value = courseInfo.value.name;
+  nextTick(() => {
+    inputRef.value.focus();
+  });
+};
+// 保存编辑后的名称
+const saveEdit = () => {
+  isEditing.value = false;
+  courseInfo.value.name = editName.value;
+};
 //课程基本信息
 const courseInfo = ref({
   id: 0,
@@ -398,6 +422,7 @@ const courseInfo = ref({
   height: 1080,
   width: 1920,
 });
+const editName = ref(courseInfo.value.name);
 const PPTpositon = reactive({
   x: 560,
   y: 210,
@@ -621,6 +646,9 @@ const uploadSubmit = (uploadForm) => {
   console.log("-------ppt上传说明", uploadForm);
   pptTemplateApi.createPPT(uploadFileObj).then((res) => {
     if (res) {
+      //将课程名称修改为附件名称
+      courseInfo.value.name = uploadFileObj.filename.split('.').slice(0, -1).join('.');
+      editName.value = courseInfo.value.name;
       schedulePPT(res);
     }
   });
@@ -655,7 +683,7 @@ const schedulePPT = (id) => {
         saveInter();
       }
     });
-  }, 10000);
+  }, 5000);
 };
 //视频总字数、时长
 const videoText = ref();
@@ -958,7 +986,7 @@ const saveSubmit = (type) => {
     }
     let warningStrArr:any = []
     PPTArr.value.forEach((item,index) => {
-      if(!item.selectAudio || item.selectAudio.code){
+      if(!item.selectAudio || !item.selectAudio.code){
         warningStrArr.push(`场景${index + 1}没有选择声音模型`)
       }
       if(item.driverType == 1){
