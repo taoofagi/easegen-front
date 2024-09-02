@@ -22,7 +22,7 @@
 
           <span>{{ courseInfo.name }}</span>
         </div>
-        <span>时长: {{ videoDuration }}</span>
+        <span>预估时长: {{ videoDuration }}</span>
         <span>总字数:{{ videoText }}</span>
       </div>
       <div class="top-right">
@@ -765,7 +765,18 @@ const getList = async () => {
     queryParams.type = tabs1ActiveNum.value;
     queryParams.gender = tabs2ActiveNum.value;
     queryParams.posture = tabs3ActiveNum.value;
-    const data = await pptTemplateApi.pageList(queryParams);
+    let data = await pptTemplateApi.pageList(queryParams);
+    //如果数字人列表 data为空 则切换type再查询一次
+    if (data.list.length == 0) {
+      queryParams.type = tabs1ActiveNum.value == "0" ? "1" : "0";
+      tabs1ActiveNum.value = queryParams.type;
+      data = await pptTemplateApi.pageList(queryParams);
+      if (data.list.length == 0) {
+        //如果还是没有，则提示没有有效的数字人，请联系管理员
+        message.error("没有有效的数字人，请联系管理员");
+        return
+      }
+    }
     data.list.forEach((item) => {
       item.isActive = false;
     });
