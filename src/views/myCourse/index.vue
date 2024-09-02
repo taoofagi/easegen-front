@@ -63,7 +63,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="110" fixed="right">
         <template #default="scope">
-          <template v-if="scope.row.status !== 1 && scope.row.status !== 3">
+          <template v-if="scope.row.status == 2">
             <el-button
               link
               type="primary"
@@ -79,7 +79,7 @@
               下载
             </el-button>
           </template>
-          <template v-else>
+          <template v-if=" scope.row.status == 3">
             <el-button
               link
               type="warning"
