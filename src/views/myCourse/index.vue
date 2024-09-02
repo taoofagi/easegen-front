@@ -34,7 +34,11 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column label="视频名称" align="center" prop="name" />
-      <el-table-column label="视频时长" align="center" prop="duration" />
+      <el-table-column label="视频时长" align="center" prop="duration">
+        <template #default="scope">
+          {{ formatDuration(scope.row.duration) }}
+        </template>
+      </el-table-column>
       <el-table-column label="课程名称" align="center" prop="courseName">
         <template #default="scope">
           <el-link type="primary" @click="goDetail(scope.row.id)">{{scope.row.courseName}}</el-link>
@@ -59,20 +63,31 @@
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="110" fixed="right">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openPreview(scope.row.previewUrl)"
-          >
-            预览
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="handleDownload(scope.row.previewUrl,scope.row.courseName)"
-          >
-            下载
-          </el-button>
+          <template v-if="scope.row.status !== 1 && scope.row.status !== 3">
+            <el-button
+              link
+              type="primary"
+              @click="openPreview(scope.row.previewUrl)"
+            >
+              预览
+            </el-button>
+            <el-button
+              link
+              type="primary"
+              @click="handleDownload(scope.row.previewUrl,scope.row.courseName)"
+            >
+              下载
+            </el-button>
+          </template>
+          <template v-else>
+            <el-button
+              link
+              type="warning"
+              @click="handleRecompose(scope.row.id)"
+            >
+              重新合成
+            </el-button>
+          </template>
           <el-button
             link
             type="danger"
@@ -161,20 +176,41 @@ const handleDelete = async (id: number) => {
 }
 
 /** 下载按钮操作 */
-const handleDownload = async (url,courseName) => {
-  if(url){
-    download.downloadVideo({
-      url: url,
-      title: courseName
-    })
-  }else{
-    message.warning('暂无下载资源')
-  }
-}
+const handleDownload = (url, courseName) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = courseName;
+  link.target = '_blank'; // 强制新标签页下载
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 const goDetail = (id) => {
   router.push(
     { path: '/chooseTemplate/index', query: { id }}
   )
+}
+
+/** 格式化视频时长 */
+const formatDuration = (seconds: number) => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hrs > 0 ? `${hrs}时` : ''}${mins > 0 ? `${mins}分` : ''}${secs}秒`;
+}
+
+/** 重新合成按钮操作 */
+const handleRecompose = async (id: number) => {
+  // 在这里实现重新合成的逻辑
+  try {
+    //TODO
+    // await pptTemplateApi.recomposeCourse(id)
+    message.success(t('common.recomposeSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {
+    message.error(t('common.recomposeFailed'))
+  }
 }
 /** 初始化 **/
 onMounted(async () => {
