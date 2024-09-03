@@ -33,6 +33,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
+      <el-table-column label="视频编码" align="center" prop="id" />
       <el-table-column label="视频名称" align="center" prop="name" />
       <el-table-column label="视频时长" align="center" prop="duration">
         <template #default="scope">

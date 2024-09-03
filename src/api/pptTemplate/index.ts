@@ -58,6 +58,10 @@ export const coursesSave = async(data) => {
 export const coursesDetail = async(id: number) => {
   return await request.get({ url: '/digitalcourse/courses/get?id=' + id })
 }
+//删除课程
+export const coursesDelete = async(id: string) => {
+  return await request.delete({ url: `/digitalcourse/courses/delete?id=${id}` })
+}
 //ppt复制
 export const copyPPT = async(id: number) => {
   return await request.get({ url: '/digitalcourse/ppt-materials/copy?id=' + id })

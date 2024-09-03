@@ -23,13 +23,13 @@
           </div>
         </div>
         <div class="type">PPT</div>
-        <div class="icons">
-          <div class="icon" @click.stop="deleteItem(item.id)">
-            <span role="img" class="anticon"><svg width="1m" height="1em" fill="currentColor" aria-hidden="true" focusable="false"><use xlink:href="#icon-shanchu"/></svg></span>
-          </div>
-          <div class="icon" @click.stop="copyItem(item.id)">
-            <span role="img" class="anticon"><svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false"><use xlink:href="#icon-fuzhi"/></svg></span>
-          </div>
+        <div class="icon-content">
+<!--          <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="copyItem(item.id)">-->
+<!--            <CopyDocument />-->
+<!--          </el-icon>-->
+          <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="deleteItem(item.id)">
+            <Delete />
+          </el-icon>
         </div>
         <div class="name-row">
           <div class="name">{{ item.name }}</div>
@@ -51,7 +51,12 @@ import { formatDate } from '@/utils/formatTime';
 import { ref, reactive, onMounted } from 'vue';
 import * as pptTemplateApi from '@/api/pptTemplate';
 import { useRouter } from 'vue-router';
-
+import {
+  Delete,
+  CopyDocument,
+} from "@element-plus/icons-vue";
+const message = useMessage() // 消息弹窗
+const { t } = useI18n() // 国际化
 const router = useRouter();
 
 const courseList = ref([]);
@@ -81,8 +86,17 @@ const detailPPT = (id) => {
   router.push({ path: '/chooseTemplate/index', query: { id } });
 };
 
-const deleteItem = (id) => {
+const deleteItem = async (id) => {
   console.log('删除项目', id);
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起删除
+    await pptTemplateApi.coursesDelete(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
 };
 
 const copyItem = (id) => {
@@ -187,21 +201,13 @@ onMounted(async () => {
       width: 50px;
     }
 
-    .icons {
+    .icon-content {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
       display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
-
-      .icon {
-        margin-left: 8px;
-        cursor: pointer;
-        color: #999;
-        transition: color 0.2s;
-
-        &:hover {
-          color: #333;
-        }
-      }
+      align-items: center;
     }
 
     .name-row {
