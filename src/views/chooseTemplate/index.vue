@@ -968,9 +968,10 @@ const saveSubmit = (type) => {
           useVideoBackgroundAudio: "",
         },
         voice: {
+          voiceId: item.selectAudio && item.selectAudio.id,
           entityId: item.selectAudio && item.selectAudio.code,
           tonePitch: "",
-          voiceType: "",
+          voiceType: item.selectAudio && item.selectAudio.voiceType,
           speechRate: "",
           name: item.selectAudio && item.selectAudio.name,
         },
@@ -1072,12 +1073,20 @@ const createAudio = async () => {
     voiceId: audioSelectData.value[0].id,
     smartSpeed: 34,
   };
+  showAudioPlay.value = true;
   pptTemplateApi.createAudio(params).then((res) => {
-    if (res) {
-      showAudioPlay.value = true;
+    if (res && !res.error) {
+      // 如果返回结果有效且没有错误，初始化Audio
       currentAudio.value = new Audio(res);
       currentAudio.value.play();
+    } else {
+      // 如果返回结果为空或有错误，关闭弹出框
+      showAudioPlay.value = false;
     }
+  }).catch((error) => {
+    // 捕获请求错误，关闭弹出框
+    console.error("API 请求失败：", error);
+    showAudioPlay.value = false;
   });
 };
 //取消试听
@@ -1190,10 +1199,13 @@ const getCourseDetail = (id) => {
             selectDriveType.value = child;
           }
         });
+        //选择声音信息
+        const voiceInfo = res.scenes[0].voice
         audioSelectData.value = [
           {
-            id: hostInfo.entityId,
-            name: hostInfo.name,
+            id: voiceInfo.voiceId,
+            entityId: voiceInfo.entityId,
+            name: voiceInfo.name,
           },
         ];
       }
