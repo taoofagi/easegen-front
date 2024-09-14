@@ -46,6 +46,13 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        width="180"
+        :formatter="dateFormatter"
+      />
+      <el-table-column
         label="合成时间"
         align="center"
         prop="finishTime"
