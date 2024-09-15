@@ -895,11 +895,11 @@ const saveSubmit = (type) => {
     pageInfo: "",
     subtitlesStyle: "{}",
   };
-  if(type == "save"){
+  // if(type == "save"){
     Reflect.set(saveSubmitForm, "id", courseInfo.value.id);
-  }else{
-    Reflect.set(saveSubmitForm, "courseMediaId", courseInfo.value.id);
-  }
+  // }else{
+  //   Reflect.set(saveSubmitForm, "courseMediaId", courseInfo.value.id);
+  // }
   
   //组装数据
   const scenes: any = [];
@@ -1002,7 +1002,7 @@ const saveSubmit = (type) => {
       }
       if(item.driverType == 1){
         if(!item.pptRemark){
-          warningStrArr.push(`场景${index + 1}无文本内容`)
+          warningStrArr.push(`场景${index + 1}无口播内容`)
         }
       }else{
         if(!item.uploadAudioUrl){
