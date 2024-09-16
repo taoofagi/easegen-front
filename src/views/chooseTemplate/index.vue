@@ -1361,7 +1361,7 @@ onUnmounted(() => {
         }
         .icon-content {
           position: absolute;
-          top: 15px;
+          top: 0px;
           right: 10px;
           cursor: pointer;
           display: flex;
