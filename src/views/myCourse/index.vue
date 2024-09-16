@@ -31,6 +31,7 @@
   </ContentWrap>
 
   <!-- 列表 -->
+  <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column label="视频编码" align="center" prop="id" />
@@ -42,27 +43,39 @@
       </el-table-column>
       <el-table-column label="课程名称" align="center" prop="courseName">
         <template #default="scope">
-          <el-link type="primary" @click="goDetail(scope.row.id)">{{scope.row.courseName}}</el-link>
+          <el-link type="primary" @click="goDetail(scope.row.id)">{{ scope.row.courseName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
-        width="180"
+        width="120"
         :formatter="dateFormatter"
       />
       <el-table-column
         label="合成时间"
         align="center"
         prop="finishTime"
-        width="180"
+        width="120"
         :formatter="dateFormatter"
       />
-      <el-table-column label="媒体类型" align="center" prop="mediaType">
+      <el-table-column label="合成进度" align="center" prop="progress">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.MEDIA_TYPE" :value="scope.row.mediaType" />
-        </template>  
+          <el-progress :percentage="getProgress(scope.row.status, scope.row.progress)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="合成耗时" align="center">
+        <template #default="scope">
+          {{ calculateDuration(scope.row.createTime, scope.row.finishTime) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="失败原因" align="center" prop="failure_reasons">
+        <template #default="scope">
+          <el-tooltip content="点击查看完整失败原因" placement="top">
+            <span>{{ scope.row.failure_reasons ? scope.row.failure_reasons.slice(0, 50) + '...' : '无' }}</span>
+          </el-tooltip>
+        </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
@@ -218,6 +231,32 @@ const handleRecompose = async (id: number) => {
     await getList()
   } catch {
     message.error(t('common.recomposeFailed'))
+  }
+}
+
+/** 根据创建时间和完成时间计算合成耗时 */
+const calculateDuration = (createTime: string, finishTime: string) => {
+  if (!createTime || !finishTime) return '未完成';
+
+  const start = new Date(createTime).getTime();
+  const end = new Date(finishTime).getTime();
+
+  const duration = (end - start) / 1000; // 转换为秒
+  const hrs = Math.floor(duration / 3600);
+  const mins = Math.floor((duration % 3600) / 60);
+  const secs = Math.floor(duration % 60);
+
+  return `${hrs > 0 ? `${hrs}时` : ''}${mins > 0 ? `${mins}分` : ''}${secs}秒`;
+}
+
+/** 获取合成进度，关联状态 */
+const getProgress = (status: number, completionPercentage: number) => {
+  if (status === 2) {
+    return 100; // 已完成，进度固定为100%
+  } else if (status === 0) {
+    return 0; // 未启动，进度固定为0%
+  } else {
+    return completionPercentage || 0; // 合成中或合成失败，按实际进度展示
   }
 }
 /** 初始化 **/
