@@ -70,10 +70,12 @@
           {{ calculateDuration(scope.row.createTime, scope.row.finishTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="失败原因" align="center" prop="failure_reasons">
+      <el-table-column label="失败原因" align="center" prop="errorReason">
         <template #default="scope">
-          <el-tooltip content="点击查看完整失败原因" placement="top">
-            <span>{{ scope.row.failure_reasons ? scope.row.failure_reasons.slice(0, 50) + '...' : '无' }}</span>
+          <el-tooltip :content="scope.row.errorReason || '无'" placement="top">
+            <span>
+              {{ scope.row.errorReason ? (scope.row.errorReason.length > 20 ? scope.row.errorReason.slice(0, 20) + '...' : scope.row.errorReason) : '无' }}
+            </span>
           </el-tooltip>
         </template>
       </el-table-column>
