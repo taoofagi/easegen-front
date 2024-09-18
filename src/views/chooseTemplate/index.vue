@@ -41,7 +41,7 @@
           <el-upload
             ref="uploadRef"
             class="upload-demo"
-            accept=".ppt,.pptx"
+            accept=".pptx"
             :limit="1"
             :headers="headers"
             :action="`${config.base_url}/infra/file/upload`"
@@ -412,7 +412,7 @@ const saveEdit = () => {
 //课程基本信息
 const courseInfo = ref({
   id: 0,
-  accountId: "",
+  accountId: userId.value,
   aspect: "16:9",
   name: "未命名草稿",
   duration: 0,
@@ -683,7 +683,7 @@ const schedulePPT = (id) => {
         saveInter();
       }
     });
-  }, 5000);
+  }, 2000);
 };
 //视频总字数、时长
 const videoText = ref(0);
