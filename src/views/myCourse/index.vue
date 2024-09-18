@@ -102,15 +102,15 @@
               下载
             </el-button>
           </template>
-<!--          <template v-if=" scope.row.status == 3">-->
-<!--            <el-button-->
-<!--              link-->
-<!--              type="warning"-->
-<!--              @click="handleRecompose(scope.row.id)"-->
-<!--            >-->
-<!--              重新合成-->
-<!--            </el-button>-->
-<!--          </template>-->
+          <template v-if=" scope.row.status == 3">
+            <el-button
+              link
+              type="warning"
+              @click="reMegerMedia(scope.row.id)"
+            >
+              重新合成
+            </el-button>
+          </template>
           <el-button
             link
             type="danger"
@@ -223,16 +223,26 @@ const formatDuration = (seconds: number) => {
 }
 
 /** 重新合成按钮操作 */
-const handleRecompose = async (id: number) => {
-  // 在这里实现重新合成的逻辑
+const reMegerMedia = async (id: number) => {
   try {
-    //TODO
-    // await pptTemplateApi.recomposeCourse(id)
-    message.success(t('common.recomposeSuccess'))
+    // 开启 loading
+    loading.value = true
+
+    // 重新合成视频
+    const res = await pptTemplateApi.reMegerMedia({ id });
+
+    console.log("---------", res);
+    if (res) {
+      message.success("合成视频任务提交成功，请到我的视频中查看！");
+    }
+
+  } catch (error) {
+    console.error(error);
+  } finally {
     // 刷新列表
-    await getList()
-  } catch {
-    message.error(t('common.recomposeFailed'))
+    getList();
+    // 无论成功还是失败，都需要关闭 loading
+    loading.value = false;
   }
 }
 

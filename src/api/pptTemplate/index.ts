@@ -79,3 +79,7 @@ export const deleteMyCourse = async(id: string) => {
 export const megerMedia = async(data) => {
   return await request.post({ url: '/digitalcourse/course-media/megerMedia', data })
 }
+//重新合成视频
+export const reMegerMedia = async(data) => {
+  return await request.post({ url: '/digitalcourse/course-media/reMegerMedia', data })
+}
