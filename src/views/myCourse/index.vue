@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column label="课程名称" align="center" prop="courseName">
         <template #default="scope">
-          <el-link type="primary" @click="goDetail(scope.row.id)">{{ scope.row.courseName }}</el-link>
+          <el-link type="primary" @click="goDetail(scope.row.courseId)">{{ scope.row.courseName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column
