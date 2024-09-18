@@ -102,15 +102,15 @@
               下载
             </el-button>
           </template>
-          <template v-if=" scope.row.status == 3">
-            <el-button
-              link
-              type="warning"
-              @click="handleRecompose(scope.row.id)"
-            >
-              重新合成
-            </el-button>
-          </template>
+<!--          <template v-if=" scope.row.status == 3">-->
+<!--            <el-button-->
+<!--              link-->
+<!--              type="warning"-->
+<!--              @click="handleRecompose(scope.row.id)"-->
+<!--            >-->
+<!--              重新合成-->
+<!--            </el-button>-->
+<!--          </template>-->
           <el-button
             link
             type="danger"
