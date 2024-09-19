@@ -893,6 +893,7 @@ const saveSubmit = (type) => {
     status: courseInfo.value.status,
     width: courseInfo.value.width,
     pageInfo: "",
+    thumbnail: "",
     subtitlesStyle: "{}",
   };
   // if(type == "save"){
@@ -911,6 +912,7 @@ const saveSubmit = (type) => {
     },
     scenes: [] as any[],
   };
+  let thumbnail = ""
   const components = [
     {
       name: selectHost.value.name,
@@ -932,10 +934,17 @@ const saveSubmit = (type) => {
       marker: 1,
     },
   ];
+  let pageNum = 1;
   if(PPTArr.value && PPTArr.value.length > 0) {
     PPTArr.value.forEach((item, index) => {
       console.log("PPTArr.value:",item)
       pageInfo.scenes.push(item.businessId);
+      if(pageNum == 1) {
+        //第一页的背景图片作为课程的缩略图
+        thumbnail = item.pictureUrl;
+        pageNum++;
+      }
+
       const formatItem = {
         background: {
           backgroundType: item.backgroundType,
@@ -981,6 +990,7 @@ const saveSubmit = (type) => {
     });
  }
   saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
+  saveSubmitForm.thumbnail = thumbnail;
   saveSubmitForm.scenes = scenes;
   if (type == "save") {
     pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {

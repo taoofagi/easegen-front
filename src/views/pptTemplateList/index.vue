@@ -18,7 +18,7 @@
     <div class="project-list">
       <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
         <div class="img-box">
-          <div class="scene-item-box" :style="{ backgroundImage: `url(${item.background})` }">
+          <div class="scene-item-box" :style="{ backgroundImage: `url(${item.thumbnail})` }">
             <img v-if="item.portrait" :src="item.portrait" class="portrait" />
           </div>
         </div>
