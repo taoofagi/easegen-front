@@ -3,14 +3,16 @@
 </template>
 
 <script>
-import { createApiToken } from '@/api/ppt/docmee/index'; // 确保路径正确
-
+import { generateToken } from '@/api/ppt/docmee/index'; // 确保路径正确
+//用户信息
+import { useUserStore } from "@/store/modules/user";
+//用户信息
+const userStore = useUserStore();
+const sysmessage = useMessage();
 export default {
   name: 'PptIndex',
   async mounted() {
-    const apiKey = 'ak_sK8RJjr33EE6TRAVLW'; // 替换为实际的API-KEY
-    const uid = 'test'; // 可选，替换为实际的用户ID或保持为空
-    const token = await createApiToken(apiKey, uid, 2);
+    const token = await generateToken();
 
     if (token) {
       const docmeeContainer = document.getElementById('docmee-container');
@@ -26,6 +28,7 @@ export default {
             console.log(message);
             if (message.type === 'invalid-token') {
               console.log('token 认证错误');
+              sysmessage.error("认证错误");
             }
             if (message.type === 'beforeGenerate') {
               const { subtype, fields } = message.data;
@@ -39,6 +42,13 @@ export default {
                   content: '继续生成PPT',
                 });
                 return true; // 允许生成
+              }
+            }
+            if (message.type === 'error') {
+              console.log('失败', message.data);
+              const { code } = message.data;
+              if (code === 88) {
+                sysmessage.error("您本时段内免费次数已用完，请稍候再试");
               }
             }
             if (message.type === 'beforeDownload') {

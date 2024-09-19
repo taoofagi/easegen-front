@@ -83,3 +83,5 @@ export const megerMedia = async(data) => {
 export const reMegerMedia = async(data) => {
   return await request.post({ url: '/digitalcourse/course-media/reMegerMedia', data })
 }
+
+//aippt 获取token
