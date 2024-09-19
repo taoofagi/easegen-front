@@ -21,8 +21,8 @@ export default {
           token: token, // 使用获取到的token
           container: docmeeContainer, // 挂载 iframe 的容器
           page: 'creator', // 选择 'creator' 或 'dashboard'
-          themeColor: '#a83aaf', // 主题色
-          background: 'linear-gradient(140deg, #ec81af, #af22ce)', // 背景色
+          themeColor: '#001529', // 主题色
+          background: 'linear-gradient(140deg, #001529, #3a506b, #5b84b1)', // 背景色
           padding: '40px', // 内边距
           onMessage(message) {
             console.log(message);
