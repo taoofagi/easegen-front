@@ -81,7 +81,7 @@
         <el-date-picker
           v-model="queryParams.createTime"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-260px"
+          class="!w-280px"
           end-placeholder="自定义时间"
           start-placeholder="自定义时间"
           type="daterange"
@@ -135,7 +135,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="订单金额" prop="refundPrice" min-width="120">
+      <el-table-column align="center" label="订单金额" min-width="120" prop="refundPrice">
         <template #default="scope">
           <span>{{ fenToYuan(scope.row.refundPrice) }} 元</span>
         </template>
