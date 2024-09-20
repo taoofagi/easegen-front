@@ -3,7 +3,7 @@
   <div class="chat-empty">
     <!-- title -->
     <div class="center-container">
-      <div class="title">芋道 AI</div>
+      <div class="title">AI对话</div>
       <div class="role-list">
         <div
           class="role-item"
@@ -20,10 +20,10 @@
 <script setup lang="ts">
 const promptList = [
   {
-    prompt: '今天气怎么样?'
+    prompt: '帮我写一份教学大纲?'
   },
   {
-    prompt: '写一首好听的诗歌?'
+    prompt: '帮我写一段python爬虫?'
   }
 ] // prompt 列表
 
