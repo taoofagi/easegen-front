@@ -318,6 +318,14 @@
       </div>
       <div class="template-box template-right" v-if="showHeadImageTool">
         <div class="image-setting">
+<!--          上传图片成功后，将当前场景的背景修改为上传的图片url-->
+
+          <div>上传图片</div>
+          <UploadImg v-model="selectPPT.pictureUrl" :limit="1" />
+        </div>
+      </div>
+      <div class="template-box template-right" v-if="showImageSet">
+        <div class="image-setting">
           <div>图片属性</div>
           <div class="img-setting">
             <span class="setting-label">位置</span>
@@ -440,6 +448,8 @@ const componentsInfo = reactive({
 });
 //PPT数字人头像设置
 const showHeadImageTool = ref(false);
+//图片属性
+const showImageSet = ref(false);
 //左侧ppt数字人位置
 const leftWidth = computed(() => {
   return PPTpositon.w / 5 + "px";
@@ -1227,6 +1237,15 @@ const getCourseDetail = (id) => {
       uploadFileObj.size = pageInfo ? pageInfo.docInfo.fileSize : "";
     }
   });
+};
+
+// 上传成功后处理图片 URL
+const handleImageSuccess = (url) => {
+  console.log('handleImageSuccess:',url)
+  if (url) {
+    selectPPT.value.pictureUrl = url; // 更新当前场景的背景图片URL
+    useMessage().success("图片上传成功，背景已更新！");
+  }
 };
 onMounted(async () => {
   await getList();
