@@ -74,9 +74,12 @@
                   <div class="list" @click="choosePPt(element)">
                     <el-image
                       class="ppt-bg"
-                      :style="element.isActive ? 'border-color: #0683ee' : ''"
+                      :style="{
+                        width: thumViewSize.width + 'px',
+                        borderColor: element.isActive ? '#0683ee' : ''
+                      }"
                       :src="element.pictureUrl"
-                      fit="cover"
+                      fit="contain"
                     />
                     <el-image
                       class="host"
@@ -141,8 +144,11 @@
         </div>
         <div class="main-box">
           <div class="list">
-            <div class="main-image-box">
-              <el-image class="ppt-bg" :src="selectPPT.pictureUrl" fit="cover" />
+            <div
+              class="main-image-box"
+              :style="{ width: viewSize.width + 'px', height: viewSize.height + 'px' }"
+            >
+              <el-image class="ppt-bg" :src="selectPPT.pictureUrl" fit="contain" />
               <Vue3DraggableResizable
                 :parent="true"
                 :initW="PPTpositon.w"
@@ -422,11 +428,23 @@ const courseInfo = ref({
   width: 1920
 })
 const editName = ref(courseInfo.value.name)
+const viewSize = reactive({
+  width: 640,
+  height: 360
+})
+const thumViewSize = reactive({
+  width: 152,
+  height: (152 * 9) / 16
+})
+const digitalHumanSize = reactive({
+  width: 150,
+  height: 200
+})
 const PPTpositon = reactive({
-  x: 560,
-  y: 210,
-  h: 150,
-  w: 200,
+  x: viewSize.width - digitalHumanSize.width,
+  y: viewSize.height - digitalHumanSize.height,
+  w: digitalHumanSize.width,
+  h: digitalHumanSize.height,
   depth: 0,
   active: false
 })
@@ -441,18 +459,20 @@ const componentsInfo = reactive({
 const showHeadImageTool = ref(false)
 //图片属性
 const showImageSet = ref(false)
+const xScale = viewSize.width / thumViewSize.width
+// const yScale = viewSize.height / thumViewSize.height
 //左侧ppt数字人位置
 const leftWidth = computed(() => {
-  return PPTpositon.w / 5 + 'px'
+  return PPTpositon.w / xScale + 'px'
 })
 const leftHeight = computed(() => {
-  return PPTpositon.h / 4 + 'px'
+  return PPTpositon.h / xScale + 'px'
 })
 const leftTop = computed(() => {
-  return PPTpositon.y / 4 + 'px'
+  return PPTpositon.y / xScale + 'px'
 })
 const leftLeft = computed(() => {
-  return PPTpositon.x / 4.5 + 'px'
+  return PPTpositon.x / xScale + 'px'
 })
 const print = (val) => {
   console.log(val)
@@ -817,15 +837,15 @@ const chooseHost = (item) => {
 // 根据数字人的不同姿势初始化其在ppt的位置
 const initHumanPositon = (data) => {
   if (data.posture === 1) {
-    PPTpositon.x = 610
-    PPTpositon.y = 160
-    PPTpositon.w = 150
-    PPTpositon.h = 200
+    PPTpositon.x = viewSize.width - digitalHumanSize.width
+    PPTpositon.y = viewSize.height - digitalHumanSize.height
+    PPTpositon.w = digitalHumanSize.width
+    PPTpositon.h = digitalHumanSize.height
   } else if (data.posture === 2) {
-    PPTpositon.x = 560
-    PPTpositon.y = 210
-    PPTpositon.w = 200
-    PPTpositon.h = 150
+    PPTpositon.x = viewSize.width - digitalHumanSize.height
+    PPTpositon.y = viewSize.height - digitalHumanSize.width
+    PPTpositon.w = digitalHumanSize.height
+    PPTpositon.h = digitalHumanSize.width
   }
 }
 //打开弹框
@@ -1332,7 +1352,7 @@ onUnmounted(() => {
       margin: 0;
 
       div {
-        height: 30px;
+        // height: 30px;
         padding: 5px 10px;
         margin: 0;
         line-height: 30px;
@@ -1382,9 +1402,16 @@ onUnmounted(() => {
 
       .list {
         position: relative;
-        width: 152px;
-        height: 86px;
+        display: flex;
+        // width: 100%;
+        // height: 86px;
         margin: 10px 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #fff;
+        box-shadow: 0 3px 6px rgb(175 175 175 / 16%);
+        box-sizing: content-box;
 
         .list-index {
           position: absolute;
@@ -1401,10 +1428,8 @@ onUnmounted(() => {
         }
 
         .ppt-bg {
-          width: 100%;
-          height: 100%;
-          border: 2px solid #fff;
-          box-shadow: 0 3px 6px rgb(175 175 175 / 16%);
+          // width: 152px;
+          // height: 100%;
         }
 
         .host {
@@ -1451,16 +1476,16 @@ onUnmounted(() => {
 
       .main-image-box {
         position: relative;
-        width: 760px;
-        height: 360px;
+        // width: 760px;
+        // height: 360px;
         border: 1px solid #ebeef5;
+        box-sizing: content-box;
       }
 
       .list {
         position: relative;
         display: flex;
         width: 95%;
-        height: 360px;
         justify-content: center;
       }
 
