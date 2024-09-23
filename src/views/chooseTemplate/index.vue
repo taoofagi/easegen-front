@@ -205,7 +205,8 @@
             <el-input
               v-model="selectPPT.pptRemark"
               ref="textareaRef"
-              :rows="3"
+              @mouseup="handlePptRemarkSelection"
+              :rows="5"
               type="textarea"
               placeholder="请输入口播内容"
               show-word-limit
@@ -1058,23 +1059,30 @@ const showAudioPlay = ref(false); //显示试听
 //显示声音驱动的文件播放弹框
 const startAudioPlay = ref(false);
 const textareaRef = ref();
-const selectTextarea = ref();
-const selectPPTText = () => {
-  if (textareaRef.value) {
-    textareaRef.value.focus();
-    const selection = window.getSelection() || document.getSelection();
-    if (selection) {
-      selectTextarea.value = selection.toString();
-    }
-  }
-};
+const selectTextarea = ref('');
 //上传音频文件超出限制后的提示
 const audioExceed = () => {
   message.warning("最多上传一个声音驱动文件！");
 };
 const currentAudio = ref();
+
+const handlePptRemarkSelection = () => {
+  if (textareaRef.value) {
+    const textarea = textareaRef.value.$el.querySelector('textarea');
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      if (start !== end) {
+        selectTextarea.value = textarea.value.substring(start, end);
+        console.log('选中的文本:', selectTextarea.value);
+      } else {
+        selectTextarea.value = '';
+        console.log('没有选中任何文本');
+      }
+    }
+  }
+}
 const createAudio = async () => {
-  await selectPPTText();
   if (!audioSelectData.value || audioSelectData.value.length == 0) {
     message.warning("请选择声音模型！");
     return false;

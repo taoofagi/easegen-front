@@ -1,5 +1,5 @@
 <template>
-  <div id="docmee-container" style="height:600px"></div>
+  <div id="docmee-container" style="height:800px"></div>
 </template>
 
 <script>
