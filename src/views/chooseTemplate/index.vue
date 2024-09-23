@@ -583,6 +583,7 @@ const selectPPT = ref({
   uploadAudioUrl: '',
   fileList: [] as any,
   selectAudio: {
+    id: '',
     code: '',
     name: ''
   }
@@ -1190,6 +1191,7 @@ const getCourseDetail = (id) => {
         PPTArr.value.forEach((scene, index) => {
           scene.selectAudio = res.scenes[index].voice;
           scene.selectAudio.code = res.scenes[index].voice.entityId;
+          scene.selectAudio.id = res.scenes[index].voice.voiceId;
           scene.uploadAudioUrl = res.scenes[index].audioDriver?.audioUrl;
         });
         if(PPTArr.value[0].audioDriver?.fileName && PPTArr.value[0].audioDriver?.audioUrl){
