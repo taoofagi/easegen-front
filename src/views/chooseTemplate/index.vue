@@ -747,15 +747,11 @@ const cancelAnalyze = () => {
   clearInterval(schedulePPTTimer.value)
 }
 const copyDocument = (item, index) => {
-  let copyItem = cloneDeep(item)
-  pptTemplateApi.copyPPT(item.id).then((res) => {
-    if (res) {
-      copyItem.id = res
-      copyItem.isActive = false
-      PPTArr.value.splice(index + 1, 0, copyItem)
-    }
-  })
-}
+  let copyItem = cloneDeep(item);
+  copyItem.id = generateUUID()
+  copyItem.isActive = false;
+  PPTArr.value.splice(index + 1, 0, copyItem);
+};
 const deleteDocument = (item) => {
   PPTArr.value = PPTArr.value.filter((child) => child.id !== item.id)
 }
