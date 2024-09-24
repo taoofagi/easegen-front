@@ -983,7 +983,8 @@ const saveSubmit = (type) => {
         textDriver: {
           pitch: '',
           speed: '',
-          volume: '',
+          speech_rate: '', // 语速
+          volume: '', // 音量
           smartSpeed: '',
           textJson: item.pptRemark
         },
