@@ -142,7 +142,7 @@
             />
           </el-select>
         </div>
-        <div class="main-box">
+        <div class="main-box relative">
           <div class="list">
             <div
               class="main-image-box"
@@ -177,6 +177,54 @@
               </Vue3DraggableResizable>
             </div>
           </div>
+          <el-card v-show="voiceData.show" class="voice-card absolute right-10px bottom-10px w-300px">
+            <div class="flex flex-col">
+              <div class="flex flex-col p-10px border-b-solid border-b-1px border-gray-200">
+                <div class="flex items-baseline">
+                  <span class="text-16px">语速</span>
+                  <el-button
+                    class="ml-10px"
+                    type="info"
+                    link
+                    @click="voiceData.speechRate = voiceData.defaultSpeechRate"
+                  >
+                    恢复默认
+                  </el-button>
+                </div>
+                <el-slider
+                  class="speech-slider px-10px mb-20px"
+                  v-model="voiceData.speechRate"
+                  :step="0.05"
+                  :min="0.6"
+                  :max="1.5"
+                  :marks="voiceData.marks"
+                  :show-spots="false"
+                />
+              </div>
+              <div class="flex flex-col p-10px">
+                <div class="flex items-baseline">
+                  <span class="text-16px">音量放大</span>
+                  <el-button
+                    class="ml-10px"
+                    type="info"
+                    link
+                    @click="voiceData.volume = voiceData.defaultVolume"
+                  >
+                    恢复默认
+                  </el-button>
+                </div>
+                <el-slider
+                  class="speech-slider px-10px mb-20px"
+                  v-model="voiceData.volume"
+                  :step="0.1"
+                  :min="1"
+                  :max="2"
+                  :marks="voiceData.marks2"
+                  :show-spots="false"
+                />
+              </div>
+            </div>
+          </el-card>
         </div>
         <div class="voice-main">
           <el-text class="mx-1" type="primary" size="small">口播内容</el-text>
@@ -193,7 +241,7 @@
             <el-button type="primary" :icon="Mic" size="small" @click="openSelect">{{
               selectPPT.selectAudio ? selectPPT.selectAudio.name : '未选择'
             }}</el-button>
-            <el-button type="success" :icon="Headset" size="small" />
+            <el-button type="success" :icon="Headset" size="small" @click="voiceData.show = !voiceData.show" />
           </div>
         </div>
         <div v-if="selectPPT.driverType == 1" style="position: relative">
@@ -893,6 +941,26 @@ const getSaveTime = () => {
   return h + ':' + m + ':' + s
 }
 const warningDialog = ref()
+
+// 语速 音量
+const voiceData = reactive({
+  show: false,
+  speechRate: 1,
+  volume: 1,
+  defaultSpeechRate: 1,
+  defaultVolume: 1,
+  marks: {
+    0.6: '0.6',
+    1: '1',
+    1.5: '1.5'
+  },
+  marks2: {
+    1: '1',
+    1.5: '1.5',
+    2: '2'
+  }
+})
+
 const saveSubmit = (type) => {
   // 检查场景是否为空
   if (!PPTArr.value || PPTArr.value.length === 0) {
@@ -986,8 +1054,8 @@ const saveSubmit = (type) => {
         textDriver: {
           pitch: '',
           speed: '',
-          speech_rate: '', // 语速
-          volume: '', // 音量
+          speech_rate: voiceData.speechRate, // 语速
+          volume: voiceData.volume, // 音量
           smartSpeed: '',
           textJson: item.pptRemark
         },
@@ -1788,5 +1856,30 @@ onUnmounted(() => {
 ::-webkit-scrollbar-track {
   background-color: #f2f2f2;
   border-radius: 6px;
+}
+
+.voice-card :deep(.el-card__body) {
+  padding: 0;
+}
+
+.speech-slider {
+  &:deep(.el-slider__bar) {
+    display: none;
+  }
+
+  &:deep(.el-slider__runway) {
+    height: 2px;
+  }
+
+  &:deep(.el-slider__button-wrapper) {
+    top: -17px;
+  }
+
+  &:deep(.el-slider__marks-stop) {
+    top: -5px;
+    width: 12px;
+    height: 12px;
+    background-color: #1989fa;
+  }
 }
 </style>
