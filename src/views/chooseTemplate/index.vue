@@ -375,7 +375,7 @@ import * as pptTemplateApi from '@/api/pptTemplate'
 import uploadExplain from './uploadExplain.vue'
 import AudioSelect from './audioSelect.vue'
 import mergeWarningDialog from './mergeWarningDialog.vue'
-import ReplaceDialog from './replaceDialog.vue'; // 引入批量替换组件
+import ReplaceDialog from './replaceDialog.vue' // 引入批量替换组件
 import user from '@/assets/imgs/user.png'
 import userActive from '@/assets/imgs/user-active.png'
 import bg from '@/assets/imgs/bg.png'
@@ -750,11 +750,11 @@ const cancelAnalyze = () => {
   clearInterval(schedulePPTTimer.value)
 }
 const copyDocument = (item, index) => {
-  let copyItem = cloneDeep(item);
+  let copyItem = cloneDeep(item)
   copyItem.id = generateUUID()
-  copyItem.isActive = false;
-  PPTArr.value.splice(index + 1, 0, copyItem);
-};
+  copyItem.isActive = false
+  PPTArr.value.splice(index + 1, 0, copyItem)
+}
 const deleteDocument = (item) => {
   PPTArr.value = PPTArr.value.filter((child) => child.id !== item.id)
 }
@@ -1029,39 +1029,53 @@ const saveSubmit = (type) => {
     let warningStrArr: any = []
     PPTArr.value.forEach((item, index) => {
       if (!item.selectAudio || !item.selectAudio.code) {
-        warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>没有选择声音模型`)
+        warningStrArr.push(
+          `场景<span style="color: red; font-weight: bold;">${index + 1}</span>没有选择声音模型`
+        )
       }
       if (item.driverType == 1) {
         if (!item.pptRemark) {
-          warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>无口播内容`)
+          warningStrArr.push(
+            `场景<span style="color: red; font-weight: bold;">${index + 1}</span>无口播内容`
+          )
         } else {
           //判断item.pptRemark超过1200个字，则提示
           if (item.pptRemark.length > 1200) {
-            warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容超过1200字，请减少或拆分场景`)
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容超过1200字，请减少或拆分场景`
+            )
           }
           // 正则表达式检查阿拉伯数字和英文标点符号
-          const arabicNumberReg = /[0-9]/; // 匹配阿拉伯数字
-          const punctuationReg = /[.,?!:;'"]/; // 匹配英文标点符号
-          const htmlTagReg = /<[^>]*>/; // 匹配HTML标签
+          const arabicNumberReg = /[0-9]/ // 匹配阿拉伯数字
+          const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
+          const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
           if (arabicNumberReg.test(item.pptRemark)) {
-            warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含阿拉伯数字可能会出现误读，请修改为中文数字`);
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含阿拉伯数字可能会出现误读，请修改为中文数字`
+            )
           }
           if (punctuationReg.test(item.pptRemark)) {
-            warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`);
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
+            )
           }
           if (htmlTagReg.test(item.pptRemark)) {
-            warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含html标签，可能会出现误读，请修改`);
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
+            )
           }
         }
       } else {
         if (!item.uploadAudioUrl) {
-          warningStrArr.push(`场景<span style="color: red; font-weight: bold;">${index + 1}</span>无音频内容`)
+          warningStrArr.push(
+            `场景<span style="color: red; font-weight: bold;">${index + 1}</span>无音频内容`
+          )
         }
       }
     })
     if (warningStrArr.length > 0) {
       // 使用 \n 换行符连接警告信息，并用 <div> 包裹每条警告
-      warningDialog.value.open(warningStrArr.map(warning => `<div>${warning}</div>`).join(''));
+      warningDialog.value.open(warningStrArr.map((warning) => `<div>${warning}</div>`).join(''))
       return
     }
     //合成视频
@@ -1283,30 +1297,30 @@ const getCourseDetail = (id) => {
   })
 }
 
-const replaceDialog = ref(null);
+const replaceDialog = ref(null)
 
 // 打开弹出框
 const openReplaceDialog = () => {
-  replaceDialog.value.open();
-};
+  replaceDialog.value.open()
+}
 
 // 处理提交的替换规则
 const escapeRegExp = (string) => {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则中的特殊字符
-};
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // 转义正则中的特殊字符
+}
 
 const handleReplacement = (replacements) => {
   PPTArr.value.forEach((item) => {
     if (item.pptRemark) {
-      replacements.forEach(replacement => {
-        const fromEscaped = escapeRegExp(replacement.from); // 转义特殊字符
-        const regExp = new RegExp(fromEscaped, 'g'); // 使用转义后的字符串构造正则表达式
-        item.pptRemark = item.pptRemark.replace(regExp, replacement.to);
-      });
+      replacements.forEach((replacement) => {
+        const fromEscaped = escapeRegExp(replacement.from) // 转义特殊字符
+        const regExp = new RegExp(fromEscaped, 'g') // 使用转义后的字符串构造正则表达式
+        item.pptRemark = item.pptRemark.replace(regExp, replacement.to)
+      })
     }
-  });
-  message.success("批量替换成功！");
-};
+  })
+  message.success('批量替换成功！')
+}
 
 onMounted(async () => {
   await getList()
