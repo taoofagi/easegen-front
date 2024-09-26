@@ -177,7 +177,10 @@
               </Vue3DraggableResizable>
             </div>
           </div>
-          <el-card v-show="voiceData.show" class="voice-card absolute right-10px bottom-10px w-300px">
+          <el-card
+            v-show="voiceData.show"
+            class="voice-card absolute right-10px bottom-10px w-300px"
+          >
             <div class="flex flex-col">
               <div class="flex flex-col p-10px border-b-solid border-b-1px border-gray-200">
                 <div class="flex items-baseline">
@@ -241,7 +244,12 @@
             <el-button type="primary" :icon="Mic" size="small" @click="openSelect">{{
               selectPPT.selectAudio ? selectPPT.selectAudio.name : '未选择'
             }}</el-button>
-            <el-button type="success" :icon="Headset" size="small" @click="voiceData.show = !voiceData.show" />
+            <el-button
+              type="success"
+              :icon="Headset"
+              size="small"
+              @click="voiceData.show = !voiceData.show"
+            />
           </div>
         </div>
         <div v-if="selectPPT.driverType == 1" style="position: relative">
@@ -1771,10 +1779,10 @@ onUnmounted(() => {
           position: absolute;
           top: 0;
           left: 0;
+          z-index: 1; /* 背景在底层 */
           width: 100%;
           height: 100%;
-          background-color: #F0F1FA; /* 设置底色 */
-          z-index: 1; /* 背景在底层 */
+          background-color: #f0f1fa; /* 设置底色 */
         }
 
         .host-name {
@@ -1792,9 +1800,9 @@ onUnmounted(() => {
         }
 
         .ppt-bg {
+          z-index: 2; /* 图片在背景之上 */
           width: 100%;
           height: 100%;
-          z-index: 2; /* 图片在背景之上 */
         }
       }
     }
