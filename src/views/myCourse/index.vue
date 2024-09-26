@@ -90,7 +90,7 @@
             <el-button
               link
               type="primary"
-              @click="openPreview(scope.row.previewUrl)"
+              @click="openPreview(scope.row)"
             >
               预览
             </el-button>
@@ -99,7 +99,15 @@
               type="primary"
               @click="handleDownload(scope.row.previewUrl,scope.row.courseName)"
             >
-              下载
+              下载视频
+            </el-button>
+            <el-button
+              v-if="scope.row.subtitlesUrl"
+              link
+              type="primary"
+              @click="handleDownload(scope.row.subtitlesUrl,scope.row.courseName)"
+            >
+              下载字幕
             </el-button>
           </template>
           <template v-if=" scope.row.status == 3">
@@ -179,9 +187,9 @@ const resetQuery = () => {
 
 /** 预览按钮*/
 const videoRef = ref()
-const openPreview = (url) => {
-  if(url){
-    videoRef.value.open(url);
+const openPreview = (row) => {
+  if(row){
+    videoRef.value.open(row.previewUrl, row.subtitlesUrl);
   }
 }
 
@@ -200,6 +208,11 @@ const handleDelete = async (id: number) => {
 
 /** 下载按钮操作 */
 const handleDownload = (url, courseName) => {
+  //如果url为空，则提示未找到资源文件
+  if (!url) {
+    message.warning("未找到资源文件！");
+    return;
+  }
   const link = document.createElement('a');
   link.href = url;
   link.download = courseName;

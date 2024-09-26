@@ -350,6 +350,7 @@
             :key="index"
             @click="chooseHost(item)"
           >
+            <div class="background"></div>
             <div class="host-name">{{ item.name }}</div>
             <el-image class="ppt-bg" :src="item.pictureUrl" fit="cover" />
           </div>
@@ -1766,6 +1767,16 @@ onUnmounted(() => {
         margin-left: 10px;
         cursor: pointer;
 
+        .background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #F0F1FA; /* 设置底色 */
+          z-index: 1; /* 背景在底层 */
+        }
+
         .host-name {
           position: absolute;
           bottom: 10px;
@@ -1783,6 +1794,7 @@ onUnmounted(() => {
         .ppt-bg {
           width: 100%;
           height: 100%;
+          z-index: 2; /* 图片在背景之上 */
         }
       }
     }
