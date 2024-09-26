@@ -489,8 +489,8 @@ const courseInfo = ref({
 })
 const editName = ref(courseInfo.value.name)
 const viewSize = reactive({
-  width: 640,
-  height: 360
+  width: 800,
+  height: (800 * 9) / 16
 })
 const thumViewSize = reactive({
   width: 152,
