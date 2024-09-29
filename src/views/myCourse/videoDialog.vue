@@ -8,7 +8,7 @@
     :close-on-click-modal="false"
   >
     <video width="100%" height="500px" controls :src="videoPath" style="object-fit: fill;">
-      <track v-if="subtitlePath" kind="subtitles" :src="subtitlePath" srclang="zh" label="中文" />
+      <track v-if="subtitlePath" kind="subtitles" :src="subtitlePath" srclang="zh" label="中文" default />
       您的浏览器不支持 HTML5 视频标签。
     </video>
   </el-dialog>
@@ -22,10 +22,18 @@ const videoPath = ref('');
 const subtitlePath = ref(''); // 新增字幕路径
 
 const open = (videoUrl, subtitleUrl) => {
-  videoPath.value = videoUrl;
-  subtitlePath.value = subtitleUrl || ''; // 设置字幕路径，如果为空则设为 ''
-  videoDialogVisible.value = true;
-}
+  videoPath.value = '';
+  subtitlePath.value = '';
+  videoDialogVisible.value = false;
+
+  // Allow DOM update
+  setTimeout(() => {
+    videoPath.value = videoUrl;
+    subtitlePath.value = subtitleUrl || '';
+    videoDialogVisible.value = true;
+  }, 50);
+};
+
 
 defineExpose({ open });
 </script>

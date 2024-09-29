@@ -189,7 +189,7 @@ const resetQuery = () => {
 const videoRef = ref()
 const openPreview = (row) => {
   if(row){
-    videoRef.value.open(row.previewUrl, row.subtitlesUrl);
+    videoRef.value.open(row.previewUrl, row.subtitlesVttUrl);
   }
 }
 
