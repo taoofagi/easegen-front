@@ -1,8 +1,8 @@
 <template>
   <el-card class="my-card h-full">
     <template #header>
-      <h3 class="m-0 px-7 shrink-0 flex items-center justify-between">
-        <span>输入区</span>
+      <h3 class="m-0 px-7 shrink-0 flex items-center justify-between header-section">
+        <span class="header-title">输入区</span>
         <!-- 展示在右上角 -->
 <!--        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">-->
 <!--          <template #icon>-->
@@ -109,6 +109,12 @@ watch(copied, (val) => {
   display: flex;
   flex-direction: column;
 
+  :deep(.el-card__header) {
+    background-color: #015EBF1A;
+    height: 40px;
+    padding: 0;
+  }
+
   :deep(.el-card__body) {
     box-sizing: border-box;
     flex-grow: 1;
@@ -116,5 +122,16 @@ watch(copied, (val) => {
     padding: 0;
     @extend .hide-scroll-bar;
   }
+}
+
+.header-section {
+  font-size: 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 14px;
 }
 </style>

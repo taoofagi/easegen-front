@@ -1,13 +1,10 @@
 <template>
   <el-card class="my-card h-full">
     <template #header>
-      <h3 class="m-0 px-7 shrink-0 flex items-center justify-between">
-        <span>识别区</span>
+      <h3 class="m-0 px-7 shrink-0 flex items-center justify-between header-section">
+        <span class="header-title">识别区 - <span class="recognized-text">成功识别题目数: </span><span class="recognized-count">{{ formattedContent ? formattedContent.length : 0 }}</span></span>
         <!-- 展示在右上角 -->
-        <el-button color="#846af7" v-show="showCopy" @click="exportExcel" size="small">
-          <template #icon>
-            <Icon icon="ph:copy-bold" />
-          </template>
+        <el-button color="#ffffff" v-show="showCopy" @click="exportExcel" size="small" style="border: 1px solid #0000FF;">
           导出试题
         </el-button>
       </h3>
@@ -27,7 +24,33 @@
           </template>
           终止生成
         </el-button>
+        <div v-if="formattedContent" class="formatted-content">
+          <div v-for="(item, index) in formattedContent" :key="index" class="question-item">
+            <div class="question-type">{{ getQuestionType(item.type) }}</div>
+            <h4>{{ index + 1 }}. 题目: {{ item.question }}</h4>
+            <div v-if="item.type === 'single_choice' || item.type === 'multiple_choice'">
+              <div v-for="(option, idx) in item.options" :key="idx">
+                <el-checkbox v-if="item.type === 'multiple_choice'" :label="getOptionLabel(idx)" :checked="item.answers.includes(getOptionLabel(idx))" style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;" @change.prevent>{{ getOptionLabel(idx) }}. {{ option }}</el-checkbox>
+                <el-radio v-else :label="getOptionLabel(idx)" :checked="item.answers === getOptionLabel(idx)" style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;" @change.prevent>{{ getOptionLabel(idx) }}. {{ option }}</el-radio>
+              </div>
+              <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
+            </div>
+            <div v-else-if="item.type === 'true_false'">
+              <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers === 'A' ? '正确' : '错误' }}</p>
+            </div>
+            <div v-else-if="item.type === 'fill_in_the_blank'">
+              <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
+            </div>
+            <div v-else-if="item.type === 'short_answer'">
+              <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
+            </div>
+            <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>难度:</strong> {{ item.difficulty }}</p>
+            <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>知识点:</strong> {{ item.knowledges }}</p>
+            <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>解析:</strong> {{ item.explan }}</p>
+          </div>
+        </div>
         <el-input
+          v-else
           id="inputId"
           type="textarea"
           v-model="compContent"
@@ -43,7 +66,7 @@
 
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-import {generateExcelApi} from "@/api/digitalcourse/genQuestion";
+import { generateExcelApi } from "@/api/digitalcourse/genQuestion";
 
 const message = useMessage() // 消息弹窗
 const { copied, copy } = useClipboard() // 粘贴板
@@ -72,6 +95,50 @@ const compContent = computed({
     emits('update:content', val)
   }
 })
+
+/** 格式化生成的内容为试题展示格式 */
+const formattedContent = computed(() => {
+  try {
+    const parsedContent = JSON.parse(props.content);
+    if (Array.isArray(parsedContent)) {
+      return parsedContent.map((item: any) => ({
+        question: item.question,
+        type: item.type,
+        difficulty: item.difficulty,
+        options: item.items,
+        answers: item.answers,
+        explan: item.explan,
+        knowledges: item.knowledges
+      }));
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+});
+
+/** 获取题型名称 */
+const getQuestionType = (type: string) => {
+  switch (type) {
+    case 'single_choice':
+      return '单选题';
+    case 'multiple_choice':
+      return '多选题';
+    case 'true_false':
+      return '判断题';
+    case 'fill_in_the_blank':
+      return '填空题';
+    case 'short_answer':
+      return '简答题';
+    default:
+      return '未知题型';
+  }
+};
+
+/** 获取选项标签 */
+const getOptionLabel = (index: number) => {
+  return String.fromCharCode(65 + index); // 将索引转换为A, B, C, D, E等
+};
 
 /** 滚动 */
 const contentRef = ref<HTMLDivElement>()
@@ -111,12 +178,71 @@ watch(copied, (val) => {
   display: flex;
   flex-direction: column;
 
+  :deep(.el-card__header) {
+    background-color: #015EBF1A;
+    height: 40px;
+    padding: 0;
+  }
+
   :deep(.el-card__body) {
     box-sizing: border-box;
     flex-grow: 1;
     overflow-y: auto;
     padding: 0;
     @extend .hide-scroll-bar;
+  }
+}
+
+.header-section {
+  font-size: 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 14px;
+}
+
+.recognized-text {
+  font-size: 12px;
+  color: gray;
+}
+
+.recognized-count {
+  font-size: 12px;
+  color: #48CA8F;
+}
+
+.formatted-content {
+  .question-item {
+    margin-bottom: 1.5rem;
+    h4 {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      font-size: 14px;
+      font-family: pingfang;
+      color: black;
+      max-width: 60ch;
+      word-break: break-word;
+    }
+    .question-type {
+      font-size: 14px;
+      font-family: pingfang;
+      color: black;
+      margin-bottom: 0.5rem;
+      padding: 1px 8px;
+      border: 1px solid #999999;
+      background-color: #015EBF1A;
+    }
+    p {
+      margin: 0.5rem 0;
+      font-size: 14px;
+      font-family: pingfang;
+      color: black;
+      max-width: 60ch;
+      word-break: break-word;
+    }
   }
 }
 </style>
