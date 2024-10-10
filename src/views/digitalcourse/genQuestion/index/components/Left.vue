@@ -49,7 +49,7 @@
     >
       <div>
         <template v-if="selectedTab === 1">
-          <ReuseLabel :hint-click="() => example('write')" hint="示例" label="题目要求" />
+          <ReuseLabel :hint-click="() => example('write')" hint="" label="题目要求" />
           <el-input
             v-model="formData.text"
             :maxlength="3000"
