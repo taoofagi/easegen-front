@@ -4,12 +4,12 @@
       <h3 class="m-0 px-7 shrink-0 flex items-center justify-between">
         <span>输入区</span>
         <!-- 展示在右上角 -->
-        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">
-          <template #icon>
-            <Icon icon="ph:copy-bold" />
-          </template>
-          复制
-        </el-button>
+<!--        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">-->
+<!--          <template #icon>-->
+<!--            <Icon icon="ph:copy-bold" />-->
+<!--          </template>-->
+<!--          复制-->
+<!--        </el-button>-->
       </h3>
     </template>
 

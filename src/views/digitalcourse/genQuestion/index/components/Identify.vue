@@ -4,7 +4,7 @@
       <h3 class="m-0 px-7 shrink-0 flex items-center justify-between">
         <span>识别区</span>
         <!-- 展示在右上角 -->
-        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">
+        <el-button color="#846af7" v-show="showCopy" @click="exportExcel" size="small">
           <template #icon>
             <Icon icon="ph:copy-bold" />
           </template>
@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
+import {generateExcelApi} from "@/api/digitalcourse/genQuestion";
 
 const message = useMessage() // 消息弹窗
 const { copied, copy } = useClipboard() // 粘贴板
@@ -82,8 +83,9 @@ defineExpose({
 
 /** 点击复制的时候复制内容 */
 const showCopy = computed(() => props.content && !props.isWriting) // 是否展示复制按钮，在生成内容完成的时候展示
-const copyContent = () => {
-  copy(props.content)
+const exportExcel = () => {
+  const params = { jsonString: props.content };
+  generateExcelApi(params);
 }
 
 /** 复制成功的时候 copied.value 为 true */

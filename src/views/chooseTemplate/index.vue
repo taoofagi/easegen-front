@@ -321,7 +321,7 @@
           </el-tooltip>
         </div>
       </div>
-      <div class="template-box template-right" v-if="!showHeadImageTool">
+      <div class="template-box template-right" v-if="showDigitalHumanTool">
         <div class="tabs-1">
           <div
             class="tabs-item"
@@ -437,6 +437,8 @@ import user from '@/assets/imgs/user.png'
 import userActive from '@/assets/imgs/user-active.png'
 import bg from '@/assets/imgs/bg.png'
 import bgActive from '@/assets/imgs/bg-active.png'
+import innerPicture from '@/assets/imgs/inner-picture.png'
+import innerPictureActive from '@/assets/imgs/inner-picture-active.png'
 //用户信息
 import { useUserStore } from '@/store/modules/user'
 import {
@@ -515,8 +517,12 @@ const componentsInfo = reactive({
   top: PPTpositon.y / 4.5,
   depth: PPTpositon.depth
 })
-//PPT数字人头像设置
+//背景设置
 const showHeadImageTool = ref(false)
+//数字人设置
+const showDigitalHumanTool = ref(false)
+//画中画设置
+const showInnerPictureTool = ref(false)
 //图片属性
 const showImageSet = ref(false)
 const xScale = viewSize.width / thumViewSize.width
@@ -624,6 +630,12 @@ const rightTools = reactive([
     url: bg,
     activeUrl: bgActive,
     isActive: false
+  },
+  {
+    name: '画中画',
+    url: innerPicture,
+    activeUrl: innerPictureActive,
+    isActive: false
   }
 ])
 const handleChangeTool = (item) => {
@@ -636,8 +648,17 @@ const handleChangeTool = (item) => {
   })
   if (item.name == '背景') {
     showHeadImageTool.value = true
-  } else {
+    showDigitalHumanTool.value = false
+    showInnerPictureTool.value = false
+  }
+  else if (item.name == '数字人') {
     showHeadImageTool.value = false
+    showDigitalHumanTool.value = true
+    showInnerPictureTool.value = false
+  } else if (item.name == '画中画') {
+    showHeadImageTool.value = false
+    showDigitalHumanTool.value = false
+    showInnerPictureTool.value = true
   }
 }
 

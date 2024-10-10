@@ -92,39 +92,50 @@ const submit = async (data: GenQuestionVO) => {
 
 /** 解析试题内容为 JSON 格式 */
 const parseQuestionsToJSON = (questionsString: string) => {
-  const questionsArray = questionsString.trim().split('\n\n');
+  // 去掉空行
+  const cleanedString = questionsString.replace(/\n\s*\n/g, '\n');
+  // 将试题字符串按题目序号或题型描述拆分为独立的题目块
+  const questionsArray = cleanedString.trim().split(/(?=^\d)/gm);
   return questionsArray.map((questionBlock) => {
+    console.log('questionBlock', questionBlock)
+    // 将每个题目块按行拆分
     const lines = questionBlock.split('\n');
-    const questionLine = lines[0];
-    const items = [];
-    let answer = '';
-    let difficulty = '';
-    let knowledge = '';
-    let explan = '';
+    const questionLine = lines[0]; // 题目行
+    const items = []; // 选项部分
+    let answer = ''; // 答案部分
+    let difficulty = ''; // 难度部分
+    let knowledge = ''; // 知识点部分
+    let explan = ''; // 解析部分
 
-    // 循环解析每一行
+    // 循环解析每一行内容，区分题目、选项、答案、难度、知识点和解析
     lines.forEach((line) => {
       if (/^[A-E]\.\s*/.test(line)) {
-        items.push(line.replace(/^[A-E]\.\s*/, '')); // 选项部分
-      } else if (line.startsWith('答案：')) {
-        answer = line.replace('答案：', '').trim();
+        // 如果行以选项字母 (A-E) 开头，表示这是一个选项
+        items.push(line.replace(/^[A-E]\.\s*/, '')); // 去掉选项前的字母和空格
+      } else if (line.startsWith('答案：') || line.startsWith('答案:')) {
+        // 如果行以“答案：”开头，表示这是答案部分
+        answer = line.replace('答案', '').replace('：','').replace(':','').trim();
       } else if (line.startsWith('难度：')) {
+        // 如果行以“难度：”开头，表示这是难度部分
         difficulty = line.replace('难度：', '').trim();
       } else if (line.startsWith('知识点：')) {
+        // 如果行以“知识点：”开头，表示这是知识点部分
         knowledge = line.replace('知识点：', '').trim();
       } else if (line.startsWith('解析：')) {
+        // 如果行以“解析：”开头，表示这是解析部分
         explan = line.replace('解析：', '').trim();
       }
     });
 
+    // 返回结构化的题目对象
     return {
-      question: questionLine.replace(/^\d+\.\s*/, '').replace(/（.*?）/, ''), // 去掉题目编号和题型描述
-      type: getQuestionType(questionLine),
-      difficulty: difficulty,
-      items: items,
-      answers: answer.split(''),
-      explan: explan,
-      knowledges: knowledge
+      question: questionLine.replace(/^\d+\.\s*/, '').replace(/[（\(].*?[）\)]/, '').replace(/".*?"/, ''), // 去掉题目编号和题型描述
+      type: getQuestionType(questionLine), // 获取题目类型
+      difficulty: difficulty, // 题目难度
+      items: items, // 选项列表
+      answers: answer, // 答案列表（将答案拆分为字符数组）
+      explan: explan, // 解析内容
+      knowledges: knowledge // 知识点内容
     };
   });
 };
@@ -132,11 +143,11 @@ const parseQuestionsToJSON = (questionsString: string) => {
 
 /** 获取试题类型 */
 const getQuestionType = (question: string) => {
-  if (question.includes('（单选题）')) return 'single_choice';
-  if (question.includes('（多选题）')) return 'multiple_choice';
-  if (question.includes('（判断题）')) return 'true_false';
-  if (question.includes('（问答题）')) return 'short_answer';
-  if (question.includes('（填空题）')) return 'fill_in_the_blank';
+  if (question.includes('单选题')) return 'single_choice';
+  if (question.includes('多选题')) return 'multiple_choice';
+  if (question.includes('判断题')) return 'true_false';
+  if (question.includes('问答题')) return 'short_answer';
+  if (question.includes('填空题')) return 'fill_in_the_blank';
   return 'unknown';
 };
 
