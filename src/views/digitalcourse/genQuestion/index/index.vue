@@ -5,8 +5,9 @@
       :is-writing="isWriting"
       class="h-full"
       @submit="submit"
+      @uploadsuccess="uploadsuccess"
       @reset="reset"
-      @example="handleExampleClick"
+      v-model:content="text"
     />
 <!--    输入区-->
     <Right
@@ -32,11 +33,12 @@
 import Left from './components/Left.vue'
 import Right from './components/Right.vue'
 import Identify from './components/Identify.vue'
-import {generateQuestionsApi, GenQuestionVO} from "@/api/digitalcourse/genQuestion";
+import {docparseApi, generateQuestionsApi, GenQuestionVO} from "@/api/digitalcourse/genQuestion";
 import {difficultyMap, questionTypeMap} from "@/views/digitalcourse/utils/constants";
 
 const message = useMessage()
 
+const text = ref('') // 题目要求
 const writeResult = ref('') // 试题生成结果
 const identifyResult = ref('') // 识别区结果
 const isWriting = ref(false) // 是否正在写作中
@@ -85,6 +87,25 @@ const submit = async (data: GenQuestionVO) => {
     // 滚动到底部
     await nextTick()
     rightRef.value?.scrollToBottom()
+  } catch (error) {
+    console.error('写作异常', error)
+    stopStream()
+  }
+}
+
+const uploadsuccess = async (data) => {
+  isWriting.value = true
+  try {
+    console.log('上传成功', data)
+    message.success('上传成功！')
+    const response = await docparseApi({
+      type: 'text',
+      fileUrl: data.fileUrl
+    })
+    console.log('response', response)
+    //将response 转为string
+    text.value = JSON.stringify(response)
+    stopStream()
   } catch (error) {
     console.error('写作异常', error)
     stopStream()

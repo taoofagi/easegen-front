@@ -16,6 +16,13 @@ export const generateQuestionsApi = (params: { text: string; question_type: stri
   })
 }
 
+export const docparseApi = (params: { type: string; fileUrl: string }) => {
+  return request.post<{ code: number; data: string; msg: string }>({
+    url: '/digitalcourse/courses/docparse',
+    data: params
+  })
+}
+
 export const generateExcelApi = (params: { jsonString: string }) => {
   return request.postOriginal({
     url: '/digitalcourse/courses/generateExcel',
