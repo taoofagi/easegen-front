@@ -19,8 +19,8 @@ export const questionTypeMap: Record<number, string> = {
   1: 'single_choice',
   2: 'multiple_choice',
   3: 'true_false',
-  4: 'short_answer',
-  5: 'fill_in_the_blank'
+  4: 'fill_in_the_blank',
+  5: 'short_answer'
 }
 
 export const difficultyMap: Record<number, string> = {
