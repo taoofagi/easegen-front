@@ -21,7 +21,7 @@
         <img
           class="image_3"
           referrerpolicy="no-referrer"
-          src="@/assets/digitalcourse/jiantou.png"
+          src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
       <!--      <div class="header-item">-->
