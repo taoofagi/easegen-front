@@ -143,6 +143,7 @@ export enum DICT_TYPE {
   INFRA_OPERATE_TYPE = 'infra_operate_type',
 
   // ========== BPM 模块 ==========
+  BPM_MODEL_TYPE = 'bpm_model_type',
   BPM_MODEL_FORM_TYPE = 'bpm_model_form_type',
   BPM_TASK_CANDIDATE_STRATEGY = 'bpm_task_candidate_strategy',
   BPM_PROCESS_INSTANCE_STATUS = 'bpm_process_instance_status',
@@ -194,7 +195,6 @@ export enum DICT_TYPE {
   PROMOTION_COUPON_TEMPLATE_VALIDITY_TYPE = 'promotion_coupon_template_validity_type', // 优惠劵模板的有限期类型
   PROMOTION_COUPON_STATUS = 'promotion_coupon_status', // 优惠劵的状态
   PROMOTION_COUPON_TAKE_TYPE = 'promotion_coupon_take_type', // 优惠劵的领取方式
-  PROMOTION_ACTIVITY_STATUS = 'promotion_activity_status', // 优惠活动的状态
   PROMOTION_CONDITION_TYPE = 'promotion_condition_type', // 营销的条件类型枚举
   PROMOTION_BARGAIN_RECORD_STATUS = 'promotion_bargain_record_status', // 砍价记录的状态
   PROMOTION_COMBINATION_RECORD_STATUS = 'promotion_combination_record_status', // 拼团记录的状态
@@ -228,6 +228,20 @@ export enum DICT_TYPE {
   AI_WRITE_TONE = 'ai_write_tone', // AI 写作语气
   AI_WRITE_LANGUAGE = 'ai_write_language', // AI 写作语言
 
+
+  // ========== IOT - 物联网模块  ==========
+  IOT_NET_TYPE = 'iot_net_type', // IOT 联网方式
+  IOT_VALIDATE_TYPE = 'iot_validate_type', // IOT 数据校验级别
+  IOT_PRODUCT_STATUS = 'iot_product_status', // IOT 产品状态
+  IOT_PRODUCT_DEVICE_TYPE = 'iot_product_device_type', // IOT 产品设备类型
+  IOT_DATA_FORMAT = 'iot_data_format', // IOT 数据格式
+  IOT_PROTOCOL_TYPE = 'iot_protocol_type', // IOT 接入网关协议
+  IOT_DEVICE_STATUS = 'iot_device_status', // IOT 设备状态
+  IOT_PRODUCT_FUNCTION_TYPE = 'iot_product_function_type', // IOT 产品功能类型
+  IOT_DATA_TYPE = 'iot_data_type', // IOT 数据类型
+  IOT_UNIT_TYPE = 'iot_unit_type', // IOT 单位类型
+  IOT_RW_TYPE = 'iot_rw_type', // IOT 读写类型
+
   // ========== DIGITALCOURSE - 数字人课程模块  ==========
   DIGITALCOURSE_DIGITALHUMAN_POSTURE = 'digitalcourse_digitalhuman_posture', // 数字人姿势
   DIGITALCOURSE_DIGITALHUMAN_MATTING = 'digitalcourse_digitalhuman_matting', // 数字人是否抠图
@@ -239,7 +253,5 @@ export enum DICT_TYPE {
   DIGITALCOURSE_GENQUESTION_DIFFICULTY = 'digitalcourse_genquestion_difficulty',
   VIDEO_STATUS = 'video_status', //合成视频状态
   MEDIA_TYPE = 'media_type' //媒体类型
-
-
 
 }
