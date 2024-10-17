@@ -5,7 +5,7 @@
         <el-avatar :size="60">
           <Icon icon="ep:avatar" :size="60" />
         </el-avatar>
-        <span class="text-18px font-bold">easegen</span>
+        <span class="text-18px font-bold">宁夏通信学会</span>
       </div>
       <Icon icon="tdesign:qrcode" :size="20" />
     </div>

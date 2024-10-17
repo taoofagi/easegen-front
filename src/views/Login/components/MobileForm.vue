@@ -133,7 +133,7 @@ const loginData = reactive({
   },
   loginForm: {
     uuid: '',
-    tenantName: 'easegen',
+    tenantName: '宁夏通信学会',
     mobileNumber: '',
     code: ''
   }

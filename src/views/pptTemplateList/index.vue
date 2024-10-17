@@ -24,14 +24,14 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
-<!--      <div class="header-item">-->
-<!--        <img src="https://console-ai.bokecc.com/static/create_digitbot@2x.5e536992.png" alt="标准模式创作" />-->
-<!--        <div class="header-text">标准模式创作</div>-->
-<!--      </div>-->
-<!--      <a class="header-item" href="https://console-ai.bokecc.com/help/video" target="_blank" rel="noreferrer noopener">-->
-<!--        <img src="https://console-ai.bokecc.com/static/video_couse@2x.62b27923.png" alt="视频教程" />-->
-<!--        <div class="header-text" style="color: #fff;">视频教程</div>-->
-<!--      </a>-->
+      <!--      <div class="header-item">-->
+      <!--        <img src="https://console-ai.bokecc.com/static/create_digitbot@2x.5e536992.png" alt="标准模式创作" />-->
+      <!--        <div class="header-text">标准模式创作</div>-->
+      <!--      </div>-->
+      <!--      <a class="header-item" href="https://console-ai.bokecc.com/help/video" target="_blank" rel="noreferrer noopener">-->
+      <!--        <img src="https://console-ai.bokecc.com/static/video_couse@2x.62b27923.png" alt="视频教程" />-->
+      <!--        <div class="header-text" style="color: #fff;">视频教程</div>-->
+      <!--      </a>-->
     </div>
     <div class="title">我的课程</div>
     <div class="project-list">
@@ -43,9 +43,9 @@
         </div>
         <div class="type">PPT</div>
         <div class="icon-content">
-<!--          <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="copyItem(item.id)">-->
-<!--            <CopyDocument />-->
-<!--          </el-icon>-->
+          <!--          <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="copyItem(item.id)">-->
+          <!--            <CopyDocument />-->
+          <!--          </el-icon>-->
           <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="deleteItem(item.id)">
             <Delete />
           </el-icon>
