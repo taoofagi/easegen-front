@@ -38,10 +38,15 @@
       <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
         <div class="img-box">
           <div class="scene-item-box" :style="{ backgroundImage: `url(${item.thumbnail})` }">
-            <img v-if="item.portrait" :src="item.portrait" class="portrait" />
+            <div v-if="item.progress" class="item-progress">进度：{{ item.progress }}</div>
           </div>
         </div>
-        <div class="type">PPT</div>
+        <div class="name-row">
+          <div class="type">PPT</div>
+          <div class="type">{{ item.id }}</div>
+
+        </div>
+
         <div class="icon-content">
           <!--          <el-icon size="20" color="#ffffff" style="margin-right: 5px" @click.stop="copyItem(item.id)">-->
           <!--            <CopyDocument />-->
@@ -271,7 +276,7 @@ onMounted(async () => {
   gap: 16px;
 
   .project-item {
-    width: calc(18% - 16px);
+    width: calc(20% - 16px);
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -301,6 +306,17 @@ onMounted(async () => {
       }
     }
 
+    .item-progress {
+      font-size: 12px;
+      position: absolute;
+      bottom: 1px; /* 距离底部的距离，可以根据需要调整 */
+      right: 1px;  /* 距离右侧的距离，可以根据需要调整 */
+      background-color: rgba(0, 0, 0, 0.5); /* 半透明背景色，可以根据需要调整 */
+      color: #fff;  /* 文字颜色 */
+      padding: 5px 10px; /* 内边距 */
+      border-radius: 4px; /* 圆角 */
+    }
+
     .type {
       margin-top: 10px;
       font-size: 12px;
@@ -325,7 +341,7 @@ onMounted(async () => {
       margin-top: 10px;
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 12px;
       color: #333;
 
       .name {
