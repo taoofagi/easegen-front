@@ -758,6 +758,7 @@ const uploadSubmit = (uploadForm) => {
 //解析ppt
 const schedulePPTTimer = ref()
 const schedulePPT = (id) => {
+  percentagePPT.value = 0
   if (schedulePPTTimer.value) {
     clearInterval(schedulePPTTimer.value)
   }
