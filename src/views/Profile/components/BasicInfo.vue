@@ -6,6 +6,21 @@
         <el-radio :value="2">{{ t('profile.user.woman') }}</el-radio>
       </el-radio-group>
     </template>
+    <template #apikey="form">
+      <el-input
+        v-model="form['apikey']"
+        type="password"
+        placeholder="API Key"
+        show-password
+        :readonly="true"
+        style="width: 300px;"
+      >
+        <template #suffix>
+          <span class="input-action" @click="refreshApiKey" style="margin-right: 10px; color: #409EFF; cursor: pointer;">刷新</span>
+          <span class="input-action" @click="copyApiKey" style="color: #409EFF; cursor: pointer;">复制</span>
+        </template>
+      </el-input>
+    </template>
   </Form>
   <div style="text-align: center">
     <XButton :title="t('common.save')" type="primary" @click="submit()" />
@@ -22,6 +37,7 @@ import {
   UserProfileUpdateReqVO
 } from '@/api/system/user/profile'
 import { useUserStore } from '@/store/modules/user'
+import { refreshUserApiKey } from '@/api/system/user'
 
 defineOptions({ name: 'BasicInfo' })
 
@@ -69,6 +85,11 @@ const schema = reactive<FormSchema[]>([
     label: t('profile.user.sex'),
     component: 'InputNumber',
     value: 0
+  },
+  {
+    field: 'apikey',
+    label: 'API Key',
+    component: 'Input'
   }
 ])
 const formRef = ref<FormExpose>() // 表单 Ref
@@ -84,6 +105,35 @@ const submit = () => {
       userStore.setUserNicknameAction(profile.nickname)
     }
   })
+}
+const refreshApiKey = async () => {
+  // 实现刷新 API Key 的逻辑
+  try {
+    const res = await refreshUserApiKey()
+    console.log('res', res)
+    if (res) {
+      init()
+      message.success('API Key 刷新成功')
+    } else {
+      message.error('刷新 API Key 失败')
+    }
+  } catch (error) {
+    console.error('刷新 API Key 时发生错误:', error)
+    message.error('刷新 API Key 时发生错误')
+  }
+}
+
+const copyApiKey = () => {
+  const apiKey = unref(formRef)?.formModel.apikey
+  if (apiKey) {
+    navigator.clipboard.writeText(apiKey).then(() => {
+      message.success('API Key 已复制到剪贴板')
+    }).catch(() => {
+      message.error('复制失败，请手动复制')
+    })
+  } else {
+    message.warning('API Key 为空')
+  }
 }
 const init = async () => {
   const res = await getUserProfile()

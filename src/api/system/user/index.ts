@@ -79,3 +79,8 @@ export const updateUserStatus = (id: number, status: number) => {
 export const getSimpleUserList = (): Promise<UserVO[]> => {
   return request.get({ url: '/system/user/simple-list' })
 }
+
+// 刷新用户 API Key
+export const refreshUserApiKey = () => {
+  return request.put({ url: '/system/user/refresh-apikey' })
+}

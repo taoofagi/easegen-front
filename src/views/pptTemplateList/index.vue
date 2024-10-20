@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { formatDate } from '@/utils/formatTime';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import * as pptTemplateApi from '@/api/pptTemplate';
 import { useRouter } from 'vue-router';
 import {
@@ -83,6 +83,8 @@ const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 const router = useRouter();
 
+//定时保存
+const intervalId = ref()
 const courseList = ref([]);
 const loading = ref(true);
 const total = ref(0);
@@ -90,6 +92,8 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
 });
+
+
 
 const getList = async () => {
   loading.value = true;
@@ -99,6 +103,20 @@ const getList = async () => {
     total.value = data.total;
   } finally {
     loading.value = false;
+  }
+};
+
+const startAutoRefresh = () => {
+  // 立即执行一次
+  getList();
+  // 每10秒执行一次
+  intervalId.value = setInterval(getList, 5000);
+};
+
+const stopAutoRefresh = () => {
+  if (intervalId.value !== null) {
+    clearInterval(intervalId.value);
+    intervalId.value = null;
   }
 };
 
@@ -128,7 +146,10 @@ const copyItem = (id) => {
 };
 
 onMounted(async () => {
-  await getList();
+  startAutoRefresh();
+});
+onUnmounted(() => {
+  stopAutoRefresh();
 });
 </script>
 
