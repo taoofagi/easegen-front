@@ -110,7 +110,6 @@ const refreshApiKey = async () => {
   // 实现刷新 API Key 的逻辑
   try {
     const res = await refreshUserApiKey()
-    console.log('res', res)
     if (res) {
       init()
       message.success('API Key 刷新成功')
@@ -126,14 +125,37 @@ const refreshApiKey = async () => {
 const copyApiKey = () => {
   const apiKey = unref(formRef)?.formModel.apikey
   if (apiKey) {
-    navigator.clipboard.writeText(apiKey).then(() => {
-      message.success('API Key 已复制到剪贴板')
-    }).catch(() => {
-      message.error('复制失败，请手动复制')
-    })
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(apiKey).then(() => {
+        message.success('API Key 已复制到剪贴板')
+      }).catch(() => {
+        fallbackCopyTextToClipboard(apiKey)
+      })
+    } else {
+      fallbackCopyTextToClipboard(apiKey)
+    }
   } else {
     message.warning('API Key 为空')
   }
+}
+
+const fallbackCopyTextToClipboard = (text) => {
+  const textArea = document.createElement("textarea")
+  textArea.value = text
+  document.body.appendChild(textArea)
+  textArea.focus()
+  textArea.select()
+  try {
+    const successful = document.execCommand('copy')
+    if (successful) {
+      message.success('API Key 已复制到剪贴板')
+    } else {
+      message.error('复制失败，请手动复制')
+    }
+  } catch (err) {
+    message.error('复制失败，请手动复制')
+  }
+  document.body.removeChild(textArea)
 }
 const init = async () => {
   const res = await getUserProfile()
