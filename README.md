@@ -5,11 +5,9 @@
 ## 🐶 新手必读
 
 * nodejs > 16.18.0 && pnpm > 8.6.0 (强制使用pnpm)
-* 演示地址【Vue3 + element-plus】：<http://36.103.251.108:48083>
-* 启动文档：请加入飞书群
-  ![飞书](public/feishu.png)
-* 教程：TODO
-* 操作手册：TODO
+* 演示地址【Vue3 + element-plus】：<http://36.103.251.108:48083> 请注册体验
+* 启动文档、操作手册：请加入飞书群获取
+  ![飞书](public/image/feishu.png)
 
 ## 🐯 平台简介
 
@@ -20,20 +18,20 @@
 * 智能课件基于[文多多](https://docmee.cn?source=u3199)实现
 * 文档解析基于[doc2x](https://doc2x.noedgeai.com/)实现
 
-* 课程制作页面
+* 课程制作
 
-![课程制作](public/digitalhuman_course.png)
-* 我的视频页面
+![课程制作](public/image/digitalhuman_course.gif)
 
-![课程制作](public/my_video.png)
-* 智能课件页面
+* 智能课件
 
-![智能课件](public/aippt.png)
-* 智能出题页面
+![智能课件](public/image/aippt.gif)
+* 智能出题
 
-![智能出题](public/ai_gen_test.png)
+![智能出题](public/image/ai_gen_test.gif)
 
 *  [样课展示](https://www.bilibili.com/video/av113088116297160/)
+
+[![B站视频](public/image/demo_course.png)](https://www.bilibili.com/video/av113088116297160/)
 
 
 
@@ -68,7 +66,7 @@
 | ESLint                        | 脚本代码检查              |
 | DotENV                        | env 文件高亮            |
 
-## 🔥 后端架构 TODO
+## 🔥 后端
 
 Spring Boot：
 
@@ -77,3 +75,13 @@ Spring Boot：
 
 ### 若依其他系统功能
 请参考[ruoyi-vue-pro](https://gitee.com/zhijiantianya/ruoyi-vue-pro#-%E5%86%85%E7%BD%AE%E5%8A%9F%E8%83%BD)
+
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=taoofagi/easegen-front&type=Date)](https://star-history.com/#taoofagi/easegen-front&Date)
+
+## 🧾 免责声明/许可
+
+1. `代码`：`easegen-front` 的代码采用 `Apache` 许可证发布，学术用途和商业用途都可以。
+2. `AIGC`：本项目旨在积极影响基于人工智能的文字、语音、视频生成领域。用户被授予使用此工具创建文字、语音、视频的自由，但他们应该遵守当地法律，并负责任地使用。开发人员不对用户可能的不当使用承担任何责任。
