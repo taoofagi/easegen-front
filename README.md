@@ -51,6 +51,9 @@
 | [iconify](https://icon-sets.iconify.design/)                         | 在线图标库            | 3.1.1  |
 | [wangeditor](https://www.wangeditor.com/)                            | 富文本编辑器           | 5.1.23 |
 
+## 部署手册
+https://ozij45g3ts.feishu.cn/docx/OIN8daguXoTzESx8nxFcJOvsnWc
+
 ## 开发工具
 
 推荐 VS Code 开发，配合插件如下：
