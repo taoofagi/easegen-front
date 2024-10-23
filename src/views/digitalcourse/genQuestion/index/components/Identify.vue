@@ -3,7 +3,7 @@
     <template #header>
       <h3 class="m-0 px-7 shrink-0 flex items-center justify-between header-section">
         <span class="header-title">识别区 - <span class="recognized-text">成功识别题目数: </span><span class="recognized-count">{{ formattedContent ? formattedContent.length : 0 }}</span></span>
-        <!-- 展示在右上角 -->
+        <!-- 展示在右上角的导出试题按钮 -->
         <el-button color="#ffffff" v-show="showCopy" @click="exportExcel" size="small" style="border: 1px solid #0000FF;">
           导出试题
         </el-button>
@@ -24,10 +24,12 @@
           </template>
           终止生成
         </el-button>
+        <!-- 格式化后的试题内容展示 -->
         <div v-if="formattedContent" class="formatted-content">
           <div v-for="(item, index) in formattedContent" :key="index" class="question-item">
             <div class="question-type">{{ getQuestionType(item.type) }}</div>
             <h4>{{ index + 1 }}. 题目: {{ item.question }}</h4>
+            <!-- 单选题和多选题的选项展示 -->
             <div v-if="item.type === 'single_choice' || item.type === 'multiple_choice'">
               <div v-for="(option, idx) in item.options" :key="idx">
                 <el-checkbox v-if="item.type === 'multiple_choice'" :label="getOptionLabel(idx)" :checked="item.answers.includes(getOptionLabel(idx))" style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;" @change.prevent>{{ getOptionLabel(idx) }}. {{ option }}</el-checkbox>
@@ -35,20 +37,25 @@
               </div>
               <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
             </div>
+            <!-- 判断题答案展示 -->
             <div v-else-if="item.type === 'true_false'">
               <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers === 'A' ? '正确' : '错误' }}</p>
             </div>
+            <!-- 填空题答案展示 -->
             <div v-else-if="item.type === 'fill_in_the_blank'">
               <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
             </div>
+            <!-- 简答题答案展示 -->
             <div v-else-if="item.type === 'short_answer'">
               <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;">答案: {{ item.answers }}</p>
             </div>
+            <!-- 题目难度、知识点和解析展示 -->
             <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>难度:</strong> {{ item.difficulty }}</p>
             <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>知识点:</strong> {{ item.knowledges }}</p>
             <p style="font-size: 14px; font-family: pingfang; color: black; max-width: 60ch; word-break: break-word;"><strong>解析:</strong> {{ item.explan }}</p>
           </div>
         </div>
+        <!-- 未格式化内容的输入框 -->
         <el-input
           v-else
           id="inputId"
@@ -68,9 +75,12 @@
 import { useClipboard } from '@vueuse/core'
 import { generateExcelApi } from "@/api/digitalcourse/genQuestion";
 
-const message = useMessage() // 消息弹窗
-const { copied, copy } = useClipboard() // 粘贴板
+// 使用消息提示
+const message = useMessage()
+// 使用剪贴板功能
+const { copied, copy } = useClipboard()
 
+// 定义组件的props
 const props = defineProps({
   content: {
     // 生成的结果
@@ -84,9 +94,13 @@ const props = defineProps({
   }
 })
 
+// 定义组件的emits
 const emits = defineEmits(['update:content', 'stopStream'])
 
-/** 通过计算属性，双向绑定，更改生成的内容，考虑到用户想要更改生成文章的情况 */
+/** 
+ * 通过计算属性，双向绑定，更改生成的内容
+ * 考虑到用户想要更改生成文章的情况
+ */
 const compContent = computed({
   get() {
     return props.content
@@ -140,7 +154,7 @@ const getOptionLabel = (index: number) => {
   return String.fromCharCode(65 + index); // 将索引转换为A, B, C, D, E等
 };
 
-/** 滚动 */
+/** 滚动相关 */
 const contentRef = ref<HTMLDivElement>()
 defineExpose({
   scrollToBottom() {
@@ -148,14 +162,19 @@ defineExpose({
   }
 })
 
-/** 点击复制的时候复制内容 */
-const showCopy = computed(() => props.content && !props.isWriting) // 是否展示复制按钮，在生成内容完成的时候展示
+/** 
+ * 控制导出按钮的显示
+ * 在生成内容完成且有内容时显示
+ */
+const showCopy = computed(() => props.content && !props.isWriting)
+
+/** 导出Excel文件 */
 const exportExcel = () => {
   const params = { jsonString: props.content };
   generateExcelApi(params);
 }
 
-/** 复制成功的时候 copied.value 为 true */
+/** 监听复制操作，成功时显示提示 */
 watch(copied, (val) => {
   if (val) {
     message.success('复制成功')
@@ -164,6 +183,7 @@ watch(copied, (val) => {
 </script>
 
 <style lang="scss" scoped>
+// 隐藏滚动条样式
 .hide-scroll-bar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -174,6 +194,7 @@ watch(copied, (val) => {
   }
 }
 
+// 卡片样式
 .my-card {
   display: flex;
   flex-direction: column;
@@ -193,6 +214,7 @@ watch(copied, (val) => {
   }
 }
 
+// 头部样式
 .header-section {
   font-size: 16px;
   height: 40px;
@@ -214,6 +236,7 @@ watch(copied, (val) => {
   color: #48CA8F;
 }
 
+// 格式化内容样式
 .formatted-content {
   .question-item {
     margin-bottom: 1.5rem;

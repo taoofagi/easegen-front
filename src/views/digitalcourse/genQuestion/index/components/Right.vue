@@ -4,12 +4,13 @@
       <h3 class="m-0 px-7 shrink-0 flex items-center justify-between header-section">
         <span class="header-title">输入区</span>
         <!-- 展示在右上角 -->
-<!--        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">-->
-<!--          <template #icon>-->
-<!--            <Icon icon="ph:copy-bold" />-->
-<!--          </template>-->
-<!--          复制-->
-<!--        </el-button>-->
+        <!-- 注释掉的复制按钮，可能后续会启用 -->
+        <!--        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">-->
+        <!--          <template #icon>-->
+        <!--            <Icon icon="ph:copy-bold" />-->
+        <!--          </template>-->
+        <!--          复制-->
+        <!--        </el-button>-->
       </h3>
     </template>
 
@@ -27,6 +28,7 @@
           </template>
           终止生成
         </el-button>
+        <!-- 文本输入区域 -->
         <el-input
           id="inputId"
           type="textarea"
@@ -44,9 +46,12 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
 
-const message = useMessage() // 消息弹窗
-const { copied, copy } = useClipboard() // 粘贴板
+// 使用消息提示
+const message = useMessage()
+// 使用剪贴板功能
+const { copied, copy } = useClipboard()
 
+// 定义组件的props
 const props = defineProps({
   content: {
     // 生成的结果
@@ -60,9 +65,13 @@ const props = defineProps({
   }
 })
 
+// 定义组件的emits
 const emits = defineEmits(['update:content', 'stopStream'])
 
-/** 通过计算属性，双向绑定，更改生成的内容，考虑到用户想要更改生成文章的情况 */
+/** 
+ * 通过计算属性，双向绑定，更改生成的内容
+ * 考虑到用户想要更改生成文章的情况
+ */
 const compContent = computed({
   get() {
     return props.content
@@ -72,7 +81,7 @@ const compContent = computed({
   }
 })
 
-/** 滚动 */
+/** 滚动相关 */
 const contentRef = ref<HTMLDivElement>()
 defineExpose({
   scrollToBottom() {
@@ -80,13 +89,18 @@ defineExpose({
   }
 })
 
-/** 点击复制的时候复制内容 */
-const showCopy = computed(() => props.content && !props.isWriting) // 是否展示复制按钮，在生成内容完成的时候展示
+/** 
+ * 控制复制按钮的显示
+ * 在生成内容完成且有内容时显示
+ */
+const showCopy = computed(() => props.content && !props.isWriting)
+
+/** 复制内容到剪贴板 */
 const copyContent = () => {
   copy(props.content)
 }
 
-/** 复制成功的时候 copied.value 为 true */
+/** 监听复制操作，成功时显示提示 */
 watch(copied, (val) => {
   if (val) {
     message.success('复制成功')
@@ -95,6 +109,7 @@ watch(copied, (val) => {
 </script>
 
 <style lang="scss" scoped>
+// 隐藏滚动条样式
 .hide-scroll-bar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -105,6 +120,7 @@ watch(copied, (val) => {
   }
 }
 
+// 卡片样式
 .my-card {
   display: flex;
   flex-direction: column;
@@ -124,6 +140,7 @@ watch(copied, (val) => {
   }
 }
 
+// 头部样式
 .header-section {
   font-size: 16px;
   height: 40px;
@@ -131,6 +148,7 @@ watch(copied, (val) => {
   align-items: center;
 }
 
+// 标题样式
 .header-title {
   font-size: 14px;
 }
