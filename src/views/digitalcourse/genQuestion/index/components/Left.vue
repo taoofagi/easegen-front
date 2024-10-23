@@ -25,7 +25,7 @@
   </DefineLabel>
 
   <div class="flex flex-col" v-bind="$attrs">
-    <!-- tab -->
+    <!-- tab 切换区域 -->
     <div class="w-full pt-2 bg-[#f5f7f9] flex justify-center">
       <div class="w-[303px] rounded-full bg-[#DDDFE3] p-1 z-10">
         <div
@@ -44,10 +44,12 @@
         </div>
       </div>
     </div>
+    <!-- 主要内容区域 -->
     <div
       class="px-7 pb-2 flex-grow overflow-y-auto lg:block w-[380px] box-border bg-[#f5f7f9] h-full"
     >
       <div>
+        <!-- 题目要求输入框 -->
         <ReuseLabel :hint-click="() => example('write')" hint="" label="题目要求" />
         <el-input
           v-model="formData.text"
@@ -58,6 +60,7 @@
           type="textarea"
         />
 
+        <!-- 文件上传区域（仅在"依据资料生成"模式下显示） -->
         <ReuseLabel label="上传文件" v-if="selectedTab === 2" />
         <template v-if="selectedTab === 2">
           <el-upload
@@ -88,13 +91,19 @@
           </el-upload>
         </template>
 
+        <!-- 选择题型 -->
         <ReuseLabel label="选择题型" />
         <Tag v-model="formData.questionType" :tags="getIntDictOptions(DICT_TYPE.DIGITALCOURSE_GENQUESTION_QUESTION_TYPE)" />
+        
+        <!-- 试题难度 -->
         <ReuseLabel label="试题难度" />
         <Tag v-model="formData.difficulty" :tags="getIntDictOptions(DICT_TYPE.DIGITALCOURSE_GENQUESTION_DIFFICULTY)" />
+        
+        <!-- 生成数量 -->
         <ReuseLabel label="生成数量" />
         <el-input v-model="formData.numQuestions" type="number" :min="1" :max="50" />
 
+        <!-- 重置和生成按钮 -->
         <div class="flex items-center justify-center mt-3">
           <el-button :disabled="isWriting" @click="reset">重置</el-button>
           <el-button :loading="isWriting" color="#846af7" @click="submit">生成</el-button>
@@ -116,8 +125,10 @@ import { config } from "@/config/axios/config";
 import { getAccessToken, getTenantId } from "@/utils/auth";
 import { UploadRawFile } from "element-plus";
 
-const message = useMessage() // 消息弹窗
+// 使用消息提示
+const message = useMessage()
 
+// 定义组件的props
 const props = defineProps({
   content: {
     type: String,
@@ -129,7 +140,7 @@ const props = defineProps({
   }
 })
 
-/** 通过计算属性，双向绑定，更改生成的内容，考虑到用户想要更改生成文章的情况 */
+// 通过计算属性，双向绑定，更改生成的内容
 const compContent = computed({
   get() {
     return props.content
@@ -139,13 +150,17 @@ const compContent = computed({
   }
 })
 
+// 文件上传状态
 const isUploading = ref(false);
+
+// 处理上传错误
 const handleError = (err) => {
   console.error('上传错误', err);
   isUploading.value = false;
   uploadRef.value!.clearFiles();
 };
 
+// 定义组件的emits
 const emits = defineEmits<{
   (e: 'submit', params: Partial<GenQuestionVO>)
   (e: 'uploadsuccess', params)
@@ -153,7 +168,7 @@ const emits = defineEmits<{
   (e: 'reset')
 }>()
 
-/** 点击示例的时候，将定义好的文章作为示例展示出来 **/
+// 点击示例时，将定义好的文章作为示例展示出来
 const example = (type: 'write' | 'reply') => {
   formData.value = {
     ...initData,
@@ -162,13 +177,16 @@ const example = (type: 'write' | 'reply') => {
   emits('example', type)
 }
 
-/** 重置，将表单值作为初选值 **/
+// 重置，将表单值恢复为初始值
 const reset = () => {
   formData.value = { ...initData }
   emits('reset')
 }
 
+// 选中的标签页
 const selectedTab = ref<TabType>(GenQuestionTypeEnum.REQUIRE)
+
+// 标签页选项
 const tabs: {
   text: string
   value: TabType
@@ -176,21 +194,15 @@ const tabs: {
   { text: '按照要求生成', value: GenQuestionTypeEnum.REQUIRE },
   { text: '依据资料生成', value: GenQuestionTypeEnum.DOC }
 ]
+
+// 创建可复用的模板组件
 const [DefineTab, ReuseTab] = createReusableTemplate<{
   active?: boolean
   text: string
   itemClick: () => void
 }>()
 
-/**
- * 可以在 template 里边定义可复用的组件，DefineLabel，ReuseLabel 是采用的解构赋值，都是 Vue 组件
- *
- * 直接通过组件的形式使用，<DefineLabel v-slot="{ label, hint, hintClick }"> 中间是需要复用的组件代码 <DefineLabel />，通过 <ReuseLabel /> 来使用定义的组件
- * DefineLabel 里边的 v-slot="{ label, hint, hintClick }"相当于是解构了组件的 prop，需要注意的是 boolean 类型，需要显式的赋值比如 <ReuseLabel :flag="true" />
- * 事件也得以 prop 形式传入，不能是 @event的形式，比如下面的 hintClick 需要<ReuseLabel :hintClick="() => { doSomething }"/>
- *
- * @see https://vueuse.org/createReusableTemplate
- */
+// 创建可复用的标签组件
 const [DefineLabel, ReuseLabel] = createReusableTemplate<{
   label: string
   class?: string
@@ -198,6 +210,7 @@ const [DefineLabel, ReuseLabel] = createReusableTemplate<{
   hintClick?: () => void
 }>()
 
+// 初始数据
 const initData: GenQuestionVO = {
   type: 1,
   text: '',
@@ -205,15 +218,17 @@ const initData: GenQuestionVO = {
   difficulty: 'easy', // 难度
   numQuestions: 5 // 题目数量
 }
+
+// 表单数据
 const formData = ref<GenQuestionVO>({ ...initData })
 
-/** 用来记录切换之前所填写的数据，切换的时候给赋值回来 **/
+// 用来记录切换之前所填写的数据
 const recordFormData = {} as Record<GenQuestionTypeEnum, GenQuestionVO>
 
-/** 切换tab **/
+// 切换标签页
 const switchTab = (value: TabType) => {
   if (value !== selectedTab.value) {
-    // 保存之前的久数据
+    // 保存之前的旧数据
     recordFormData[selectedTab.value] = formData.value
     selectedTab.value = value
     // 将之前的旧数据赋值回来
@@ -221,7 +236,7 @@ const switchTab = (value: TabType) => {
   }
 }
 
-/** 提交写作 */
+// 提交生成
 const submit = () => {
   if (!formData.value.text) {
     message.warning(`请输入${selectedTab.value === 1 ? '题目要求' : '参考资料'}内容`)
@@ -240,13 +255,12 @@ const submit = () => {
     return
   }
   emits('submit', {
-    /** 撰写的时候没有 originalContent 字段**/
     ...(selectedTab.value === 1 ? omit(formData.value, ['originalContent']) : formData.value),
-    /** 使用选中 tab 值覆盖当前的 type 类型 **/
     type: selectedTab.value
   })
 }
 
+// 上传相关
 const uploadRef = ref()
 const headers = {
   Accept: 'application/json, text/plain, */*',
@@ -257,6 +271,8 @@ const uploadFileObj = reactive({
   filename: '',
   text: 0,
 })
+
+// 处理超出文件数量限制
 const handleExceed = (files) => {
   isUploading.value = false;
   uploadRef.value!.clearFiles();
@@ -264,11 +280,14 @@ const handleExceed = (files) => {
   file.uid = genFileId()
   uploadRef.value!.handleStart(file)
 }
+
+// 处理文件改变
 const handleChange = (files) => {
   isUploading.value = true;
   uploadFileObj.filename = files.name;
 };
 
+// 处理上传成功
 const handleSuccess = async (rawFile) => {
   uploadRef.value!.clearFiles();
   message.success('上传成功，开始解析文件！')

@@ -1,6 +1,7 @@
-<!-- 标签选项 -->
+<!-- 标签选项组件 -->
 <template>
   <div class="flex flex-wrap gap-[8px]">
+    <!-- 遍历标签数组，渲染每个标签 -->
     <span
       v-for="tag in props.tags"
       :key="tag.value"
@@ -14,19 +15,23 @@
 </template>
 
 <script setup lang="ts">
+// 定义组件的 props
 const props = withDefaults(
   defineProps<{
-    tags: { label: string; value: string }[]
-    modelValue: string
-    [k: string]: any
+    tags: { label: string; value: string }[] // 标签数组，包含标签文本和值
+    modelValue: string // 当前选中的标签值
+    [k: string]: any // 允许其他任意属性
   }>(),
   {
-    tags: () => []
+    tags: () => [] // 标签数组默认为空数组
   }
 )
 
+// 定义组件的 emits
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: string): void
+  (e: 'update:modelValue', value: string): void // 更新选中标签值的事件
 }>()
 </script>
+
+<!-- 组件样式 -->
 <style scoped></style>
