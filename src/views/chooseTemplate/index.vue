@@ -174,6 +174,14 @@
                   :src="selectHost ? selectHost.pictureUrl : ''"
                   fit="cover"
                 />
+                <el-icon v-if="PPTpositon.active"
+                  size="20"
+                  color="#409eff"
+                  style="position:absolute;top:5px;right:5px;z-index=999;"
+                  @click.stop="deleteDigitalHuman(element)"
+                >
+                  <Delete />
+                </el-icon>
               </Vue3DraggableResizable>
             </div>
           </div>
@@ -371,6 +379,7 @@
           />
         </div>
       </div>
+      <div class="template-box template-right" v-if="showTemplateTool"> 模板 </div>
       <div class="template-box template-right" v-if="showHeadImageTool">
         <div class="image-setting">
           <!--          上传图片成功后，将当前场景的背景修改为上传的图片url-->
@@ -433,6 +442,8 @@ import uploadExplain from './uploadExplain.vue'
 import AudioSelect from './audioSelect.vue'
 import mergeWarningDialog from './mergeWarningDialog.vue'
 import ReplaceDialog from './replaceDialog.vue' // 引入批量替换组件
+import template from '@/assets/imgs/template.png'
+import templateActive from '@/assets/imgs/template-active.png'
 import user from '@/assets/imgs/user.png'
 import userActive from '@/assets/imgs/user-active.png'
 import bg from '@/assets/imgs/bg.png'
@@ -510,6 +521,11 @@ const PPTpositon = reactive({
   depth: 0,
   active: false
 })
+
+const deleteDigitalHuman = (element) => {
+  console.log('delete')
+}
+
 const componentsInfo = reactive({
   width: PPTpositon.w / 5,
   height: PPTpositon.h / 4,
@@ -521,6 +537,8 @@ const componentsInfo = reactive({
 const showHeadImageTool = ref(false)
 //数字人设置
 const showDigitalHumanTool = ref(false)
+//模板设置
+const showTemplateTool = ref(false)
 //画中画设置
 const showInnerPictureTool = ref(false)
 //图片属性
@@ -620,10 +638,16 @@ const driveTypeChange = (item) => {
 //右侧设置
 const rightTools = reactive([
   {
+    name: '模板',
+    url: template,
+    activeUrl: templateActive,
+    isActive: false
+  },
+  {
     name: '数字人',
     url: user,
     activeUrl: userActive,
-    isActive: true
+    isActive: false
   },
   {
     name: '背景',
@@ -648,15 +672,22 @@ const handleChangeTool = (item) => {
   })
   if (item.name == '背景') {
     showHeadImageTool.value = true
+    showTemplateTool.value = false
     showDigitalHumanTool.value = false
     showInnerPictureTool.value = false
-  }
-  else if (item.name == '数字人') {
+  } else if (item.name == '数字人') {
     showHeadImageTool.value = false
+    showTemplateTool.value = false
     showDigitalHumanTool.value = true
+    showInnerPictureTool.value = false
+  } else if (item.name == '模板') {
+    showHeadImageTool.value = false
+    showTemplateTool.value = true
+    showDigitalHumanTool.value = false
     showInnerPictureTool.value = false
   } else if (item.name == '画中画') {
     showHeadImageTool.value = false
+    showTemplateTool.value = false
     showDigitalHumanTool.value = false
     showInnerPictureTool.value = true
   }
