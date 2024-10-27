@@ -1213,7 +1213,7 @@ const saveSubmit = (type) => {
           color: '#ffffff',
           pptRemark: item.pptRemark
         },
-        components: components,
+        components: item.showDigitalHuman ? components : null,
         driverType: item.driverType,
         duration: '',
         orderNo: index + 1,
