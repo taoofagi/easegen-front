@@ -165,22 +165,50 @@
               class="main-image-box"
               :style="{ width: viewSize.width + 'px', height: viewSize.height + 'px' }"
             >
+              <!-- 背景 -->
               <el-image
-                v-if="selectTemplate.showBackground"
+                v-if="selectPPT.pictureUrl"
                 class="background"
-                :src="selectTemplate.bgImage"
-              />
-              <el-image
-                v-if="selectTemplate.showPPT"
-                class="ppt-bg"
                 :src="selectPPT.pictureUrl"
-                :style="{
-                  width: selectTemplate.PPTPositon.w + 'px',
-                  height: selectTemplate.PPTPositon.h + 'px',
-                  top: selectTemplate.PPTPositon.y + 'px',
-                  left: selectTemplate.PPTPositon.x + 'px'
-                }"
               />
+              <!-- 画中画 -->
+              <Vue3DraggableResizable
+                v-if="selectPPT.innerPicture.src"
+                :parent="true"
+                :initW="selectTemplate.PPTPositon.w"
+                :initH="selectTemplate.PPTPositon.h"
+                v-model:x="selectTemplate.PPTPositon.x"
+                v-model:y="selectTemplate.PPTPositon.y"
+                v-model:w="selectTemplate.PPTPositon.w"
+                v-model:h="selectTemplate.PPTPositon.h"
+                v-model:active="selectTemplate.PPTPositon.active"
+                :draggable="true"
+                :resizable="true"
+                @activated="print('PPT activated')"
+                @deactivated="print('PPT deactivated')"
+                @drag-start="print('PPT drag-start')"
+                @resize-start="print('PPT resize-start')"
+                @dragging="print('PPT dragging')"
+                @resizing="print('PPT resizing')"
+                @drag-end="print('PPT drag-end')"
+                @resize-end="print('PPT resize-end')"
+                style="z-index: 3"
+              >
+                <el-image
+                  class="ppt-bg"
+                  :src="selectPPT.innerPicture.src"
+                  fit="cover"
+                />
+                <el-icon
+                  v-if="PPTpositon.active"
+                  size="20"
+                  color="#409eff"
+                  style="position: absolute; top: 5px; right: 5px; z-index: 4"
+                  @click.stop="deleteInnerPicture"
+                >
+                  <Delete />
+                </el-icon>
+              </Vue3DraggableResizable>
               <Vue3DraggableResizable
                 v-if="selectPPT.showDigitalHuman && selectTemplate.showDigitalHuman"
                 :parent="true"
@@ -462,12 +490,22 @@
           <el-checkbox v-model="applyAllTemplate" label="是否应用所有页面" />
         </div>
       </div>
+      <!-- 背景设置 -->
       <div class="template-box template-right" v-if="showHeadImageTool">
         <div class="image-setting">
           <!--          上传图片成功后，将当前场景的背景修改为上传的图片url-->
 
           <div>上传图片</div>
           <UploadImg v-model="selectPPT.pictureUrl" :limit="1" />
+        </div>
+      </div>
+      <!-- 画中画设置 -->
+      <div class="template-box template-right" v-if="showInnerPictureTool">
+        <div class="image-setting">
+          <!--          上传图片成功后，将当前场景的画中画修改为上传的图片url-->
+
+          <div>上传图片</div>
+          <UploadImg v-model="selectPPT.innerPicture.src" :limit="1" />
         </div>
       </div>
       <div class="template-box template-right" v-if="showImageSet">
@@ -569,6 +607,7 @@ const saveEdit = () => {
   isEditing.value = false
   courseInfo.value.name = editName.value
 }
+
 //课程基本信息
 const courseInfo = ref({
   id: 0,
@@ -579,9 +618,15 @@ const courseInfo = ref({
   status: 0,
   pageMode: 2,
   matting: 1,
+  width: 1920,
   height: 1080,
-  width: 1920
 })
+// 当比例改变时更新宽度和高度
+watch(() => courseInfo.value.aspect, (newAspect) => {
+  courseInfo.value.width = newAspect === '16:9' ? 1920 : 1080
+  courseInfo.value.height = newAspect === '16:9' ? 1080 : 1920
+})
+
 const editName = ref(courseInfo.value.name)
 const viewSize = reactive({
   width: 800,
@@ -822,6 +867,23 @@ const showLeftList = ref(true)
 
 const selectPPT = ref({
   pictureUrl: '',
+  innerPicture: {
+    //定义画中画对象，属性与数字人相同
+    name: '画中画',
+    src: '',
+    cover: '',
+    width: 0,
+    height: 0,
+    originWidth: 0,
+    originHeight: 0,
+    category: 1,
+    depth: 1,//画中画1-100
+    top: 0,
+    marginLeft: 0,
+    businessId: generateUUID(),
+    entityType: 0
+
+  },
   pptRemark: '',
   driverType: 1,
   uploadAudioUrl: '',
@@ -830,7 +892,8 @@ const selectPPT = ref({
     id: '',
     code: '',
     name: ''
-  }
+  },
+  showDigitalHuman: true
 }) //选择的PPT
 const checked5 = ref(false)
 const options = [
@@ -840,7 +903,7 @@ const options = [
   },
   {
     value: '2',
-    label: '16:10'
+    label: '9:16'
   }
 ]
 const uploadRef = ref()
@@ -929,6 +992,43 @@ const schedulePPT = (id) => {
           item.uploadAudioUrl = ''
           item.fileList = []
           item.businessId = generateUUID()
+          item.width = courseInfo.value.width
+          item.height = courseInfo.value.height
+          // 根据当前选择模板初始化画中画数据 先注释，后面在解析ppt时可选择是否选用模板，默认不选
+          // if (selectTemplate.value.showPPT) {
+          //   item.innerPicture = { 
+          //     src: item.pictureUrl,
+          //     cover: selectTemplate.value.bgImage,
+          //     width: selectTemplate.value.PPTPositon.w,
+          //     height: selectTemplate.value.PPTPositon.h,
+          //     top: selectTemplate.value.PPTPositon.y,
+          //     marginLeft: selectTemplate.value.PPTPositon.x
+          //   }
+
+          //   item.pictureUrl = selectTemplate.value.bgImage
+          // } else {
+          //   item.innerPicture = { 
+          //     src: '',
+          //     cover: '',
+          //     width: 0,
+          //     height: 0,
+          //     top: 0,
+          //     marginLeft: 0,
+          //     category: 1
+          //   }
+          // }
+          item.innerPicture = { 
+              src: '',
+              cover: '',
+              width: 0,
+              height: 0,
+              top: 0,
+              marginLeft: 0,
+              category: 1
+            }
+          // 初始化是否展示数字人
+          // item.showDigitalHuman = selectTemplate.value.showDigitalHuman
+          item.showDigitalHuman = true
         })
         PPTArr.value = res
         PPTArr.value[0].isActive = true
@@ -992,6 +1092,10 @@ const deleteDocument = (item) => {
 }
 const deleteDigitalHuman = () => {
   selectPPT.value.showDigitalHuman = false
+}
+//删除画中画
+const deleteInnerPicture = () => {
+  selectPPT.value.innerPicture.src = ''
 }
 //删除多个ppt
 const deleteMore = () => {
@@ -1188,93 +1292,122 @@ const saveSubmit = (type) => {
     scenes: [] as any[]
   }
   let thumbnail = ''
-  const components = [
-    {
-      name: selectHost.value.name,
-      src: selectHost.value.pictureUrl,
-      cover: selectHost.value.pictureUrl,
-      width: PPTpositon.w / 3,
-      height: PPTpositon.h / 3,
-      originWidth: PPTpositon.w / 3,
-      originHeight: PPTpositon.h / 3,
-      category: 2, //1: PPT, 2: 数字人, 3: 其他
-      depth: componentsInfo.depth,
-      top: PPTpositon.y / 3,
-      marginLeft: PPTpositon.x / 3,
-      entityId: selectHost.value.code,
-      entityType: selectHost.value.type, // 如果是数字人，则是数字人类型 0: 普通, 1: 专属
-      businessId: generateUUID(),
-      digitbotType: tabs1ActiveNum.value,
-      matting: 1,
-      marker: 1
-    }
-  ]
+  const { name, pictureUrl, code, type: digitalHumanType } = selectHost.value; // 解构以避免循环引用
+  const digitalHumanComponents = { 
+    name, 
+    src: pictureUrl, 
+    cover: pictureUrl, 
+    width: PPTpositon.w, 
+    height: PPTpositon.h, 
+    originWidth: PPTpositon.w, 
+    originHeight: PPTpositon.h, 
+    category: 2, // 1: PPT, 2: 数字人, 3: 其他 
+    depth: componentsInfo.depth, 
+    top: PPTpositon.y, 
+    marginLeft: PPTpositon.x, 
+    entityId: code, 
+    entityType: digitalHumanType, // 如果是数字人，则是数字人类型 0: 普通, 1: 专属 
+    businessId: generateUUID(), 
+    digitbotType: tabs1ActiveNum.value, 
+    matting: 1, 
+    marker: 1 
+  }; 
   let pageNum = 1
   if (PPTArr.value && PPTArr.value.length > 0) {
+    console.log('开始处理PPTArr数据');
     PPTArr.value.forEach((item, index) => {
-      console.log('PPTArr.value:', item)
-      pageInfo.scenes.push(item.businessId)
-      if (pageNum == 1) {
-        //第一页的背景图片作为课程的缩略图
-        thumbnail = item.pictureUrl
-        pageNum++
-      }
+      console.log(`处理第 ${index + 1} 个场景`);
+      try {
+        pageInfo.scenes.push(item.businessId);
+        if (pageNum == 1) {
+          thumbnail = item.pictureUrl;
+          pageNum++;
+        }
+        
+        const innerPictureCom = item.innerPicture;
+        console.log('innerPictureCom:', JSON.stringify(innerPictureCom));
 
-      const formatItem = {
-        background: {
-          backgroundType: item.backgroundType,
-          entityId: '',
-          width: item.width,
-          height: item.height,
-          depth: 0,
-          src: item.pictureUrl,
-          cover: item.pictureUrl,
-          originWidth: item.width,
-          originHeight: item.height,
-          color: '#ffffff',
-          pptRemark: item.pptRemark
-        },
-        components: item.showDigitalHuman ? components : null,
-        driverType: item.driverType,
-        duration: '',
-        orderNo: index + 1,
-        textDriver: {
-          pitch: '',
-          speed: '',
-          speech_rate: voiceData.speechRate, // 语速
-          volume: voiceData.volume, // 音量
-          smartSpeed: '',
-          textJson: item.pptRemark
-        },
-        audioDriver: {
-          fileName: item.fileList && item.fileList[0]?.name,
-          audioId: '',
-          audioUrl: item.uploadAudioUrl,
-          useVideoBackgroundAudio: ''
-        },
-        voice: {
-          voiceId: item.selectAudio && item.selectAudio.id,
-          entityId: item.selectAudio && item.selectAudio.code,
-          tonePitch: '',
-          voiceType: item.selectAudio && item.selectAudio.voiceType,
-          speechRate: '',
-          name: item.selectAudio && item.selectAudio.name
-        },
-        businessId: item.businessId
+        const formatItem = {
+          background: {
+            backgroundType: item.backgroundType,
+            entityId: '',
+            width: courseInfo.value.width,
+            height: courseInfo.value.height,
+            depth: 0,
+            src: item.pictureUrl,
+            cover: item.pictureUrl,
+            originWidth: item.width,
+            originHeight: item.height,
+            color: '#ffffff',
+            pptRemark: item.pptRemark
+          },
+          components: [
+            {
+              ...cloneDeep(digitalHumanComponents), // 深拷贝
+              status: item.showDigitalHuman ? 0 : 1
+            },
+            ...(innerPictureCom.src ? [{
+              ...cloneDeep(innerPictureCom), // 深拷贝
+              category: 1
+            }] : [])
+          ],
+          driverType: item.driverType,
+          duration: '',
+          orderNo: index + 1,
+          textDriver: {
+            pitch: '',
+            speed: '',
+            speech_rate: voiceData.speechRate,
+            volume: voiceData.volume,
+            smartSpeed: '',
+            textJson: item.pptRemark
+          },
+          audioDriver: {
+            fileName: item.fileList && item.fileList[0]?.name,
+            audioId: '',
+            audioUrl: item.uploadAudioUrl,
+            useVideoBackgroundAudio: ''
+          },
+          voice: {
+            voiceId: item.selectAudio && item.selectAudio.id,
+            entityId: item.selectAudio && item.selectAudio.code,
+            tonePitch: '',
+            voiceType: item.selectAudio && item.selectAudio.voiceType,
+            speechRate: '',
+            name: item.selectAudio && item.selectAudio.name
+          },
+          businessId: item.businessId
+        };
+        console.log('formatItem:', cloneDeep(formatItem));
+        scenes.push(formatItem);
+      } catch (error) {
+        console.error(`处理第 ${index + 1} 个场景时出错:`, error);
+        //抛出异常
+        throw error
       }
-      scenes.push(formatItem)
-    })
+    });
   }
-  saveSubmitForm.pageInfo = JSON.stringify(pageInfo)
-  saveSubmitForm.thumbnail = thumbnail
-  saveSubmitForm.scenes = scenes
+  console.log('pageInfo:', JSON.stringify(pageInfo));
+  console.log('thumbnail:', thumbnail);
+  
+  try {
+    saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
+    saveSubmitForm.thumbnail = thumbnail;
+    saveSubmitForm.scenes = cloneDeep(scenes);
+    console.log('saveSubmitForm:', cloneDeep(saveSubmitForm));
+  } catch (error) {
+    console.error('保存表单数据时出错:', error);
+  }
+
   if (type == 'save') {
-    pptTemplateApi.coursesSave(saveSubmitForm).then((res) => {
+    pptTemplateApi.coursesSave(stringifySafely(saveSubmitForm)).then((res) => {
       if (res) {
-        message.success('保存成功！')
-        saveTime.value = getSaveTime()
+        message.success('保存成功！');
+        saveTime.value = getSaveTime();
       }
-    })
+    }).catch((error) => {
+      console.error('保存课程时出错:', error);
+    });
   } else {
     // 校验场景数据
     if (!PPTArr.value || PPTArr.value.length == 0) {
@@ -1341,6 +1474,18 @@ const saveSubmit = (type) => {
       }
     })
   }
+}
+function stringifySafely(obj) {
+    const seen = new WeakSet();
+    return JSON.stringify(obj, (key, value) => {
+        if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+                return; // 循环引用时返回 undefined
+            }
+            seen.add(value);
+        }
+        return value;
+    });
 }
 //定时保存
 const saveTimer = ref()
@@ -1483,7 +1628,8 @@ const getCourseDetail = (id) => {
           item.backgroundType = item.background.backgroundType
           item.width = item.background.width
           item.height = item.background.height
-          item.showDigitalHuman = true
+          item.showDigitalHuman = item.components.find((p) => p.category == 2).status == 0 //根据数字人模板的status判断是否显示数字人
+          item.innerPicture = item.components.find((p) => p.category == 1) //画中画
         })
         PPTArr.value = res.scenes
         PPTArr.value[0].isActive = true
@@ -1509,7 +1655,7 @@ const getCourseDetail = (id) => {
           ]
         }
         //选择的数字人信息
-        const hostInfo = res.scenes[0].components[0]
+        const hostInfo = res.scenes[0].components.find(component => component.category === 2)
         hostList.value.forEach((item) => {
           if (item.code == hostInfo.entityId) {
             selectHost.value = item
@@ -1551,21 +1697,22 @@ const getCourseDetail = (id) => {
       uploadFileObj.size = pageInfo ? pageInfo.docInfo.fileSize : ''
 
       //应用模板
-      appleTemplate()
+      applyTemplate()
     }
   })
 }
-
+//选择模板
 const chooseTemplate = (currTemplate) => {
   selectTemplate.value = currTemplate
+  console.log('选择的模板信息:', currTemplate)
   templates.forEach((item) => {
     item.isActive = false
   })
   currTemplate.isActive = true
-  appleTemplate()
+  applyTemplate()
 }
 
-const appleTemplate = (ppt = null) => {
+const applyTemplate = (ppt = null) => {
   let pptList = []
 
   if (applyAllTemplate.value) {
@@ -1575,26 +1722,29 @@ const appleTemplate = (ppt = null) => {
   } else {
     pptList.push(selectPPT.value)
   }
+  //数字人是统一生效的，先处理
 
   pptList.forEach((item) => {
-    // if (selectTemplate.value.showBackground) {
-    //   item.background.src = selectTemplate.value.bgImage
-    //   item.background.cover = selectTemplate.value.bgImage
-    // }
-    // if (selectTemplate.value.showPPT) {
-    //   const pptComponent = item.components.find((p) => p.category == 1)
-    //   pptComponent.width = selectTemplate.value.PPTPositon.w
-    //   pptComponent.height = selectTemplate.value.PPTPositon.h
-    //   pptComponent.top = selectTemplate.value.PPTPositon.y
-    //   pptComponent.left = selectTemplate.value.PPTPositon.x
-    // }
-    // if (selectTemplate.value.showDigitalHuman) {
-    //   const humanComponent = item.components.find((p) => p.category == 2)
-    //   humanComponent.width = selectTemplate.value.HumanPositon.w
-    //   humanComponent.height = selectTemplate.value.HumanPositon.h
-    //   humanComponent.top = selectTemplate.value.HumanPositon.y
-    //   humanComponent.left = selectTemplate.value.HumanPositon.x
-    // }
+    if (selectTemplate.value.showPPT) {
+      item.innerPicture.name = '画中画'
+      item.innerPicture.src = selectPPT.value.pictureUrl
+      item.innerPicture.cover = selectTemplate.value.bgImage
+      item.innerPicture.width = selectTemplate.value.PPTPositon.w
+      item.innerPicture.height = selectTemplate.value.PPTPositon.h
+      item.innerPicture.top = selectTemplate.value.PPTPositon.y
+      item.innerPicture.marginLeft = selectTemplate.value.PPTPositon.x
+      item.innerPicture.category = 1
+      item.innerPicture.depth = 1
+      item.innerPicture.businessId = generateUUID()
+      item.innerPicture.entityType = 1
+      item.innerPicture.originHeight = courseInfo.value.height
+      item.innerPicture.originWidth = courseInfo.value.width
+      item.innerPicture.entityId = 1
+    }
+    if (selectTemplate.value.showBackground) {
+      item.pictureUrl = selectTemplate.value.bgImage
+    }
+    
     item.showDigitalHuman = selectTemplate.value.showDigitalHuman
   })
   PPTpositon.w = selectTemplate.value.HumanPositon.w
