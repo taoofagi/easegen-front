@@ -419,37 +419,40 @@
         <div class="template-list">
           <div
             class="template-item"
-            v-for="(item, index) in templates"
+            v-for="(template, index) in templates"
             :key="index"
-            @click="chooseTemplate(item)"
+            @click="chooseTemplate(template)"
           >
+            <div class="list-index" :style="template.isActive ? 'background: #409eff' : ''">
+              {{ index + 1 }}
+            </div>
             <el-image
-              v-if="item.showBackground"
+              v-if="template.showBackground"
               class="background"
-              :src="item.bgImage"
+              :src="template.bgImage"
               fit="contain"
             />
             <el-image
-              v-if="item.showPPT"
+              v-if="template.showPPT"
               class="ppt-bg"
               :src="selectPPT.pictureUrl"
               :style="{
-                width: item.PPTPositon.w * 0.28 + 'px',
-                height: item.PPTPositon.h * 0.28 + 'px',
-                top: item.PPTPositon.y * 0.28 + 'px',
-                left: item.PPTPositon.x * 0.28 + 'px'
+                width: template.PPTPositon.w * 0.28 + 'px',
+                height: template.PPTPositon.h * 0.28 + 'px',
+                top: template.PPTPositon.y * 0.28 + 'px',
+                left: template.PPTPositon.x * 0.28 + 'px'
               }"
               fit="cover"
             />
             <el-image
-              v-if="item.showDigitalHuman"
+              v-if="template.showDigitalHuman"
               class="human-image"
               :src="selectHost.pictureUrl"
               :style="{
-                width: item.HumanPositon.w * 0.28 + 'px',
-                height: item.HumanPositon.h * 0.28 + 'px',
-                top: item.HumanPositon.y * 0.28 + 'px',
-                left: item.HumanPositon.x * 0.28 + 'px'
+                width: template.HumanPositon.w * 0.28 + 'px',
+                height: template.HumanPositon.h * 0.28 + 'px',
+                top: template.HumanPositon.y * 0.28 + 'px',
+                left: template.HumanPositon.x * 0.28 + 'px'
               }"
               fit="cover"
             />
@@ -648,6 +651,7 @@ const templates = [
     showBackground: true,
     showDigitalHuman: true,
     showPPT: true,
+    isActive: true,
     PPTPositon: {
       w: 672,
       h: 379,
@@ -662,6 +666,23 @@ const templates = [
     },
     bgImage:
       'http://36.103.251.108:48084/39f5490c0ee98d23a3c476303a44d99016f81dd81be8bc38278bf37bf3602964.png'
+  },
+  {
+    showBackground: false,
+    showDigitalHuman: true,
+    showPPT: true,
+    PPTPositon: {
+      w: 800,
+      h: 450,
+      x: 0,
+      y: 0
+    },
+    HumanPositon: {
+      w: 150,
+      h: 198,
+      x: 650,
+      y: 252
+    }
   }
 ]
 const selectTemplate = ref(templates[0])
@@ -1535,8 +1556,12 @@ const getCourseDetail = (id) => {
   })
 }
 
-const chooseTemplate = (item) => {
-  selectTemplate.value = item
+const chooseTemplate = (currTemplate) => {
+  selectTemplate.value = currTemplate
+  templates.forEach((item) => {
+    item.isActive = false
+  })
+  currTemplate.isActive = true
   appleTemplate()
 }
 
@@ -2049,7 +2074,19 @@ onUnmounted(() => {
       margin: 5px 0;
       margin-left: 10px;
       cursor: pointer;
-
+      .list-index {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 100;
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        color: #fff;
+        text-align: center;
+        background: #122121;
+        border-radius: 5px;
+      }
       .ppt-bg {
         position: absolute;
         z-index: 2; /* 图片在背景之上 */
