@@ -73,21 +73,38 @@
                 <div class="mt-2 w-100%">
                   <div class="list" @click="choosePPt(element)">
                     <el-image
-                      class="ppt-bg"
+                      v-if="selectTemplate.showBackground"
+                      class="background"
+                      :src="selectTemplate.bgImage"
+                      fit="contain"
                       :style="{
                         width: thumViewSize.width + 'px',
+                        height: thumViewSize.height + 'px',
+                        top: '0px',
+                        left: '0px'
+                      }"
+                    />
+                    <el-image
+                      v-if="selectTemplate.showPPT"
+                      class="ppt-bg"
+                      :style="{
+                        width: selectTemplate.PPTPositon.w * (thumViewSize.width / 800) + 'px',
+                        height: selectTemplate.PPTPositon.h * (thumViewSize.height / 450) + 'px',
+                        top: selectTemplate.PPTPositon.y * (thumViewSize.width / 800) + 'px',
+                        left: selectTemplate.PPTPositon.x * (thumViewSize.height / 450) + 'px',
                         borderColor: element.isActive ? '#0683ee' : ''
                       }"
                       :src="element.pictureUrl"
                       fit="contain"
                     />
                     <el-image
+                      v-if="element.showDigitalHuman"
                       class="host"
                       :style="{
-                        width: leftWidth,
-                        height: leftHeight,
-                        top: leftTop,
-                        left: leftLeft
+                        width: PPTpositon.w * (thumViewSize.width / 800) + 'px',
+                        height: PPTpositon.h * (thumViewSize.height / 450) + 'px',
+                        top: PPTpositon.y * (thumViewSize.width / 800) + 'px',
+                        left: PPTpositon.x * (thumViewSize.height / 450) + 'px'
                       }"
                       :src="selectHost ? selectHost.pictureUrl : ''"
                       fit="cover"
@@ -148,8 +165,24 @@
               class="main-image-box"
               :style="{ width: viewSize.width + 'px', height: viewSize.height + 'px' }"
             >
-              <el-image class="ppt-bg" :src="selectPPT.pictureUrl" fit="contain" />
+              <el-image
+                v-if="selectTemplate.showBackground"
+                class="background"
+                :src="selectTemplate.bgImage"
+              />
+              <el-image
+                v-if="selectTemplate.showPPT"
+                class="ppt-bg"
+                :src="selectPPT.pictureUrl"
+                :style="{
+                  width: selectTemplate.PPTPositon.w + 'px',
+                  height: selectTemplate.PPTPositon.h + 'px',
+                  top: selectTemplate.PPTPositon.y + 'px',
+                  left: selectTemplate.PPTPositon.x + 'px'
+                }"
+              />
               <Vue3DraggableResizable
+                v-if="selectPPT.showDigitalHuman && selectTemplate.showDigitalHuman"
                 :parent="true"
                 :initW="PPTpositon.w"
                 :initH="PPTpositon.h"
@@ -168,17 +201,19 @@
                 @resizing="print('resizing')"
                 @drag-end="print('drag-end')"
                 @resize-end="print('resize-end')"
+                style="z-index: 4"
               >
                 <el-image
                   class="minddle-host-image"
                   :src="selectHost ? selectHost.pictureUrl : ''"
                   fit="cover"
                 />
-                <el-icon v-if="PPTpositon.active"
+                <el-icon
+                  v-if="PPTpositon.active"
                   size="20"
                   color="#409eff"
-                  style="position:absolute;top:5px;right:5px;z-index=999;"
-                  @click.stop="deleteDigitalHuman(element)"
+                  style="position: absolute; top: 5px; right: 5px; z-index: 4"
+                  @click.stop="deleteDigitalHuman"
                 >
                   <Delete />
                 </el-icon>
@@ -379,7 +414,51 @@
           />
         </div>
       </div>
-      <div class="template-box template-right" v-if="showTemplateTool"> 模板 </div>
+      <div class="template-box template-right" v-if="showTemplateTool">
+        <div class="tabs-2"> </div>
+        <div class="template-list">
+          <div
+            class="template-item"
+            v-for="(item, index) in templates"
+            :key="index"
+            @click="chooseTemplate(item)"
+          >
+            <el-image
+              v-if="item.showBackground"
+              class="background"
+              :src="item.bgImage"
+              fit="contain"
+            />
+            <el-image
+              v-if="item.showPPT"
+              class="ppt-bg"
+              :src="selectPPT.pictureUrl"
+              :style="{
+                width: item.PPTPositon.w * 0.28 + 'px',
+                height: item.PPTPositon.h * 0.28 + 'px',
+                top: item.PPTPositon.y * 0.28 + 'px',
+                left: item.PPTPositon.x * 0.28 + 'px'
+              }"
+              fit="cover"
+            />
+            <el-image
+              v-if="item.showDigitalHuman"
+              class="human-image"
+              :src="selectHost.pictureUrl"
+              :style="{
+                width: item.HumanPositon.w * 0.28 + 'px',
+                height: item.HumanPositon.h * 0.28 + 'px',
+                top: item.HumanPositon.y * 0.28 + 'px',
+                left: item.HumanPositon.x * 0.28 + 'px'
+              }"
+              fit="cover"
+            />
+          </div>
+        </div>
+        <div class="apply-all">
+          <el-checkbox v-model="applyAllTemplate" label="是否应用所有页面" />
+        </div>
+      </div>
       <div class="template-box template-right" v-if="showHeadImageTool">
         <div class="image-setting">
           <!--          上传图片成功后，将当前场景的背景修改为上传的图片url-->
@@ -522,10 +601,6 @@ const PPTpositon = reactive({
   active: false
 })
 
-const deleteDigitalHuman = (element) => {
-  console.log('delete')
-}
-
 const componentsInfo = reactive({
   width: PPTpositon.w / 5,
   height: PPTpositon.h / 4,
@@ -543,6 +618,9 @@ const showTemplateTool = ref(false)
 const showInnerPictureTool = ref(false)
 //图片属性
 const showImageSet = ref(false)
+//是否将模板应用到所有页面
+const applyAllTemplate = ref(false)
+
 const xScale = viewSize.width / thumViewSize.width
 // const yScale = viewSize.height / thumViewSize.height
 //左侧ppt数字人位置
@@ -564,6 +642,29 @@ const print = (val) => {
 const state = reactive({
   dragging: false
 })
+//预设模板
+const templates = [
+  {
+    showBackground: true,
+    showDigitalHuman: true,
+    showPPT: true,
+    PPTPositon: {
+      w: 672,
+      h: 379,
+      x: 122,
+      y: 20
+    },
+    HumanPositon: {
+      w: 150,
+      h: 198,
+      x: 0,
+      y: 252
+    },
+    bgImage:
+      'http://36.103.251.108:48084/39f5490c0ee98d23a3c476303a44d99016f81dd81be8bc38278bf37bf3602964.png'
+  }
+]
+const selectTemplate = ref(templates[0])
 //数字人tab
 const tabs1 = [
   {
@@ -867,6 +968,9 @@ const copyDocument = (item, index) => {
 }
 const deleteDocument = (item) => {
   PPTArr.value = PPTArr.value.filter((child) => child.id !== item.id)
+}
+const deleteDigitalHuman = () => {
+  selectPPT.value.showDigitalHuman = false
 }
 //删除多个ppt
 const deleteMore = () => {
@@ -1358,6 +1462,7 @@ const getCourseDetail = (id) => {
           item.backgroundType = item.background.backgroundType
           item.width = item.background.width
           item.height = item.background.height
+          item.showDigitalHuman = true
         })
         PPTArr.value = res.scenes
         PPTArr.value[0].isActive = true
@@ -1423,8 +1528,54 @@ const getCourseDetail = (id) => {
       const pageInfo = res.pageInfo ? JSON.parse(res.pageInfo) : ''
       uploadFileObj.filename = pageInfo ? pageInfo.docInfo.fileName : ''
       uploadFileObj.size = pageInfo ? pageInfo.docInfo.fileSize : ''
+
+      //应用模板
+      appleTemplate()
     }
   })
+}
+
+const chooseTemplate = (item) => {
+  selectTemplate.value = item
+  appleTemplate()
+}
+
+const appleTemplate = (ppt = null) => {
+  let pptList = []
+
+  if (applyAllTemplate.value) {
+    pptList = PPTArr.value
+  } else if (ppt) {
+    pptList.push(ppt)
+  } else {
+    pptList.push(selectPPT.value)
+  }
+
+  pptList.forEach((item) => {
+    // if (selectTemplate.value.showBackground) {
+    //   item.background.src = selectTemplate.value.bgImage
+    //   item.background.cover = selectTemplate.value.bgImage
+    // }
+    // if (selectTemplate.value.showPPT) {
+    //   const pptComponent = item.components.find((p) => p.category == 1)
+    //   pptComponent.width = selectTemplate.value.PPTPositon.w
+    //   pptComponent.height = selectTemplate.value.PPTPositon.h
+    //   pptComponent.top = selectTemplate.value.PPTPositon.y
+    //   pptComponent.left = selectTemplate.value.PPTPositon.x
+    // }
+    // if (selectTemplate.value.showDigitalHuman) {
+    //   const humanComponent = item.components.find((p) => p.category == 2)
+    //   humanComponent.width = selectTemplate.value.HumanPositon.w
+    //   humanComponent.height = selectTemplate.value.HumanPositon.h
+    //   humanComponent.top = selectTemplate.value.HumanPositon.y
+    //   humanComponent.left = selectTemplate.value.HumanPositon.x
+    // }
+    item.showDigitalHuman = selectTemplate.value.showDigitalHuman
+  })
+  PPTpositon.w = selectTemplate.value.HumanPositon.w
+  PPTpositon.h = selectTemplate.value.HumanPositon.h
+  PPTpositon.x = selectTemplate.value.HumanPositon.x
+  PPTpositon.y = selectTemplate.value.HumanPositon.y
 }
 
 const replaceDialog = ref(null)
@@ -1477,6 +1628,7 @@ onUnmounted(() => {
 }
 
 .minddle-host-image {
+  z-index: 3;
   width: 100%;
   height: 100%;
 }
@@ -1585,15 +1737,7 @@ onUnmounted(() => {
 
       .list {
         position: relative;
-        display: flex;
-        // width: 100%;
-        // height: 86px;
-        margin: 10px 0;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border: 2px solid #fff;
-        box-shadow: 0 3px 6px rgb(175 175 175 / 16%);
+        margin: 20px 0;
         box-sizing: content-box;
 
         .list-index {
@@ -1611,12 +1755,14 @@ onUnmounted(() => {
         }
 
         .ppt-bg {
+          z-index: 2;
           // width: 152px;
           // height: 100%;
         }
 
         .host {
           position: absolute;
+          z-index: 3;
         }
 
         .icon-content {
@@ -1626,6 +1772,7 @@ onUnmounted(() => {
           display: flex;
           cursor: pointer;
           align-items: center;
+          z-index: 4;
         }
       }
     }
@@ -1673,6 +1820,7 @@ onUnmounted(() => {
       }
 
       .ppt-bg {
+        z-index: 2;
         width: 100%;
         height: 100%;
       }
@@ -1814,6 +1962,14 @@ onUnmounted(() => {
       }
     }
 
+    .apply-all {
+      position: absolute;
+      bottom: 80px;
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+
     .host-list {
       height: 90%;
       overflow-y: auto;
@@ -1878,6 +2034,42 @@ onUnmounted(() => {
         margin-left: 10px;
       }
     }
+  }
+
+  .template-list {
+    height: 90%;
+    overflow-y: auto;
+    border-top: 1px solid #ebeef5;
+
+    .template-item {
+      position: relative;
+      display: inline-block;
+      width: 224px;
+      height: 126px;
+      margin: 5px 0;
+      margin-left: 10px;
+      cursor: pointer;
+
+      .ppt-bg {
+        position: absolute;
+        z-index: 2; /* 图片在背景之上 */
+      }
+
+      .human-image {
+        position: absolute;
+        z-index: 3; /* 图片在背景之上 */
+      }
+    }
+  }
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* 背景在底层 */
+    width: 100%;
+    height: 100%;
+    background-color: #f0f1fa; /* 设置底色 */
   }
 
   .template-tool {
