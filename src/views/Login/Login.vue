@@ -74,6 +74,7 @@ import { ThemeSwitch } from '@/layout/components/ThemeSwitch'
 import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
 
 import { LoginForm, MobileForm, QrCodeForm, RegisterForm, SSOLoginVue } from './components'
+import * as ConfigApi from "@/api/infra/config";
 
 defineOptions({ name: 'Login' })
 
@@ -81,6 +82,19 @@ const { t } = useI18n()
 const appStore = useAppStore()
 const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('login')
+const passwordLoginSwitch = ref(undefined)
+
+
+onMounted(async ()=>{
+  try {
+    const data = await ConfigApi.getConfigKey('password-login-switch')
+    if (data && data.length > 0) {
+      passwordLoginSwitch.value = data
+    }
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style lang="scss" scoped>
