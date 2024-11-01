@@ -179,6 +179,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useWatermark } from '@/hooks/web/useWatermark'
 import type { WorkplaceTotal, Project, Notice, Shortcut } from './types'
 import { pieOptions, barOptions } from './echarts-data'
+import {getUserProfile} from "@/api/system/user/profile";
 defineOptions({ name: 'Home' })
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -385,4 +386,12 @@ const getAllApi = async () => {
 }
 
 getAllApi()
+const message = useMessage()
+onMounted(async ()=>{
+  const res = await getUserProfile()
+  if (!res.mobile){
+    message.notifyWarning("请前往个人中心绑定手机号！")
+  }
+  console.log(res.mobile,'res')
+})
 </script>

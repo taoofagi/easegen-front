@@ -28,17 +28,46 @@
         </el-form-item>
       </el-col>
       <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
-        <el-form-item prop="username">
+        <el-form-item prop="mobile">
           <el-input
-            v-model="registerData.registerForm.username"
-            :placeholder="t('login.username')"
+            v-model="registerData.registerForm.mobile"
+            :placeholder="t('login.mobileNumberPlaceholder')"
             size="large"
             :prefix-icon="iconAvatar"
           />
         </el-form-item>
       </el-col>
       <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
-        <el-form-item prop="username">
+        <el-form-item prop="code">
+          <el-row :gutter="5" justify="space-between" style="width: 100%">
+            <el-col :span="24">
+              <el-input
+                v-model="registerData.registerForm.code"
+                :placeholder="t('login.codePlaceholder')"
+                :prefix-icon="iconCircleCheck"
+              >
+                <!-- <el-button class="w-[100%]"> -->
+                <template #append>
+                  <span
+                    v-if="mobileCodeTimer <= 0"
+                    class="getMobileCode"
+                    style="cursor: pointer"
+                    @click="getSmsCode"
+                  >
+                    {{ t('login.getSmsCode') }}
+                  </span>
+                  <span v-if="mobileCodeTimer > 0" class="getMobileCode" style="cursor: pointer">
+                    {{ mobileCodeTimer }}秒后可重新获取
+                  </span>
+                </template>
+              </el-input>
+              <!-- </el-button> -->
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-col>
+      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+        <el-form-item prop="nickname">
           <el-input
             v-model="registerData.registerForm.nickname"
             placeholder="昵称"
@@ -104,6 +133,8 @@ import * as authUtil from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import * as LoginApi from '@/api/login'
 import { LoginStateEnum, useLoginState } from './useLogin'
+import {sendSmsCode} from "@/api/login";
+import * as ConfigApi from "@/api/infra/config";
 
 defineOptions({ name: 'RegisterForm' })
 
@@ -119,8 +150,9 @@ const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
 const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
-
+const iconCircleCheck = useIcon({ icon: 'ep:circle-check' })
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER)
+const message = useMessage()
 
 const equalToPassword = (rule, value, callback) => {
   if (registerData.registerForm.password !== value) {
@@ -130,12 +162,39 @@ const equalToPassword = (rule, value, callback) => {
   }
 }
 
+const mobileCodeTimer = ref(0)
+const smsVO = reactive({
+  smsCode: {
+    mobile: '',
+    scene: 22
+  },
+  loginSms: {
+    mobile: '',
+    code: ''
+  }
+})
+const getSmsCode = async () => {
+  await getTenantId()
+  smsVO.smsCode.mobile = registerData.registerForm.mobile
+  await sendSmsCode(smsVO.smsCode).then(async () => {
+    message.success(t('login.SmsSendMsg'))
+    // 设置倒计时
+    mobileCodeTimer.value = 60
+    let msgTimer = setInterval(() => {
+      mobileCodeTimer.value = mobileCodeTimer.value - 1
+      if (mobileCodeTimer.value <= 0) {
+        clearInterval(msgTimer)
+      }
+    }, 1000)
+  })
+}
+
 const registerRules = {
   tenantName: [
     { required: true, trigger: 'blur', message: '请输入您所属的租户' },
     { min: 2, max: 20, message: '租户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
   ],
-  username: [
+  mobile: [
     { required: true, trigger: 'blur', message: '请输入您的账号' },
     { min: 4, max: 30, message: '用户账号长度必须介于 4 和 30 之间', trigger: 'blur' }
   ],
@@ -151,7 +210,8 @@ const registerRules = {
   confirmPassword: [
     { required: true, trigger: 'blur', message: '请再次输入您的密码' },
     { required: true, validator: equalToPassword, trigger: 'blur' }
-  ]
+  ],
+  code: [required]
 }
 
 const registerData = reactive({
@@ -162,7 +222,7 @@ const registerData = reactive({
     tenantName: import.meta.env.VITE_APP_DEFAULT_LOGIN_TENANT || '',
     nickname: '',
     tenantId: 0,
-    username: '',
+    mobile: '',
     password: '',
     confirmPassword: '',
     captchaVerification: ''
@@ -181,7 +241,7 @@ const handleRegister = async (params: any) => {
     if (registerData.captchaEnable) {
       registerData.registerForm.captchaVerification = params.captchaVerification
     }
-
+    registerData.registerForm.username = registerData.registerForm.mobile
     const res = await LoginApi.register(registerData.registerForm)
     if (!res) {
       return
