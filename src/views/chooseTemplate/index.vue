@@ -57,6 +57,7 @@
             </template>
           </el-upload>
         </div>
+        <!-- 左侧场景页面缩略图 -->
         <div v-if="showLeftList" style="height: calc(100% - 86px)">
           <div class="image-list">
             <draggable
@@ -72,10 +73,10 @@
               <template #item="{ element, index }">
                 <div class="mt-2 w-100%">
                   <div class="list" @click="choosePPt(element)">
+                    <!-- 背景图片(必显示) -->
                     <el-image
-                      v-if="selectTemplate.showBackground"
                       class="background"
-                      :src="selectTemplate.bgImage"
+                      :src="element.pictureUrl"
                       fit="contain"
                       :style="{
                         width: thumViewSize.width + 'px',
@@ -84,29 +85,31 @@
                         left: '0px'
                       }"
                     />
+                    <!-- 画中画(有则显示) -->
                     <el-image
-                      v-if="selectTemplate.showPPT"
+                      v-if="element.innerPicture?.src"
                       class="ppt-bg"
                       :style="{
-                        width: selectTemplate.PPTPositon.w * (thumViewSize.width / 800) + 'px',
-                        height: selectTemplate.PPTPositon.h * (thumViewSize.height / 450) + 'px',
-                        top: selectTemplate.PPTPositon.y * (thumViewSize.width / 800) + 'px',
-                        left: selectTemplate.PPTPositon.x * (thumViewSize.height / 450) + 'px',
+                        width: element.innerPicture.width  * (thumViewSize.width / 800) + 'px',
+                        height: element.innerPicture.height * (thumViewSize.height / 450) + 'px',
+                        top: element.innerPicture.top  * (thumViewSize.width / 800) + 'px',
+                        left: element.innerPicture.marginLeft * (thumViewSize.height / 450) + 'px',
                         borderColor: element.isActive ? '#0683ee' : ''
                       }"
-                      :src="element.pictureUrl"
+                      :src="element.innerPicture.src"
                       fit="contain"
                     />
+                    <!-- 数字人(有则显示) -->
                     <el-image
                       v-if="element.showDigitalHuman"
                       class="host"
                       :style="{
-                        width: PPTpositon.w * (thumViewSize.width / 800) + 'px',
-                        height: PPTpositon.h * (thumViewSize.height / 450) + 'px',
-                        top: PPTpositon.y * (thumViewSize.width / 800) + 'px',
+                        width: PPTpositon.w  * (thumViewSize.width / 800) + 'px',
+                        height: PPTpositon.h  * (thumViewSize.height / 450) + 'px',
+                        top: PPTpositon.y  * (thumViewSize.width / 800) + 'px',
                         left: PPTpositon.x * (thumViewSize.height / 450) + 'px'
                       }"
-                      :src="selectHost ? selectHost.pictureUrl : ''"
+                      :src="selectHost?.pictureUrl"
                       fit="cover"
                     />
                     <div class="list-index" :style="element.isActive ? 'background: #409eff' : ''">
@@ -148,6 +151,7 @@
           <div>PPT需要上传、解析等步骤处理，请耐心等待。</div>
         </div>
       </div>
+      <!-- 中间主画布 -->
       <div class="template-box template-middle">
         <div class="middle-top">
           <el-select v-model="courseInfo.aspect" placeholder="Select" style="width: 140px">
@@ -165,9 +169,8 @@
               class="main-image-box"
               :style="{ width: viewSize.width + 'px', height: viewSize.height + 'px' }"
             >
-              <!-- 背景 -->
+              <!-- 背景(必显示) -->
               <el-image
-                v-if="selectPPT.pictureUrl"
                 class="background"
                 :src="selectPPT.pictureUrl"
               />
@@ -175,13 +178,13 @@
               <Vue3DraggableResizable
                 v-if="selectPPT.innerPicture.src"
                 :parent="true"
-                :initW="selectTemplate.PPTPositon.w"
-                :initH="selectTemplate.PPTPositon.h"
-                v-model:x="selectTemplate.PPTPositon.x"
-                v-model:y="selectTemplate.PPTPositon.y"
-                v-model:w="selectTemplate.PPTPositon.w"
-                v-model:h="selectTemplate.PPTPositon.h"
-                v-model:active="selectTemplate.PPTPositon.active"
+                :initW="selectPPT.innerPicture.width"
+                :initH="selectPPT.innerPicture.height"
+                v-model:x="selectPPT.innerPicture.marginLeft"
+                v-model:y="selectPPT.innerPicture.top"
+                v-model:w="selectPPT.innerPicture.width"
+                v-model:h="selectPPT.innerPicture.height"
+                v-model:active="selectPPT.innerPicture.active"
                 :draggable="true"
                 :resizable="true"
                 @activated="print('PPT activated')"
@@ -210,7 +213,7 @@
                 </el-icon>
               </Vue3DraggableResizable>
               <Vue3DraggableResizable
-                v-if="selectPPT.showDigitalHuman && selectTemplate.showDigitalHuman"
+                v-if="selectPPT.showDigitalHuman"
                 :parent="true"
                 :initW="PPTpositon.w"
                 :initH="PPTpositon.h"
@@ -442,6 +445,7 @@
           />
         </div>
       </div>
+      <!-- 模板设置 -->
       <div class="template-box template-right" v-if="showTemplateTool">
         <div class="tabs-2"> </div>
         <div class="template-list">
@@ -455,34 +459,9 @@
               {{ index + 1 }}
             </div>
             <el-image
-              v-if="template.showBackground"
               class="background"
-              :src="template.bgImage"
+              :src="template.previewImage"
               fit="contain"
-            />
-            <el-image
-              v-if="template.showPPT"
-              class="ppt-bg"
-              :src="selectPPT.pictureUrl"
-              :style="{
-                width: template.PPTPositon.w * 0.28 + 'px',
-                height: template.PPTPositon.h * 0.28 + 'px',
-                top: template.PPTPositon.y * 0.28 + 'px',
-                left: template.PPTPositon.x * 0.28 + 'px'
-              }"
-              fit="cover"
-            />
-            <el-image
-              v-if="template.showDigitalHuman"
-              class="human-image"
-              :src="selectHost.pictureUrl"
-              :style="{
-                width: template.HumanPositon.w * 0.28 + 'px',
-                height: template.HumanPositon.h * 0.28 + 'px',
-                top: template.HumanPositon.y * 0.28 + 'px',
-                left: template.HumanPositon.x * 0.28 + 'px'
-              }"
-              fit="cover"
             />
           </div>
         </div>
@@ -640,6 +619,12 @@ const digitalHumanSize = reactive({
   width: 150,
   height: 200
 })
+// 添加缩放比例计算
+const scaleRatio = computed(() => ({
+  width: courseInfo.value.width / viewSize.width, // 1920/800 = 2.4
+  height: courseInfo.value.height / viewSize.height // 1080/450 = 2.4
+}))
+
 const PPTpositon = reactive({
   x: viewSize.width - digitalHumanSize.width,
   y: viewSize.height - digitalHumanSize.height,
@@ -691,46 +676,52 @@ const state = reactive({
   dragging: false
 })
 //预设模板
-const templates = [
+const TEMPLATE_PRESETS = [
   {
     showBackground: true,
     showDigitalHuman: true,
     showPPT: true,
-    isActive: true,
     PPTPositon: {
-      w: 672,
-      h: 379,
-      x: 122,
-      y: 20
+      w: 672, // 1613 / 2.4
+      h: 379,  // 910 / 2.4
+      x: 122,  // 293 / 2.4
+      y: 20    // 48 / 2.4
     },
     HumanPositon: {
-      w: 150,
-      h: 198,
+      w: 150,  // 360 / 2.4
+      h: 198,  // 475 / 2.4
       x: 0,
-      y: 252
+      y: 252   // 605 / 2.4
     },
     bgImage:
-      'http://36.103.251.108:48084/39f5490c0ee98d23a3c476303a44d99016f81dd81be8bc38278bf37bf3602964.png'
+      'http://36.103.251.108:48084/39f5490c0ee98d23a3c476303a44d99016f81dd81be8bc38278bf37bf3602964.png',
+    previewImage:
+      'http://36.103.251.108:48084/cc0742d1db2eba71919c56e0cb4a38e8596bf4b997ac8220d0ea7dd1af31bf65.png'
   },
   {
     showBackground: false,
     showDigitalHuman: true,
     showPPT: true,
     PPTPositon: {
-      w: 800,
-      h: 450,
+      w: 800, // 1920 / 2.4
+      h: 450, // 1080 / 2.4
       x: 0,
       y: 0
     },
     HumanPositon: {
-      w: 150,
-      h: 198,
-      x: 650,
-      y: 252
-    }
+      w: 150,  // 360 / 2.4
+      h: 198,  // 475 / 2.4
+      x: 650, // 1560 / 2.4
+      y: 252   // 605 / 2.4
+    },
+    bgImage: '',
+    previewImage: 'http://36.103.251.108:48084/3ebeff2dc6c13ac9e5a91dacf6dac2e454dc02a54d667ecc010ac95d1f98242f.png'
   }
-]
-const selectTemplate = ref(templates[0])
+] as const
+const templates = ref(TEMPLATE_PRESETS.map(template => cloneDeep(template)))
+ 
+const selectTemplate = ref(cloneDeep(templates.value[0]))
+
 //数字人tab
 const tabs1 = [
   {
@@ -881,7 +872,8 @@ const selectPPT = ref({
     top: 0,
     marginLeft: 0,
     businessId: generateUUID(),
-    entityType: 0
+    entityType: 0,
+    entityId: '0'
 
   },
   pptRemark: '',
@@ -984,6 +976,7 @@ const schedulePPT = (id) => {
       if (res && typeof res == 'string') {
         percentagePPT.value = parseInt(`${Number(res) * 100}`)
       } else if (res && res.length > 0) {
+        console.log('selectTemplate',selectTemplate.value)
         res.forEach((item) => {
           item.isActive = false
           item.isChecked = false
@@ -994,30 +987,43 @@ const schedulePPT = (id) => {
           item.businessId = generateUUID()
           item.width = courseInfo.value.width
           item.height = courseInfo.value.height
-          // 根据当前选择模板初始化画中画数据 先注释，后面在解析ppt时可选择是否选用模板，默认不选
-          // if (selectTemplate.value.showPPT) {
-          //   item.innerPicture = { 
-          //     src: item.pictureUrl,
-          //     cover: selectTemplate.value.bgImage,
-          //     width: selectTemplate.value.PPTPositon.w,
-          //     height: selectTemplate.value.PPTPositon.h,
-          //     top: selectTemplate.value.PPTPositon.y,
-          //     marginLeft: selectTemplate.value.PPTPositon.x
-          //   }
+          let ppturl = item.pictureUrl;
+          //是否展示背景 如果展示背景，则背景等于模板背景，否则为空
+          if(selectTemplate.value.showBackground){
+            item.pictureUrl = selectTemplate.value.bgImage
+          }else{
+            item.pictureUrl = ''
+          }
+          // 如果展示背景，并且展示ppt，则ppt放到画中画
+          console.log('selectTemplate.value.PPTPositon.w',selectTemplate.value.PPTPositon.w
+          ,'selectTemplate.value.PPTPositon.h',selectTemplate.value.PPTPositon.h
+          ,'scaleRatio.value.width',scaleRatio.value.width
+          ,'scaleRatio.value.height',scaleRatio.value.height
+          )
+          if (item.pictureUrl&&selectTemplate.value.showPPT) {
+            item.innerPicture = { 
+              name: '画中画',
+              src: ppturl,
+              cover: ppturl,
+              width: selectTemplate.value.PPTPositon.w,
+              height: selectTemplate.value.PPTPositon.h,
+              originWidth: selectTemplate.value.PPTPositon.w,
+              originHeight: selectTemplate.value.PPTPositon.h,
+              category: 1,
+              depth: 1,
+              top: selectTemplate.value.PPTPositon.y,
+              marginLeft: selectTemplate.value.PPTPositon.x,
+              businessId: generateUUID(),
+              entityType: 0,
+              entityId: '0'
+            }
 
-          //   item.pictureUrl = selectTemplate.value.bgImage
-          // } else {
-          //   item.innerPicture = { 
-          //     src: '',
-          //     cover: '',
-          //     width: 0,
-          //     height: 0,
-          //     top: 0,
-          //     marginLeft: 0,
-          //     category: 1
-          //   }
-          // }
-          item.innerPicture = { 
+            
+          } 
+          //如果不展示背景，则ppt放到背景，画中画为空
+          else if(!item.pictureUrl&&selectTemplate.value.showPPT){
+            item.pictureUrl = ppturl
+            item.innerPicture = { 
               src: '',
               cover: '',
               width: 0,
@@ -1026,13 +1032,19 @@ const schedulePPT = (id) => {
               marginLeft: 0,
               category: 1
             }
+          }
           // 初始化是否展示数字人
-          // item.showDigitalHuman = selectTemplate.value.showDigitalHuman
           item.showDigitalHuman = true
+          // 数字人位置和尺寸也需要缩放
+          PPTpositon.w = selectTemplate.value.HumanPositon.w
+          PPTpositon.h = selectTemplate.value.HumanPositon.h
+          PPTpositon.x = selectTemplate.value.HumanPositon.x
+          PPTpositon.y = selectTemplate.value.HumanPositon.y
         })
         PPTArr.value = res
         PPTArr.value[0].isActive = true
         selectPPT.value = PPTArr.value[0]
+        console.log('selectPPT.value',selectPPT.value)
         showLeftList.value = true
         clearInterval(schedulePPTTimer.value)
         //轮询保存课程
@@ -1297,14 +1309,14 @@ const saveSubmit = (type) => {
     name, 
     src: pictureUrl, 
     cover: pictureUrl, 
-    width: PPTpositon.w, 
-    height: PPTpositon.h, 
-    originWidth: PPTpositon.w, 
-    originHeight: PPTpositon.h, 
+    width: PPTpositon.w * scaleRatio.value.width,
+    height: PPTpositon.h * scaleRatio.value.height,
+    originWidth: PPTpositon.w * scaleRatio.value.width,
+    originHeight: PPTpositon.h * scaleRatio.value.height,
     category: 2, // 1: PPT, 2: 数字人, 3: 其他 
     depth: componentsInfo.depth, 
-    top: PPTpositon.y, 
-    marginLeft: PPTpositon.x, 
+    top: PPTpositon.y * scaleRatio.value.height,
+    marginLeft: PPTpositon.x * scaleRatio.value.width,
     entityId: code, 
     entityType: digitalHumanType, // 如果是数字人，则是数字人类型 0: 普通, 1: 专属 
     businessId: generateUUID(), 
@@ -1346,8 +1358,13 @@ const saveSubmit = (type) => {
               ...cloneDeep(digitalHumanComponents), // 深拷贝
               status: item.showDigitalHuman ? 0 : 1
             },
-            ...(innerPictureCom.src ? [{
-              ...cloneDeep(innerPictureCom), // 深拷贝
+            ...(item.innerPicture?.src ? [{
+              ...cloneDeep(item.innerPicture),
+              // 保存时放大画中画的尺寸和位置
+              width: item.innerPicture.width * scaleRatio.value.width,
+              height: item.innerPicture.height * scaleRatio.value.height,
+              top: item.innerPicture.top * scaleRatio.value.height,
+              marginLeft: item.innerPicture.marginLeft * scaleRatio.value.width,
               category: 1
             }] : [])
           ],
@@ -1434,12 +1451,12 @@ const saveSubmit = (type) => {
             )
           }
           // 正则表达式检查阿拉伯数字和英文标点符号
-          const arabicNumberReg = /[0-9]/ // 匹配阿拉伯数字
+          const arabicNumberReg = /\d{2,}/ // 匹配连续2个及以上阿拉伯数字
           const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
           const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
           if (arabicNumberReg.test(item.pptRemark)) {
             warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含阿拉伯数字可能会出现误读，请修改为中文数字`
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含连续阿拉伯数字可能会出现误读，请修改为中文数字`
             )
           }
           if (punctuationReg.test(item.pptRemark)) {
@@ -1629,11 +1646,22 @@ const getCourseDetail = (id) => {
           item.width = item.background.width
           item.height = item.background.height
           item.showDigitalHuman = item.components.find((p) => p.category == 2).status == 0 //根据数字人模板的status判断是否显示数字人
-          item.innerPicture = item.components.find((p) => p.category == 1) //画中画
+          // 画中画位置和尺寸缩小
+          const innerPicture = item.components.find((p) => p.category == 1)
+          if (innerPicture) {
+            item.innerPicture = {
+              ...innerPicture,
+              width: innerPicture.width / scaleRatio.value.width,
+              height: innerPicture.height / scaleRatio.value.height,
+              top: innerPicture.top / scaleRatio.value.height,
+              marginLeft: innerPicture.marginLeft / scaleRatio.value.width
+            }
+          }
         })
         PPTArr.value = res.scenes
         PPTArr.value[0].isActive = true
         selectPPT.value = PPTArr.value[0]
+        console.log('getCourseDetail selectPPT.value:', selectPPT.value)
         // selectPPT.value.uploadAudioUrl = PPTArr.value[0].audioDriver?.audioUrl;
         // selectPPT.value.selectAudio = PPTArr.value[0].voice;
         // 遍历所有场景，应用相同的声音模型
@@ -1661,13 +1689,15 @@ const getCourseDetail = (id) => {
             selectHost.value = item
           }
         })
+        if (hostInfo) {
+          PPTpositon.w = hostInfo.width / scaleRatio.value.width
+          PPTpositon.h = hostInfo.height / scaleRatio.value.height
+          PPTpositon.x = hostInfo.marginLeft / scaleRatio.value.width
+          PPTpositon.y = hostInfo.top / scaleRatio.value.height
+        }
         // selectHost.value.name = hostInfo.name;
         // selectHost.value.pictureUrl = hostInfo.src;
         // selectHost.value.id = hostInfo.entityId;
-        PPTpositon.x = hostInfo.marginLeft * 3
-        PPTpositon.y = hostInfo.top * 3
-        PPTpositon.w = hostInfo.width * 3
-        PPTpositon.h = hostInfo.height * 3
         //数字人位置信息
         componentsInfo.width = hostInfo.width
         componentsInfo.height = hostInfo.height
@@ -1696,16 +1726,16 @@ const getCourseDetail = (id) => {
       uploadFileObj.filename = pageInfo ? pageInfo.docInfo.fileName : ''
       uploadFileObj.size = pageInfo ? pageInfo.docInfo.fileSize : ''
 
-      //应用模板
-      applyTemplate()
+      //应用模板 这里用户可能已经调整了模板，所以这里不应用模板
+      // applyTemplate()
     }
   })
 }
 //选择模板
 const chooseTemplate = (currTemplate) => {
-  selectTemplate.value = currTemplate
+  selectTemplate.value = cloneDeep(currTemplate)
   console.log('选择的模板信息:', currTemplate)
-  templates.forEach((item) => {
+  templates.value.forEach((item) => {
     item.isActive = false
   })
   currTemplate.isActive = true
@@ -1713,40 +1743,43 @@ const chooseTemplate = (currTemplate) => {
 }
 
 const applyTemplate = (ppt = null) => {
-  let pptList = []
+  const template = selectTemplate.value
+  const pptList = applyAllTemplate.value ? PPTArr.value : [selectPPT.value]
 
-  if (applyAllTemplate.value) {
-    pptList = PPTArr.value
-  } else if (ppt) {
-    pptList.push(ppt)
-  } else {
-    pptList.push(selectPPT.value)
-  }
   //数字人是统一生效的，先处理
 
   pptList.forEach((item) => {
-    if (selectTemplate.value.showPPT) {
-      item.innerPicture.name = '画中画'
-      item.innerPicture.src = selectPPT.value.pictureUrl
-      item.innerPicture.cover = selectTemplate.value.bgImage
-      item.innerPicture.width = selectTemplate.value.PPTPositon.w
-      item.innerPicture.height = selectTemplate.value.PPTPositon.h
-      item.innerPicture.top = selectTemplate.value.PPTPositon.y
-      item.innerPicture.marginLeft = selectTemplate.value.PPTPositon.x
-      item.innerPicture.category = 1
-      item.innerPicture.depth = 1
-      item.innerPicture.businessId = generateUUID()
-      item.innerPicture.entityType = 1
-      item.innerPicture.originHeight = courseInfo.value.height
-      item.innerPicture.originWidth = courseInfo.value.width
-      item.innerPicture.entityId = 1
-    }
-    if (selectTemplate.value.showBackground) {
-      item.pictureUrl = selectTemplate.value.bgImage
+    // 保存原始ppt图片
+    const originalPPT = item.innerPicture?.src || item.pictureUrl
+    console.log('originalPPT', originalPPT)
+    if (template.showBackground) {
+      item.pictureUrl = template.bgImage
+      if (template.showPPT) {
+        item.innerPicture = {
+          name: '画中画',
+          src: originalPPT,
+          cover: template.bgImage,
+          width: template.PPTPositon.w,
+          height: template.PPTPositon.h,
+          top: template.PPTPositon.y,
+          marginLeft: template.PPTPositon.x,
+          category: 1,
+          depth: 1,
+          businessId: generateUUID(),
+          entityType: 1,
+          originHeight: courseInfo.value.height,
+          originWidth: courseInfo.value.width,
+          entityId: 1
+        }
+      }
+    } else {
+      item.pictureUrl = originalPPT
+      item.innerPicture.src = ""
     }
     
-    item.showDigitalHuman = selectTemplate.value.showDigitalHuman
+    item.showDigitalHuman = template.showDigitalHuman
   })
+  // 数字人位置也需要缩放
   PPTpositon.w = selectTemplate.value.HumanPositon.w
   PPTpositon.h = selectTemplate.value.HumanPositon.h
   PPTpositon.x = selectTemplate.value.HumanPositon.x
@@ -1912,6 +1945,7 @@ onUnmounted(() => {
 
       .list {
         position: relative;
+        height: calc(152px * 9 / 16); // 使用缩略图的固定高度
         margin: 20px 0;
         box-sizing: content-box;
 
@@ -1927,6 +1961,13 @@ onUnmounted(() => {
           text-align: center;
           background: #122121;
           border-radius: 5px;
+        }
+
+        // 确保背景图片填充整个容器
+        .background {
+          position: absolute;
+          width: 100%;
+          height: 100%;
         }
 
         .ppt-bg {
