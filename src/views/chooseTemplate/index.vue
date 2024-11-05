@@ -694,9 +694,51 @@ const TEMPLATE_PRESETS = [
       y: 252   // 605 / 2.4
     },
     bgImage:
-      'http://36.103.251.108:48084/39f5490c0ee98d23a3c476303a44d99016f81dd81be8bc38278bf37bf3602964.png',
+      'http://36.103.251.108:48084/6f76ef1671f70f5676ae7e08eeb9dc240f16eaff0107c5ffeef38c9cbcf83d2d.png',//淡蓝
     previewImage:
-      'http://36.103.251.108:48084/cc0742d1db2eba71919c56e0cb4a38e8596bf4b997ac8220d0ea7dd1af31bf65.png'
+      'http://36.103.251.108:48084/81cf41ad6bddb692a976700d813a3abe8a0ecd883d8281dac9e92ff644022b1e.png'
+  },
+  {
+    showBackground: true,
+    showDigitalHuman: true,
+    showPPT: true,
+    PPTPositon: {
+      w: 672, // 1613 / 2.4
+      h: 379,  // 910 / 2.4
+      x: 122,  // 293 / 2.4
+      y: 20    // 48 / 2.4
+    },
+    HumanPositon: {
+      w: 150,  // 360 / 2.4
+      h: 198,  // 475 / 2.4
+      x: 0,
+      y: 252   // 605 / 2.4
+    },
+    bgImage:
+      'http://36.103.251.108:48084/e4118100e71818c3d81477fb1a80756c68670337865ae7717a6f5e3b050a58fb.png',//深蓝
+    previewImage:
+      'http://36.103.251.108:48084/a440e8c0606b23807d62129fa6490eaf90d65b5483abe6c5ab5c500b04fb50b1.png'
+  },
+  {
+    showBackground: true,
+    showDigitalHuman: true,
+    showPPT: true,
+    PPTPositon: {
+      w: 672, // 1613 / 2.4
+      h: 379,  // 910 / 2.4
+      x: 122,  // 293 / 2.4
+      y: 20    // 48 / 2.4
+    },
+    HumanPositon: {
+      w: 150,  // 360 / 2.4
+      h: 198,  // 475 / 2.4
+      x: 0,
+      y: 252   // 605 / 2.4
+    },
+    bgImage:
+      'http://36.103.251.108:48084/874d9f3a4af1d82fbd4888e225ba2bf6a97f3f5e23ae9ff90e6e3f9c396c3ccb.png',//紫色
+    previewImage:
+      'http://36.103.251.108:48084/d3b0c9a6e0a651b57fc23cfb122d266e2ccc5b824836f58931bf8529c49a983b.png'
   },
   {
     showBackground: false,
