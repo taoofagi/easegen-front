@@ -16,7 +16,7 @@
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :on-success="handleFileSuccess"
-      :show-file-list="true"
+      :show-file-list="isShowFileList"
       class="upload-file-uploader"
       name="file"
     >
@@ -25,15 +25,15 @@
         选取文件
       </el-button>
       <template v-if="isShowTip" #tip>
-        <div style="font-size: 8px">
+<!--        <div style="font-size: 8px">
           大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
-        </div>
+        </div>-->
         <div style="font-size: 8px">
           格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b> 的文件
         </div>
       </template>
       <template #file="row">
-        <div class="flex items-center">
+        <div v-show="isShowFileList" class="flex items-center">
           <span>{{ row.file.name }}</span>
           <div class="ml-10px">
             <el-link
@@ -77,7 +77,8 @@ defineOptions({ name: 'UploadFile' })
 
 const message = useMessage() // 消息弹窗
 const emit = defineEmits(['update:modelValue'])
-
+const duration = ref(undefined)
+const fileName = ref('')
 const props = defineProps({
   modelValue: propTypes.oneOfType<string | string[]>([String, Array<String>]).isRequired,
   fileType: propTypes.array.def(['doc', 'xls', 'ppt', 'txt', 'pdf']), // 文件类型, 例如['png', 'jpg', 'jpeg']
@@ -86,8 +87,20 @@ const props = defineProps({
   autoUpload: propTypes.bool.def(true), // 自动上传
   drag: propTypes.bool.def(false), // 拖拽上传
   isShowTip: propTypes.bool.def(true), // 是否显示提示
+  isShowFileList: propTypes.bool.def(true), // 是否显示提示
   disabled: propTypes.bool.def(false) // 是否禁用上传组件 ==> 非必传（默认为 false）
 })
+
+const getVideoDuration = (file) =>{
+  const url = URL.createObjectURL(file);
+  const audioElement = new Audio(url);
+  audioElement.addEventListener("loadedmetadata", function() {
+    // 视频时长值的获取要等到这个匿名函数执行完毕才产生
+    duration.value = parseInt(audioElement.duration); //得到时长为秒，小数，182.36
+    fileName.value = file.name; //得到时长为秒，小数，182.36
+    emitUpdateDuration()
+  });
+}
 
 // ========== 上传相关 ==========
 const uploadRef = ref<UploadInstance>()
@@ -103,6 +116,11 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
     message.error(`上传文件数量不能超过${props.limit}个!`)
     return false
   }
+  try {
+    getVideoDuration(file)
+  }catch (e) {
+    console.log('视频文件解析异常')
+  }
   let fileExtension = ''
   if (file.name.lastIndexOf('.') > -1) {
     fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
@@ -116,10 +134,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
     message.error(`文件格式不正确, 请上传${props.fileType.join('/')}格式!`)
     return false
   }
-  if (!isLimit) {
+  /*if (!isLimit) {
     message.error(`上传文件大小不能超过${props.fileSize}MB!`)
     return false
-  }
+  }*/
   message.success('正在上传文件，请稍候...')
   uploadNumber.value++
 }
@@ -194,6 +212,10 @@ const emitUpdateModelValue = () => {
     result = result.join(',')
   }
   emit('update:modelValue', result)
+}
+// 发送文件链接列表更新
+const emitUpdateDuration = () => {
+  emit('getDuration', duration,fileName.value)
 }
 </script>
 <style lang="scss" scoped>

@@ -168,6 +168,10 @@ export enum DICT_TYPE {
   // ========== Member 会员模块 ==========
   MEMBER_POINT_BIZ_TYPE = 'member_point_biz_type', // 积分的业务类型
   MEMBER_EXPERIENCE_BIZ_TYPE = 'member_experience_biz_type', // 会员经验业务类型
+  MEMBER_LANGUAGE = 'language', // 会员经验业务类型
+  MEMBER_INDUSTRY = 'industry', // 会员经验业务类型
+  MEMBER_SCENE = 'application_sence', // 会员经验业务类型
+  IS_OR_NOT = 'is_or_not', // 会员经验业务类型
 
   // ========== MALL - 商品模块 ==========
   PRODUCT_SPU_STATUS = 'product_spu_status', //商品状态
