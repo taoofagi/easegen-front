@@ -176,7 +176,7 @@
               />
               <!-- 画中画 -->
               <Vue3DraggableResizable
-                v-if="selectPPT.innerPicture.src"
+                v-if="selectPPT.innerPicture&&selectPPT.innerPicture.src"
                 :parent="true"
                 :initW="selectPPT.innerPicture.width"
                 :initH="selectPPT.innerPicture.height"
@@ -1407,7 +1407,8 @@ const saveSubmit = (type) => {
               height: item.innerPicture.height * scaleRatio.value.height,
               top: item.innerPicture.top * scaleRatio.value.height,
               marginLeft: item.innerPicture.marginLeft * scaleRatio.value.width,
-              category: 1
+              category: 1,
+              id: undefined
             }] : [])
           ],
           driverType: item.driverType,
@@ -1494,18 +1495,22 @@ const saveSubmit = (type) => {
           }
           // 正则表达式检查阿拉伯数字和英文标点符号
           const arabicNumberReg = /\d{2,}/ // 匹配连续2个及以上阿拉伯数字
-          const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
+          // const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
           const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
           if (arabicNumberReg.test(item.pptRemark)) {
+            // 找出所有连续的阿拉伯数字
+            const matches = item.pptRemark.match(/\d{2,}/g) || [];
+            const numbersStr = matches.length > 0 ? 
+              `(<span style="color: #ff4d4f">${matches.join('、')}</span>)` : '';
             warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含连续阿拉伯数字可能会出现误读，请修改为中文数字`
+              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
             )
           }
-          if (punctuationReg.test(item.pptRemark)) {
-            warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
-            )
-          }
+          // if (punctuationReg.test(item.pptRemark)) {
+          //   warningStrArr.push(
+          //     `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
+          //   )
+          // }
           if (htmlTagReg.test(item.pptRemark)) {
             warningStrArr.push(
               `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
