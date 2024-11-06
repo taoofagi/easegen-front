@@ -549,6 +549,7 @@ import bg from '@/assets/imgs/bg.png'
 import bgActive from '@/assets/imgs/bg-active.png'
 import innerPicture from '@/assets/imgs/inner-picture.png'
 import innerPictureActive from '@/assets/imgs/inner-picture-active.png'
+import { TemplateApi } from '@/api/digitalcourse/template'
 //用户信息
 import { useUserStore } from '@/store/modules/user'
 import {
@@ -675,94 +676,12 @@ const print = (val) => {
 const state = reactive({
   dragging: false
 })
+
 //预设模板
-const TEMPLATE_PRESETS = [
-  {
-    showBackground: true,
-    showDigitalHuman: true,
-    showPPT: true,
-    PPTPositon: {
-      w: 672, // 1613 / 2.4
-      h: 379,  // 910 / 2.4
-      x: 122,  // 293 / 2.4
-      y: 20    // 48 / 2.4
-    },
-    HumanPositon: {
-      w: 150,  // 360 / 2.4
-      h: 198,  // 475 / 2.4
-      x: 0,
-      y: 252   // 605 / 2.4
-    },
-    bgImage:
-      'http://36.103.251.108:48084/6f76ef1671f70f5676ae7e08eeb9dc240f16eaff0107c5ffeef38c9cbcf83d2d.png',//淡蓝
-    previewImage:
-      'http://36.103.251.108:48084/81cf41ad6bddb692a976700d813a3abe8a0ecd883d8281dac9e92ff644022b1e.png'
-  },
-  {
-    showBackground: true,
-    showDigitalHuman: true,
-    showPPT: true,
-    PPTPositon: {
-      w: 672, // 1613 / 2.4
-      h: 379,  // 910 / 2.4
-      x: 122,  // 293 / 2.4
-      y: 20    // 48 / 2.4
-    },
-    HumanPositon: {
-      w: 150,  // 360 / 2.4
-      h: 198,  // 475 / 2.4
-      x: 0,
-      y: 252   // 605 / 2.4
-    },
-    bgImage:
-      'http://36.103.251.108:48084/e4118100e71818c3d81477fb1a80756c68670337865ae7717a6f5e3b050a58fb.png',//深蓝
-    previewImage:
-      'http://36.103.251.108:48084/a440e8c0606b23807d62129fa6490eaf90d65b5483abe6c5ab5c500b04fb50b1.png'
-  },
-  {
-    showBackground: true,
-    showDigitalHuman: true,
-    showPPT: true,
-    PPTPositon: {
-      w: 672, // 1613 / 2.4
-      h: 379,  // 910 / 2.4
-      x: 122,  // 293 / 2.4
-      y: 20    // 48 / 2.4
-    },
-    HumanPositon: {
-      w: 150,  // 360 / 2.4
-      h: 198,  // 475 / 2.4
-      x: 0,
-      y: 252   // 605 / 2.4
-    },
-    bgImage:
-      'http://36.103.251.108:48084/874d9f3a4af1d82fbd4888e225ba2bf6a97f3f5e23ae9ff90e6e3f9c396c3ccb.png',//紫色
-    previewImage:
-      'http://36.103.251.108:48084/d3b0c9a6e0a651b57fc23cfb122d266e2ccc5b824836f58931bf8529c49a983b.png'
-  },
-  {
-    showBackground: false,
-    showDigitalHuman: true,
-    showPPT: true,
-    PPTPositon: {
-      w: 800, // 1920 / 2.4
-      h: 450, // 1080 / 2.4
-      x: 0,
-      y: 0
-    },
-    HumanPositon: {
-      w: 150,  // 360 / 2.4
-      h: 198,  // 475 / 2.4
-      x: 650, // 1560 / 2.4
-      y: 252   // 605 / 2.4
-    },
-    bgImage: '',
-    previewImage: 'http://36.103.251.108:48084/3ebeff2dc6c13ac9e5a91dacf6dac2e454dc02a54d667ecc010ac95d1f98242f.png'
-  }
-] as const
-const templates = ref(TEMPLATE_PRESETS.map(template => cloneDeep(template)))
- 
-const selectTemplate = ref(cloneDeep(templates.value[0]))
+const TEMPLATE_PRESETS = ref([])
+const templates = ref([])
+
+const selectTemplate = ref([])
 
 //数字人tab
 const tabs1 = [
@@ -1047,10 +966,10 @@ const schedulePPT = (id) => {
               name: '画中画',
               src: ppturl,
               cover: ppturl,
-              width: selectTemplate.value.PPTPositon.w,
-              height: selectTemplate.value.PPTPositon.h,
-              originWidth: selectTemplate.value.PPTPositon.w,
-              originHeight: selectTemplate.value.PPTPositon.h,
+              width: selectTemplate.value.pptW,
+              height: selectTemplate.value.pptH,
+              originWidth: selectTemplate.value.pptW,
+              originHeight: selectTemplate.value.pptH,
               category: 1,
               depth: 1,
               top: selectTemplate.value.PPTPositon.y,
@@ -1078,10 +997,10 @@ const schedulePPT = (id) => {
           // 初始化是否展示数字人
           item.showDigitalHuman = true
           // 数字人位置和尺寸也需要缩放
-          PPTpositon.w = selectTemplate.value.HumanPositon.w
-          PPTpositon.h = selectTemplate.value.HumanPositon.h
-          PPTpositon.x = selectTemplate.value.HumanPositon.x
-          PPTpositon.y = selectTemplate.value.HumanPositon.y
+          PPTpositon.w = selectTemplate.value.humanW
+          PPTpositon.h = selectTemplate.value.humanH
+          PPTpositon.x = selectTemplate.value.humanX
+          PPTpositon.y = selectTemplate.value.humanY
         })
         PPTArr.value = res
         PPTArr.value[0].isActive = true
@@ -1827,10 +1746,10 @@ const applyTemplate = (ppt = null) => {
     item.showDigitalHuman = template.showDigitalHuman
   })
   // 数字人位置也需要缩放
-  PPTpositon.w = selectTemplate.value.HumanPositon.w
-  PPTpositon.h = selectTemplate.value.HumanPositon.h
-  PPTpositon.x = selectTemplate.value.HumanPositon.x
-  PPTpositon.y = selectTemplate.value.HumanPositon.y
+  PPTpositon.w = selectTemplate.value.humanW
+  PPTpositon.h = selectTemplate.value.humanH
+  PPTpositon.x = selectTemplate.value.humanX
+  PPTpositon.y = selectTemplate.value.humanY
 }
 
 const replaceDialog = ref(null)
@@ -1859,6 +1778,10 @@ const handleReplacement = (replacements) => {
 }
 
 onMounted(async () => {
+  let data = await TemplateApi.getTemplatePage(queryParams)
+  TEMPLATE_PRESETS.value = data.list
+  selectTemplate.value = cloneDeep(templates.value[0])
+  templates.value = TEMPLATE_PRESETS.value.map(template => cloneDeep(template))
   await getList()
   if (route.query.id) {
     await getCourseDetail(route.query.id)

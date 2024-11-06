@@ -86,14 +86,10 @@ const passwordLoginSwitch = ref(undefined)
 
 
 onMounted(async ()=>{
-  try {
     const data = await ConfigApi.getConfigKey('password-login-switch')
     if (data && data.length > 0) {
       passwordLoginSwitch.value = data
     }
-  } finally {
-    loading.value = false
-  }
 })
 </script>
 

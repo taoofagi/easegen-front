@@ -56,6 +56,10 @@ export const sendSmsCode = (data: SmsCodeVO) => {
 export const smsLogin = (data: SmsLoginVO) => {
   return request.post({ url: '/system/auth/sms-login', data })
 }
+// 短信验证码登录
+export const changeOrBindMobile = (data: SmsLoginVO) => {
+  return request.post({ url: '/system/auth/bind-mobile', data })
+}
 
 // 社交快捷登录，使用 code 授权码
 export function socialLogin(type: string, code: string, state: string) {

@@ -1,5 +1,17 @@
 <template>
   <Form ref="formRef" :labelWidth="200" :rules="rules" :schema="schema">
+    <template #mobile="form">
+      <el-input
+        v-model="form['mobile']"
+        type="text"
+        placeholder="请绑定手机号"
+        readonly
+      >
+        <template #suffix>
+          <span class="input-action" @click="bindMobile" style="margin-right: 10px; color: #409EFF; cursor: pointer;">认证</span>
+        </template>
+      </el-input>
+    </template>
     <template #sex="form">
       <el-radio-group v-model="form['sex']">
         <el-radio :value="1">{{ t('profile.user.man') }}</el-radio>
@@ -22,6 +34,39 @@
       </el-input>
     </template>
   </Form>
+  <Dialog :before-close="handleClose" v-model="dialogVisible" title="手机号认证">
+    <el-form
+      v-loading="formLoading"
+      :model="formData"
+      :rules="formRules"
+      label-width="80px"
+    >
+      <el-form-item label="手机号" prop="mobile">
+        <el-input v-model="formData.mobile" placeholder="请输入 手机号" />
+      </el-form-item>
+      <el-form-item label="验证码" prop="code">
+        <el-input v-model="formData.code" placeholder="请输入 验证码" >
+          <template #append>
+                  <span
+                    v-if="mobileCodeTimer <= 0"
+                    class="getMobileCode"
+                    style="cursor: pointer"
+                    @click="getSmsCode"
+                  >
+                    {{ t('login.getSmsCode') }}
+                  </span>
+            <span v-if="mobileCodeTimer > 0" class="getMobileCode" style="cursor: pointer">
+                    {{ mobileCodeTimer }}秒后可重新获取
+                  </span>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
+      <el-button @click="handleClose">取 消</el-button>
+    </template>
+  </Dialog>
   <div style="text-align: center">
     <XButton :title="t('common.save')" type="primary" @click="submit()" />
     <XButton :title="t('common.reset')" type="danger" @click="init()" />
@@ -38,6 +83,8 @@ import {
 } from '@/api/system/user/profile'
 import { useUserStore } from '@/store/modules/user'
 import { refreshUserApiKey } from '@/api/system/user'
+import {sendSmsCode,changeOrBindMobile} from "@/api/login";
+import {getTenantId} from "@/utils/auth";
 
 defineOptions({ name: 'BasicInfo' })
 
@@ -47,14 +94,6 @@ const userStore = useUserStore()
 // 表单校验
 const rules = reactive<FormRules>({
   nickname: [{ required: true, message: t('profile.rules.nickname'), trigger: 'blur' }],
-  email: [
-    { required: true, message: t('profile.rules.mail'), trigger: 'blur' },
-    {
-      type: 'email',
-      message: t('profile.rules.truemail'),
-      trigger: ['blur', 'change']
-    }
-  ],
   mobile: [
     { required: true, message: t('profile.rules.phone'), trigger: 'blur' },
     {
@@ -64,6 +103,67 @@ const rules = reactive<FormRules>({
     }
   ]
 })
+const formRules = reactive<FormRules>({
+  mobile: [
+    { required: true, message: t('profile.rules.phone'), trigger: 'blur' },
+    {
+      pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+      message: t('profile.rules.truephone'),
+      trigger: 'blur'
+    }
+  ]
+})
+const formData = ref({})
+const formLoading = ref(false)
+const dialogVisible = ref(false)
+const bindMobile = ()=>{
+  dialogVisible.value = true
+}
+const handleClose = () => {
+  formData.value = {}
+  dialogVisible.value = false
+}
+const smsVO = reactive({
+  smsCode: {
+    mobile: '',
+    scene: 5
+  },
+  loginSms: {
+    mobile: '',
+    code: ''
+  }
+})
+const submitForm = async () => {
+  smsVO.loginSms.mobile = formData.value.mobile
+  smsVO.loginSms.code = formData.value.code
+  let res = await changeOrBindMobile(smsVO.loginSms)
+  if (res){
+    message.success("绑定成功")
+    await init()
+    dialogVisible.value = false
+  }
+}
+const mobileCodeTimer = ref(0)
+const getSmsCode = async () => {
+  await getTenantId()
+  console.log(formData)
+  if (!formData.value.mobile) {
+    return message.warning("请输入手机号")
+  }
+  smsVO.smsCode.mobile = formData.value.mobile
+  console.log(smsVO)
+  await sendSmsCode(smsVO.smsCode).then(async () => {
+    message.success(t('login.SmsSendMsg'))
+    // 设置倒计时
+    mobileCodeTimer.value = 60
+    let msgTimer = setInterval(() => {
+      mobileCodeTimer.value = mobileCodeTimer.value - 1
+      if (mobileCodeTimer.value <= 0) {
+        clearInterval(msgTimer)
+      }
+    }, 1000)
+  })
+}
 const schema = reactive<FormSchema[]>([
   {
     field: 'nickname',
