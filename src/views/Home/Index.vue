@@ -390,7 +390,7 @@ const message = useMessage()
 onMounted(async ()=>{
   const res = await getUserProfile()
   if (!res.mobile){
-    message.notifyWarning("请前往个人中心绑定手机号！")
+    message.notifyWarning("请前往个人中心绑定手机号，未绑定用户将限制使用平台！")
   }
   console.log(res.mobile,'res')
 })
