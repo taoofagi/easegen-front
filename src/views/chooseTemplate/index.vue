@@ -956,11 +956,11 @@ const schedulePPT = (id) => {
             item.pictureUrl = ''
           }
           // 如果展示背景，并且展示ppt，则ppt放到画中画
-          console.log('selectTemplate.value.PPTPositon.w',selectTemplate.value.PPTPositon.w
+          /*console.log('selectTemplate.value.PPTPositon.w',selectTemplate.value.PPTPositon.w
           ,'selectTemplate.value.PPTPositon.h',selectTemplate.value.PPTPositon.h
           ,'scaleRatio.value.width',scaleRatio.value.width
           ,'scaleRatio.value.height',scaleRatio.value.height
-          )
+          )*/
           if (item.pictureUrl&&selectTemplate.value.showPPT) {
             item.innerPicture = { 
               name: '画中画',
@@ -1780,7 +1780,7 @@ const handleReplacement = (replacements) => {
 onMounted(async () => {
   let data = await TemplateApi.getTemplatePage(queryParams)
   TEMPLATE_PRESETS.value = data.list
-  selectTemplate.value = cloneDeep(templates.value[0])
+  if (templates.value.length > 0)selectTemplate.value = cloneDeep(templates.value[0])
   templates.value = TEMPLATE_PRESETS.value.map(template => cloneDeep(template))
   await getList()
   if (route.query.id) {

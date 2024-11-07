@@ -22,7 +22,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否显示数字人" prop="showDigitalHuman">
-            <el-select v-model="formData.showBackground" placeholder="请选择">
+            <el-select v-model="formData.showDigitalHuman" placeholder="请选择">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.IS_OR_NOT)"
                 :key="dict.value"
@@ -36,7 +36,7 @@
       <el-row>
         <el-col :span="12">
           <el-form-item label="是否显示ppt" prop="showPpt">
-            <el-select v-model="formData.showBackground" placeholder="请选择">
+            <el-select v-model="formData.showPpt" placeholder="请选择">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.IS_OR_NOT)"
                 :key="dict.value"
@@ -151,9 +151,9 @@ const formData = ref({
   bgImage: undefined,
 })
 const formRules = reactive({
-  showBackground: [{ required: true, message: '0 不显示，1显示不能为空', trigger: 'blur' }],
-  showDigitalHuman: [{ required: true, message: '0 不显示，1显示不能为空', trigger: 'blur' }],
-  showPpt: [{ required: true, message: '0 不显示，1显示不能为空', trigger: 'blur' }],
+  showBackground: [{ required: true, message: '是否展示背景不能为空', trigger: 'blur' }],
+  showDigitalHuman: [{ required: true, message: '是否展示数字人不能为空', trigger: 'blur' }],
+  showPpt: [{ required: true, message: '是否展示ppt不能为空', trigger: 'blur' }],
   pptW: [{ required: true, message: 'ppt宽不能为空', trigger: 'blur' }],
   pptH: [{ required: true, message: 'ppt高不能为空', trigger: 'blur' }],
   pptX: [{ required: true, message: 'ppt距离顶部位置不能为空', trigger: 'blur' }],
@@ -162,7 +162,6 @@ const formRules = reactive({
   humanH: [{ required: true, message: '数字人高不能为空', trigger: 'blur' }],
   humanX: [{ required: true, message: '数字人距离顶部位置不能为空', trigger: 'blur' }],
   humanY: [{ required: true, message: '数字人距离左侧位置不能为空', trigger: 'blur' }],
-  bgImage: [{ required: true, message: '背景图片不能为空', trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 
