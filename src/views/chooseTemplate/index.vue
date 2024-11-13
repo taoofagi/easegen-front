@@ -956,12 +956,11 @@ const schedulePPT = (id) => {
             item.pictureUrl = ''
           }
           // 如果展示背景，并且展示ppt，则ppt放到画中画
-          /*console.log('selectTemplate.value.PPTPositon.w',selectTemplate.value.PPTPositon.w
-          ,'selectTemplate.value.PPTPositon.h',selectTemplate.value.PPTPositon.h
-          ,'scaleRatio.value.width',scaleRatio.value.width
-          ,'scaleRatio.value.height',scaleRatio.value.height
-          )*/
-          if (item.pictureUrl&&selectTemplate.value.showPPT) {
+          // console.log('selectTemplate',selectTemplate.value)
+          // console.log('selectTemplate.value.pptW',selectTemplate.value.pptW
+          // ,'selectTemplate.value.pptH',selectTemplate.value.pptH
+          // )
+          if (item.pictureUrl&&selectTemplate.value.showPpt) {
             item.innerPicture = { 
               name: '画中画',
               src: ppturl,
@@ -972,8 +971,8 @@ const schedulePPT = (id) => {
               originHeight: selectTemplate.value.pptH,
               category: 1,
               depth: 1,
-              top: selectTemplate.value.PPTPositon.y,
-              marginLeft: selectTemplate.value.PPTPositon.x,
+              top: selectTemplate.value.pptY,
+              marginLeft: selectTemplate.value.pptX,
               businessId: generateUUID(),
               entityType: 0,
               entityId: '0'
@@ -982,7 +981,7 @@ const schedulePPT = (id) => {
             
           } 
           //如果不展示背景，则ppt放到背景，画中画为空
-          else if(!item.pictureUrl&&selectTemplate.value.showPPT){
+          else if(!item.pictureUrl&&selectTemplate.value.showPpt){
             item.pictureUrl = ppturl
             item.innerPicture = { 
               src: '',
@@ -1720,15 +1719,15 @@ const applyTemplate = (ppt = null) => {
     console.log('originalPPT', originalPPT)
     if (template.showBackground) {
       item.pictureUrl = template.bgImage
-      if (template.showPPT) {
+      if (template.showPpt) {
         item.innerPicture = {
           name: '画中画',
           src: originalPPT,
           cover: template.bgImage,
-          width: template.PPTPositon.w,
-          height: template.PPTPositon.h,
-          top: template.PPTPositon.y,
-          marginLeft: template.PPTPositon.x,
+          width: template.pptW,
+          height: template.pptH,
+          top: template.pptY,
+          marginLeft: template.pptX,
           category: 1,
           depth: 1,
           businessId: generateUUID(),
@@ -1779,9 +1778,18 @@ const handleReplacement = (replacements) => {
 
 onMounted(async () => {
   let data = await TemplateApi.getTemplatePage(queryParams)
-  TEMPLATE_PRESETS.value = data.list
+  TEMPLATE_PRESETS.value = data.list.map(item => {
+    return {
+      ...item,
+      showBackground: item.showBackground === 1,
+      showDigitalHuman: item.showDigitalHuman === 1, 
+      showPpt: item.showPpt === 1
+    }
+  })
   if (templates.value.length > 0)selectTemplate.value = cloneDeep(templates.value[0])
   templates.value = TEMPLATE_PRESETS.value.map(template => cloneDeep(template))
+  selectTemplate.value = cloneDeep(templates.value[0])
+  // console.log('onMounted selectTemplate.value',selectTemplate.value)
   await getList()
   if (route.query.id) {
     await getCourseDetail(route.query.id)
