@@ -50,10 +50,14 @@
             :on-exceed="handleExceed"
             :on-change="handleChange"
             :on-success="handleSuccess"
+            :on-error="handleError"
             :show-file-list="false"
           >
             <template #trigger>
-              <el-button type="primary" :icon="Upload">上传PPT</el-button>
+              <el-button type="primary" :icon="Upload">
+                上传PPT
+              </el-button>
+
             </template>
           </el-upload>
         </div>
@@ -171,6 +175,7 @@
             >
               <!-- 背景(必显示) -->
               <el-image
+                v-show="selectPPT.pictureUrl"
                 class="background"
                 :src="selectPPT.pictureUrl"
               />
@@ -883,17 +888,28 @@ const handleExceed = (files) => {
   file.uid = genFileId()
   uploadRef.value!.handleStart(file)
 }
+
+// 上传相关的处理函数
 const handleChange = (files) => {
   uploadFileObj.filename = files.name
   uploadFileObj.size = files.size
+  
 }
+
 const uploadExplainRef = ref()
 const handleSuccess = (rawFile) => {
+
   message.success('上传成功！')
   uploadFileObj.url = rawFile.data
   uploadExplainRef.value.open()
   uploadRef.value!.clearFiles()
 }
+
+const handleError = (err) => {
+  message.error('上传失败，请重试')
+  console.error('Upload error:', err)
+}
+
 //上传音频
 const uploadAudioRef = ref()
 const handleAudioSuccess = (rawFile) => {
