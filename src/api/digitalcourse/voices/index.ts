@@ -17,6 +17,15 @@ export interface VoicesVO {
 export const getVoicesPage = async (params) => {
   return await request.get({ url: `/digitalcourse/voices/page`, params })
 }
+// 查询声音管理分页
+export const getVoicesCommonPage = async (params) => {
+  return await request.get({ url: `/digitalcourse/voices/common-page`, params })
+}
+
+// 查询存储数字人信息，包括数字人的基本属性、图片、姿势等信息详情
+export const auditing = async () => {
+  return await request.get({ url: `/digitalcourse/voices/auditing` })
+}
 
 // 查询声音管理详情
 export const getVoices = async (id: number) => {
@@ -41,4 +50,4 @@ export const deleteVoices = async (id: number) => {
 // 导出声音管理 Excel
 export const exportVoices = async (params) => {
   return await request.download({ url: `/digitalcourse/voices/export-excel`, params })
-}
+}

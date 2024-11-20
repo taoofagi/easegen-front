@@ -111,7 +111,6 @@
         </template>
       </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="编码" align="center" prop="code" />
       <el-table-column label="姿势" align="center" prop="posture">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE" :value="scope.row.posture" />
@@ -131,20 +130,23 @@
       />
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
+          {{getStatusLabel(scope.row.status)}}
+
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
+            v-if="superAdminProcess(scope.row.status)"
+            :disabled="scope.row.status == 3"
             link
             type="primary"
-            @click="openForm('update', scope.row.id)"
-            v-hasPermi="['digitalcourse:digital-humans:update']"
+            @click="openAuditForm('update', scope.row.id)"
           >
-            编辑
+            处理
           </el-button>
           <el-button
+            :disabled="scope.row.status == 3 || memberDelete(scope.row.status)"
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
@@ -166,19 +168,30 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <DigitalHumansForm ref="formRef" @success="getList" />
+  <AuditForm ref="auditFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
+import { getStatusLabel } from '../common'
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
 import DigitalHumansForm from './DigitalHumansForm.vue'
-
+import AuditForm from './AuditForm.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut() // 用户信息缓存
 defineOptions({ name: 'DigitalHumans' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
+
+const memberDelete = (state)=>{
+  return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
+}
+const superAdminProcess = (status)=>{
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && ![0,4,5].includes(status))
+}
 
 const loading = ref(true) // 列表的加载中
 const list = ref([]) // 列表的数据
@@ -200,7 +213,7 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
-    const data = await DigitalHumansApi.getDigitalHumansPage(queryParams)
+    const data = await DigitalHumansApi.getDigitalHumansCommonPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -222,8 +235,13 @@ const resetQuery = () => {
 
 /** 添加/修改操作 */
 const formRef = ref()
+const auditFormRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
+}
+
+const openAuditForm = (type: string, id?: number) => {
+  auditFormRef.value.open(type, id)
 }
 
 /** 删除按钮操作 */

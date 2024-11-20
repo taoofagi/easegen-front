@@ -8,16 +8,16 @@
       v-loading="formLoading"
     >
       <el-form-item label="声音名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入声音名称" />
+        <el-input disabled v-model="formData.name" placeholder="请输入声音名称" />
       </el-form-item>
       <el-form-item label="头像" prop="avatarUrl">
-        <UploadFile v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
+        <UploadFile :isShowDelete="false"  v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
       </el-form-item>
       <el-form-item label="试听音频" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+        <UploadFile :isShowDelete="false" v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
       <el-form-item label="语言类型" prop="language">
-        <el-select v-model="formData.language" placeholder="请选择语言类型">
+        <el-select disabled v-model="formData.language" placeholder="请选择语言类型">
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
             :key="dict.value"
@@ -27,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
+        <el-select disabled v-model="formData.gender" placeholder="请选择性别">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
             :key="dict.value"
@@ -37,35 +37,18 @@
         </el-select>
       </el-form-item>
       <el-form-item label="介绍" prop="introduction">
-        <el-input v-model="formData.introduction" placeholder="请输入介绍" />
+        <el-input disabled v-model="formData.introduction" placeholder="请输入介绍" />
       </el-form-item>
       <el-form-item label="音质评分" prop="quality">
-        <el-input v-model="formData.quality" placeholder="请输入音质评分" />
+        <el-input disabled v-model="formData.quality" placeholder="请输入音质评分" />
       </el-form-item>
-      <el-form-item label="声音类型 " prop="voiceType">
-        <el-select v-model="formData.voiceType" placeholder="请选择声音类型 ">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
+      <el-form-item v-if="formData.status > 1" label="修复后音频" prop="fixAuditionUrl">
+        <UploadFile v-model="formData.fixAuditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('fixAuditionUrl', $event)"/>
       </el-form-item>
-<!--      <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="formData.status">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
-      </el-form-item>-->
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
+      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) }}</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>
@@ -92,7 +75,7 @@ const formData = ref({
   gender: undefined,
   introduction: undefined,
   quality: undefined,
-  voiceType: 0,
+  voiceType: undefined,
   status: undefined,
 })
 const formRules = reactive({

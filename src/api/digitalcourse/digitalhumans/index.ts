@@ -22,10 +22,19 @@ export interface DigitalHumansVO {
 export const getDigitalHumansPage = async (params) => {
   return await request.get({ url: `/digitalcourse/digital-humans/page`, params })
 }
+// 查询存储数字人信息，包括数字人的基本属性、图片、姿势等信息分页
+export const getDigitalHumansCommonPage = async (params) => {
+  return await request.get({ url: `/digitalcourse/digital-humans/common-page`, params })
+}
 
 // 查询存储数字人信息，包括数字人的基本属性、图片、姿势等信息详情
 export const getDigitalHumans = async (id: number) => {
   return await request.get({ url: `/digitalcourse/digital-humans/get?id=` + id })
+}
+
+// 查询存储数字人信息，包括数字人的基本属性、图片、姿势等信息详情
+export const auditing = async () => {
+  return await request.get({ url: `/digitalcourse/digital-humans/auditing` })
 }
 
 // 新增存储数字人信息，包括数字人的基本属性、图片、姿势等信息
@@ -46,4 +55,4 @@ export const deleteDigitalHumans = async (id: number) => {
 // 导出存储数字人信息，包括数字人的基本属性、图片、姿势等信息 Excel
 export const exportDigitalHumans = async (params) => {
   return await request.download({ url: `/digitalcourse/digital-humans/export-excel`, params })
-}
+}

@@ -8,13 +8,10 @@
       v-loading="formLoading"
     >
       <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入名称" />
-      </el-form-item>
-      <el-form-item label="编码" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入编码" />
+        <el-input disabled v-model="formData.name" placeholder="请输入名称" />
       </el-form-item>
       <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
+        <el-select disabled v-model="formData.gender" placeholder="请选择性别">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
             :key="dict.value"
@@ -23,24 +20,14 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="数字人模式" prop="useModel">
-        <el-select v-model="formData.useModel" placeholder="请选择数字人模式">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="parseInt(dict.value)"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item v-if="formData.useModel == 1" label="图片" prop="pictureUrl">
-        <UploadImg v-model="formData.pictureUrl" />
+      <el-form-item label="图片" v-if="formData.useModel == 1" prop="pictureUrl">
+        <UploadImg disabled v-model="formData.pictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
-        <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
+        <UploadFile :isShowDelete="false" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
       </el-form-item>
       <el-form-item label="抠图标识" prop="matting">
-        <el-select v-model="formData.matting" placeholder="请选择抠图标识">
+        <el-select disabled v-model="formData.matting" placeholder="请选择抠图标识">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
             :key="dict.value"
@@ -50,7 +37,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="姿势" prop="posture">
-        <el-select v-model="formData.posture" placeholder="请选择姿势">
+        <el-select disabled v-model="formData.posture" placeholder="请选择姿势">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
             :key="dict.value"
@@ -60,7 +47,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择类型">
+        <el-select disabled v-model="formData.type" placeholder="请选择类型">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
@@ -69,17 +56,24 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="修复图片" v-if="formData.useModel == 1 && formData.status > 1" prop="fixPictureUrl">
+        <UploadImg readonly v-model="formData.fixPictureUrl" />
+      </el-form-item>
+      <el-form-item v-if="formData.useModel == 2 && formData.status > 1" label="修复视频" prop="fixVideoUrl">
+        <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
+      </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
+      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) }}</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>
 </template>
 <script setup lang="ts">
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
+import { getIntDictOptions, getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
-
+import { getButtonTitle } from '../common'
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -139,12 +133,16 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
-const submitForm = async () => {
+const submitForm = async (status) => {
   // 校验表单
   await formRef.value.validate()
   // 提交请求
   formLoading.value = true
   try {
+    if (formData.value.status == 2) formData.value.status = 3
+    if (formData.value.status == 1) formData.value.status = 2
+    if (formData.value.status == 4) formData.value.status = 1
+    if (status) formData.value.status = 4
     const data = formData.value as unknown as DigitalHumansApi.DigitalHumansVO
     if (formType.value === 'create') {
       await DigitalHumansApi.createDigitalHumans(data)
@@ -183,7 +181,11 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
 }
+
 const handleFileSuccess = (fileType,response) => {
+  if (fileType === 'fixVideoUrl') {
+    formData.value.fixVideoUrl = response.data;
+  }
   if (fileType === 'videoUrl') {
     formData.value.videoUrl = response.data;
   }
