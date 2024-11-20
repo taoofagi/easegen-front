@@ -186,7 +186,7 @@ const loginData = reactive({
   loginForm: {
     tenantName: import.meta.env.VITE_APP_DEFAULT_LOGIN_TENANT || '',
     username: import.meta.env.VITE_APP_DEFAULT_LOGIN_USERNAME || '',
-    password: 'h18604290570',//import.meta.env.VITE_APP_DEFAULT_LOGIN_PASSWORD || '',
+    password: import.meta.env.VITE_APP_DEFAULT_LOGIN_PASSWORD || '',
     captchaVerification: '',
     rememberMe: true // 默认记录我。如果不需要，可手动修改
   }
