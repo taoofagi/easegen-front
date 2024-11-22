@@ -8,30 +8,6 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="声音名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入声音名称"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="语言类型" prop="language">
-        <el-select
-          v-model="queryParams.language"
-          placeholder="请选择语言类型"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="性别" prop="gender">
         <el-select
           v-model="queryParams.gender"
@@ -47,42 +23,59 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="声音类型 " prop="voiceType">
+      <el-form-item label="名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入名称"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="姿势" prop="posture">
         <el-select
-          v-model="queryParams.voiceType"
-          placeholder="请选择声音类型 "
+          v-model="queryParams.posture"
+          placeholder="请选择姿势"
           clearable
           class="!w-240px"
         >
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+      <el-form-item label="类型" prop="type">
+        <el-select
+          v-model="queryParams.type"
+          placeholder="请选择类型"
+          clearable
           class="!w-240px"
-        />
+        >
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="queryParams.status">
-          <el-radio
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择状态"
+          clearable
+          class="!w-240px"
+        >
+          <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -91,7 +84,7 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['digitalcourse:voices:create']"
+          v-hasPermi="['digitalcourse:digital-humans:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -100,7 +93,7 @@
           plain
           @click="handleExport"
           :loading="exportLoading"
-          v-hasPermi="['digitalcourse:voices:export']"
+          v-hasPermi="['digitalcourse:digital-humans:export']"
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
@@ -111,22 +104,21 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="声音ID" align="center" prop="id" />
-      <el-table-column label="声音名称" align="center" prop="name" />
-      <el-table-column label="语言类型" align="center" prop="language">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />
-        </template>
-      </el-table-column>
+      <el-table-column label="ID" align="center" prop="id" />
       <el-table-column label="性别" align="center" prop="gender">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
         </template>
       </el-table-column>
-      <el-table-column label="音质评分" align="center" prop="quality" />
-      <el-table-column label="声音类型 " align="center" prop="voiceType">
+      <el-table-column label="名称" align="center" prop="name" />
+      <el-table-column label="姿势" align="center" prop="posture">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_TYPE" :value="scope.row.voiceType" />
+          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE" :value="scope.row.posture" />
+        </template>
+      </el-table-column>
+      <el-table-column label="类型" align="center" prop="type">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE" :value="scope.row.type" />
         </template>
       </el-table-column>
       <el-table-column
@@ -139,6 +131,7 @@
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
           {{getStatusLabel(scope.row.status)}}
+
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center">
@@ -148,7 +141,7 @@
             :disabled="scope.row.status == 3"
             link
             type="primary"
-            @click="openAuditForm('update', scope.row.id)"
+            @click="openForm('update', scope.row.id)"
           >
             处理
           </el-button>
@@ -157,7 +150,6 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['digitalcourse:digital-humans:delete']"
           >
             删除
           </el-button>
@@ -174,25 +166,29 @@
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <VoicesForm ref="formRef" @success="getList" />
-  <AuditForm ref="auditFormRef" @success="getList" />
+  <DigitalHumansForm ref="formRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
-import { getIntDictOptions, getStrDictOptions, DICT_TYPE } from '@/utils/dict'
+import { getStatusLabel } from '../../common'
+import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import * as VoicesApi from '@/api/digitalcourse/voices'
-import VoicesForm from './VoicesForm.vue'
-import AuditForm from './AuditForm.vue'
+import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
+import DigitalHumansForm from './DigitalHumansForm.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 const userStore = useUserStoreWithOut() // 用户信息缓存
-import { getStatusLabel } from '../common'
-
-defineOptions({ name: 'Voices' })
+defineOptions({ name: 'DigitalHumans' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
+
+const memberDelete = (state)=>{
+  return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
+}
+const superAdminProcess = (status)=>{
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && status != 0)
+}
 
 const loading = ref(true) // 列表的加载中
 const list = ref([]) // 列表的数据
@@ -200,12 +196,11 @@ const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  name: undefined,
-  language: undefined,
   gender: undefined,
-  quality: undefined,
-  voiceType: undefined,
-  createTime: [],
+  name: undefined,
+  posture: undefined,
+  type: undefined,
+  useModel: undefined,
   status: undefined,
 })
 const queryFormRef = ref() // 搜索的表单
@@ -215,20 +210,12 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
-    const data = await VoicesApi.getVoicesPage(queryParams)
+    const data = await DigitalHumansApi.getDigitalHumansPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
     loading.value = false
   }
-}
-
-
-const memberDelete = (state)=>{
-  return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
-}
-const superAdminProcess = (status)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && ![0,4,5].includes(status))
 }
 
 /** 搜索按钮操作 */
@@ -245,12 +232,8 @@ const resetQuery = () => {
 
 /** 添加/修改操作 */
 const formRef = ref()
-const auditFormRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
-}
-const openAuditForm = (type: string, id?: number) => {
-  auditFormRef.value.open(type, id)
 }
 
 /** 删除按钮操作 */
@@ -259,7 +242,7 @@ const handleDelete = async (id: number) => {
     // 删除的二次确认
     await message.delConfirm()
     // 发起删除
-    await VoicesApi.deleteVoices(id)
+    await DigitalHumansApi.deleteDigitalHumans(id)
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
@@ -273,8 +256,8 @@ const handleExport = async () => {
     await message.exportConfirm()
     // 发起导出
     exportLoading.value = true
-    const data = await VoicesApi.exportVoices(queryParams)
-    download.excel(data, '声音管理.xls')
+    const data = await DigitalHumansApi.exportDigitalHumans(queryParams)
+    download.excel(data, '存储数字人信息，包括数字人的基本属性、图片、姿势等信息.xls')
   } catch {
   } finally {
     exportLoading.value = false

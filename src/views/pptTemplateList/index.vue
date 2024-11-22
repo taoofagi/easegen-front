@@ -24,6 +24,52 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
+      <div class="group_8 flex-row justify-end cursor-pointer" @click="todigitalhumans">
+        <div class="box_2 flex-col justify-between">
+          <div class="text-group_2 flex-col justify-between">
+            <span class="text_10">数字人形象定制</span>
+            <span class="text_11">提交形象</span>
+          </div>
+          <div class="box_3 flex-row">
+            <div class="image-wrapper_2 flex-col">
+              <img
+                class="thumbnail_2"
+                referrerpolicy="no-referrer"
+                src="@/assets/digitalcourse/jiantou.png"
+              />
+            </div>
+            <span class="text_12">提交形象</span>
+          </div>
+        </div>
+        <img
+          class="image_3"
+          referrerpolicy="no-referrer"
+          src="@/assets/digitalcourse/pptmodel.png"
+        />
+      </div>
+      <div class="group_8 flex-row justify-end cursor-pointer" @click="tovoice">
+        <div class="box_2 flex-col justify-between">
+          <div class="text-group_2 flex-col justify-between">
+            <span class="text_10">数字人声音定制</span>
+            <span class="text_11"></span>
+          </div>
+          <div class="box_3 flex-row">
+            <div class="image-wrapper_2 flex-col">
+              <img
+                class="thumbnail_2"
+                referrerpolicy="no-referrer"
+                src="@/assets/digitalcourse/jiantou.png"
+              />
+            </div>
+            <span class="text_12">提交声音</span>
+          </div>
+        </div>
+        <img
+          class="image_3"
+          referrerpolicy="no-referrer"
+          src="@/assets/digitalcourse/pptmodel.png"
+        />
+      </div>
       <!--      <div class="header-item">-->
       <!--        <img src="https://console-ai.bokecc.com/static/create_digitbot@2x.5e536992.png" alt="标准模式创作" />-->
       <!--        <div class="header-text">标准模式创作</div>-->
@@ -67,6 +113,7 @@
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
     />
+
   </div>
 </template>
 
@@ -79,6 +126,8 @@ import {
   Delete,
   CopyDocument,
 } from "@element-plus/icons-vue";
+import {auditing as auditHumans} from "@/api/digitalcourse/digitalhumans";
+import {auditing as auditVoices} from "@/api/digitalcourse/voices";
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 const router = useRouter();
@@ -94,7 +143,19 @@ const queryParams = reactive({
 });
 
 
+const todigitalhumans = async () => {
+  await auditHumans().then(res=>{
+    if (!res) return
+    router.push('/digitalcourse/digitalhumans/custom/index')
+  })
 
+}
+const tovoice = async () => {
+  await auditVoices().then(res=>{
+    if (!res) return
+    router.push('/digitalcourse/voices/custom/index')
+  })
+}
 const getList = async () => {
   loading.value = true;
   try {

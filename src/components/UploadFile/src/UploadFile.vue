@@ -46,7 +46,7 @@
               下载
             </el-link>
           </div>
-          <div class="ml-10px">
+          <div class="ml-10px" v-if="isShowDelete">
             <el-button link type="danger" @click="handleRemove(row.file)"> 删除</el-button>
           </div>
         </div>
@@ -88,6 +88,7 @@ const props = defineProps({
   drag: propTypes.bool.def(false), // 拖拽上传
   isShowTip: propTypes.bool.def(true), // 是否显示提示
   isShowFileList: propTypes.bool.def(true), // 是否显示提示
+  isShowDelete: propTypes.bool.def(true), // 是否显示删除
   disabled: propTypes.bool.def(false) // 是否禁用上传组件 ==> 非必传（默认为 false）
 })
 

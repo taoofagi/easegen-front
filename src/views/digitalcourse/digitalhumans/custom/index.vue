@@ -1,5 +1,17 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <div>
+    <el-row>
+      <el-col>
+        <el-button
+          plain
+          round
+          size="small"
+          @click="toDisgitalhumans"
+        >
+          我的模型
+        </el-button>
+      </el-col>
+    </el-row>
     <el-form
       ref="formRef"
       :model="formData"
@@ -9,9 +21,6 @@
     >
       <el-form-item label="名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入名称" />
-      </el-form-item>
-      <el-form-item label="编码" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入编码" />
       </el-form-item>
       <el-form-item label="性别" prop="gender">
         <el-select v-model="formData.gender" placeholder="请选择性别">
@@ -59,7 +68,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="类型" prop="type">
+<!--      <el-form-item label="类型" prop="type">
         <el-select v-model="formData.type" placeholder="请选择类型">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
@@ -68,25 +77,24 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item>-->
     </el-form>
-    <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
-    </template>
-  </Dialog>
+    <div>
+<!--      <el-button v-hasPermi="['humans:custom:submit']" @click="save" type="primary" :disabled="formLoading">存为草稿</el-button>-->
+      <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">提 交</el-button>
+    </div>
+  </div>
 </template>
+
+
 <script setup lang="ts">
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
-import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
-
+import {DICT_TYPE, getIntDictOptions} from "@/utils/dict";
+import * as DigitalHumansApi from "@/api/digitalcourse/digitalhumans";
+const message = useMessage() // 消息弹窗\
 const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
-
-const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const formLoading = ref(false)
 const formData = ref({
   id: undefined,
   expireStatus: undefined,
@@ -100,7 +108,7 @@ const formData = ref({
   snapshotHeight: undefined,
   snapshotUrl: undefined,
   snapshotWidth: undefined,
-  type: undefined,
+  type: 1,
   useGeneralModel: undefined,
   useModel: undefined,
   status: undefined,
@@ -114,78 +122,62 @@ const formRules = reactive({
   snapshotUrl: [{ required: true, message: '快照URL不能为空', trigger: 'blur' }],
   snapshotWidth: [{ required: true, message: '快照宽度不能为空', trigger: 'blur' }],
   type: [{ required: true, message: '类型不能为空', trigger: 'change' }],
-  useGeneralModel: [{ required: true, message: '使用通用模型不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'change' }],
+  useGeneralModel: [{ required: true, message: '使用通用模型不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
-
-/** 打开弹窗 */
-const open = async (type: string, id?: number) => {
-  dialogVisible.value = true
-  dialogTitle.value = t('action.' + type)
-  formType.value = type
-  resetForm()
-  // 修改时，设置数据
-  if (id) {
-    formLoading.value = true
-    try {
-      formData.value = await DigitalHumansApi.getDigitalHumans(id)
-    } finally {
-      formLoading.value = false
-    }
-  }
-}
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
-
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
-const submitForm = async () => {
+const submitForm = async (status) => {
   // 校验表单
   await formRef.value.validate()
   // 提交请求
   formLoading.value = true
   try {
     const data = formData.value as unknown as DigitalHumansApi.DigitalHumansVO
-    if (formType.value === 'create') {
+    data.status = status
+    if (!data.id) {
       await DigitalHumansApi.createDigitalHumans(data)
       message.success(t('common.createSuccess'))
     } else {
       await DigitalHumansApi.updateDigitalHumans(data)
       message.success(t('common.updateSuccess'))
     }
-    dialogVisible.value = false
-    // 发送操作成功的事件
-    emit('success')
+  } finally {
+    formLoading.value = false
+  }
+}
+const toDisgitalhumans = () => {
+  router.push("/digitalcourse/digitalhumans/custom/page")
+}
+const save = async () => {
+  // 校验表单
+  // await formRef.value.validate()
+  // 提交请求
+  formLoading.value = true
+  try {
+    const data = formData.value as unknown as DigitalHumansApi.DigitalHumansVO
+    if (!data.id) {
+      await DigitalHumansApi.createDigitalHumans(data)
+      message.success(t('common.createSuccess'))
+    } else {
+      await DigitalHumansApi.updateDigitalHumans(data)
+      message.success(t('common.updateSuccess'))
+    }
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
-const resetForm = () => {
-  formData.value = {
-    id: undefined,
-    expireStatus: undefined,
-    finishTime: undefined,
-    gender: undefined,
-    matting: undefined,
-    name: undefined,
-    code: undefined,
-    pictureUrl: undefined,
-    posture: undefined,
-    snapshotHeight: undefined,
-    snapshotUrl: undefined,
-    snapshotWidth: undefined,
-    type: undefined,
-    useGeneralModel: undefined,
-    useModel: undefined,
-    status: undefined,
-  }
-  formRef.value?.resetFields()
-}
+// 处理文件上传成功
 const handleFileSuccess = (fileType,response) => {
   if (fileType === 'videoUrl') {
     formData.value.videoUrl = response.data;
   }
 };
+
+
 </script>
+
+
+
+<style scoped lang="scss">
+
+</style>

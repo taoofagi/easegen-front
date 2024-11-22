@@ -124,11 +124,6 @@
         </template>
       </el-table-column>
       <el-table-column label="音质评分" align="center" prop="quality" />
-      <el-table-column label="声音类型 " align="center" prop="voiceType">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_TYPE" :value="scope.row.voiceType" />
-        </template>
-      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -148,7 +143,7 @@
             :disabled="scope.row.status == 3"
             link
             type="primary"
-            @click="openAuditForm('update', scope.row.id)"
+            @click="openForm('update', scope.row.id)"
           >
             处理
           </el-button>
@@ -157,7 +152,6 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['digitalcourse:digital-humans:delete']"
           >
             删除
           </el-button>
@@ -175,7 +169,6 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <VoicesForm ref="formRef" @success="getList" />
-  <AuditForm ref="auditFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -184,10 +177,9 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import * as VoicesApi from '@/api/digitalcourse/voices'
 import VoicesForm from './VoicesForm.vue'
-import AuditForm from './AuditForm.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 const userStore = useUserStoreWithOut() // 用户信息缓存
-import { getStatusLabel } from '../common'
+import { getStatusLabel } from '../../common'
 
 defineOptions({ name: 'Voices' })
 
@@ -228,7 +220,7 @@ const memberDelete = (state)=>{
   return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
 }
 const superAdminProcess = (status)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && ![0,4,5].includes(status))
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && status != 0)
 }
 
 /** 搜索按钮操作 */
@@ -245,12 +237,8 @@ const resetQuery = () => {
 
 /** 添加/修改操作 */
 const formRef = ref()
-const auditFormRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
-}
-const openAuditForm = (type: string, id?: number) => {
-  auditFormRef.value.open(type, id)
 }
 
 /** 删除按钮操作 */
