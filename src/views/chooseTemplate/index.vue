@@ -347,6 +347,8 @@
           </div>
           <div class="tool-box">
             <div class="tool-btn">
+              <!-- 新增智能讲稿按钮 -->
+              <el-button type="primary" size="small" @click="openScriptRewriter">智能讲稿</el-button>
               <el-button type="primary" @click="openReplaceDialog" size="small">批量替换</el-button>
               <el-button type="primary" size="small">停顿</el-button>
               <el-button type="primary" size="small">多音字</el-button>
@@ -529,6 +531,14 @@
     <AudioSelect ref="audioSelect" @success="selectAudio" />
     <mergeWarningDialog ref="warningDialog" />
     <ReplaceDialog ref="replaceDialog" :ppt-arr="PPTArr" @submit="handleReplacement" />
+    <!-- 添加智能讲稿组件 -->
+  <Rewriter
+    ref="rewriterRef"
+    :image-url="currentImageUrl"
+    :title="''"
+    :content="selectPPT.pptRemark"
+    @confirm="handleRewritten"
+  />
   </div>
 </template>
 <script lang="ts" setup>
@@ -546,6 +556,7 @@ import uploadExplain from './uploadExplain.vue'
 import AudioSelect from './audioSelect.vue'
 import mergeWarningDialog from './mergeWarningDialog.vue'
 import ReplaceDialog from './replaceDialog.vue' // 引入批量替换组件
+import Rewriter from './rewriter.vue'
 import template from '@/assets/imgs/template.png'
 import templateActive from '@/assets/imgs/template-active.png'
 import user from '@/assets/imgs/user.png'
@@ -882,6 +893,29 @@ const uploadFileObj = reactive({
   extInfo: '{"addMode":true,"docType":1,"pptNotes":true,"pptContent":false,"notesPolish":false}',
   resolveType: 1
 })
+//智讲稿组件begin
+//添加ref
+const rewriterRef = ref()
+// 计算当前要传入的图片URL
+const currentImageUrl = computed(() => {
+  if (selectPPT.value?.innerPicture?.src) {
+    return selectPPT.value.innerPicture.src
+  }
+  return selectPPT.value?.pictureUrl || ''
+})
+// 打开智能讲稿弹窗
+const openScriptRewriter = () => {
+  if (!selectPPT.value?.pptRemark && !currentImageUrl.value) {
+    message.warning('请先选中页面')
+    return
+  }
+  rewriterRef.value.open()
+}
+// 处理讲稿内容
+const handleRewritten = (rewrittenContent) => {
+  selectPPT.value.pptRemark = rewrittenContent
+}
+//智讲稿组件end
 const handleExceed = (files) => {
   uploadRef.value!.clearFiles()
   const file = files[0] as UploadRawFile
@@ -951,7 +985,15 @@ const schedulePPT = (id) => {
   schedulePPTTimer.value = setInterval(() => {
     pptTemplateApi.getSchedule(id).then((res) => {
       if (res && typeof res == 'string') {
-        percentagePPT.value = parseInt(`${Number(res) * 100}`)
+        const progress = Number(res)
+        // 添加解析失败的判断
+        if (progress < 0) {
+          clearInterval(schedulePPTTimer.value)
+          showLeftList.value = true
+          message.error('PPT解析失败,请重试')
+          return
+        }
+        percentagePPT.value = parseInt(`${progress * 100}`)
       } else if (res && res.length > 0) {
         console.log('selectTemplate',selectTemplate.value)
         res.forEach((item) => {
