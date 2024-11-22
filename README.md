@@ -45,6 +45,7 @@ If this project has helped you, remember to Star and follow, which would be grea
 
 Here are the major features and improvements we plan to implement in the future:
 - [x] Support for course templates
+- [x] Support for intelligent script generation
 - [ ] Support for digital human image and voice customization
 - [x] Support for docker quick deployment
 - [ ] Support for AI-generated scriptwriting
