@@ -1,30 +1,78 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="讲稿助手"
+    title="智能讲稿"
     width="80%"
     :before-close="handleClose"
   >
   <div class="rewriter-container flex-col">
       <div class="content-wrapper flex-col">
         <div class="main-content flex-row">
-          <!-- 左侧区域 -->
+          <!-- 左侧功能区域 -->
           <div class="left-area flex-col">
-            <div class="title">预览</div>
+            <!-- 智写方式 -->
+            <div class="config-item flex items-center">
+              <div class="config-label" style="width: 120px">智写方式：</div>
+              <el-select v-model="writeMode" placeholder="请选择智写方式">
+                <el-option label="图片改写" value="image" />
+                <el-option label="文字改写" value="text" />
+                <el-option label="扩写" value="expand" />
+                <el-option label="缩写" value="shrink" />
+              </el-select>
+            </div>
             
-            <!-- 图片预览区 -->
-            <div class="preview-image  flex-center">
-              <el-image 
-                :src="imageUrl"
-                :style="{
-                  width: '480px',
-                  height: imageUrl ? '480px / (imageWidth / imageHeight)' : '0'
-                }"
-              />
+            <!-- 图片预览区，仅图片改写时显示 -->
+            <div v-if="writeMode === 'image'" class="config-item">
+              <div class="config-label">PPT预览：</div>
+              <div class="preview-image flex-center">
+                <el-image 
+                  :src="imageUrl"
+                  :style="{
+                    width: '320px',
+                    height: imageUrl ? '320px / (imageWidth / imageHeight)' : '0'
+                  }"
+                  :preview-src-list="[imageUrl]"
+                  :initial-index="0"
+                  fit="contain"
+                  preview-teleported
+                />
+              </div>
+            </div>
+            
+            <!-- 写作风格，仅图片改写和文字改写时显示 -->
+            <div v-if="['image', 'text'].includes(writeMode)" class="config-item flex items-center">
+              <div class="config-label" style="width: 80px">风格：</div>
+              <el-select v-model="writeStyle" placeholder="请选择写作风格">
+                <el-option label="专业正式" value="professional" />
+                <el-option label="通俗日常" value="casual" />
+                <el-option label="自信激励" value="inspiring" />
+              </el-select>
             </div>
 
+
+            <div v-if="writeMode === 'image'" class="config-item flex items-center">
+              <div class="config-label" style="width: 80px">主题：</div>
+              <el-input 
+                v-model="pageTheme" 
+                placeholder="页面主题（选填）"
+              />
+            </div>
+            
+            <!-- 个性化要求，仅图片改写和文字改写时显示 -->
+            <div v-if="['image', 'text'].includes(writeMode)" class="config-item flex items-center">
+              <div class="config-label" style="width: 80px">要求：</div>
+              <el-input
+                v-model="customRequirements"
+                type="textarea"
+                :rows="2"
+                resize="none"
+                placeholder="请输入个性化要求，如语言风格、重点内容等（选填）"
+              />
+            </div>
+          
+
             <!-- 生成讲稿按钮 -->
-            <div class="rewrite-actions flex-center">
+            <div class="rewrite-actions ">
               <el-button 
                 type="primary" 
                 :loading="isRewriting"
@@ -34,36 +82,18 @@
               </el-button>
             </div>
           </div>
-          <!-- 中间功能区 -->
-          <div class="feature-area flex-col">
-            <!-- <div class="section_5 flex-col">
-              <img
-                class="label_15"
-                referrerpolicy="no-referrer"
-                src="./assets/img/FigmaDDSSlicePNGf981d35e48759f43e11100e51a5683de.png"
+          <!-- 中间原始讲稿区 -->
+          <div class="output-area flex-col justify-between">
+            <div class="original-content flex-col">
+              <el-input
+                v-model="originalContent"
+                type="textarea"
+                :rows="25"
+                resize="none"
+                readonly
+                placeholder="原始内容"
               />
-              <span class="text_39">智能拓写</span>
-            </div> -->
-            <div class="feature-item flex-row justify-between ">
-              <div class="feature-icon-wrapper flex-col justify-between align-center">
-                <img
-                  class="feature-icon"
-                  referrerpolicy="no-referrer"
-                  src="./assets/img/icon-image-generate.png"
-                />
-                <span class="text-group_11">图片生成</span>
-              </div>
             </div>
-            <!-- <div class="section_7 flex-row">
-              <div class="image-text_24 flex-col justify-between">
-                <img
-                  class="label_17"
-                  referrerpolicy="no-referrer"
-                  src="./assets/img/FigmaDDSSlicePNG42603c049aa86436c5a6c204b6de08f6.png"
-                />
-                <span class="text-group_12">资料增强</span>
-              </div>
-            </div> -->
           </div>
           <!-- 右侧输出区 -->
           <div class="output-area flex-col justify-between">
@@ -71,10 +101,10 @@
               <el-input
                 v-model="displayContent"
                 type="textarea"
-                :rows="20"
+                :rows="25"
                 resize="none"
                 readonly
-                :placeholder="isRewriting ? '讲稿生成中，请耐心等待...' : '改写后的内容将在这里展示...'"
+                :placeholder="isRewriting ? '内容生成中，请耐心等待...' : '改写后的内容'"
               />
             </div>
             <!-- <div class="text-wrapper_17 flex-col">
@@ -127,20 +157,50 @@ const rewriteRequirement = ref('')
 const rewrittenText = ref('')
 
 
+const writeMode = ref('image') // 默认图片改写
+// 使用 props.title 作为 pageTheme 的默认值
+const pageTheme = ref(props.title)
+const writeStyle = ref('professional')
+const customRequirements = ref('')
+const originalContent = ref(props.content)
+console.log('传入的content:', props.content)
+
+const outputContent = ref('') // 存储完整的生成内容
+const displayContent = ref('') // 用于显示打字机效果的内容
+const isRewriting = ref(false)
+const isTyping = ref(false) // 新增打字机效果进行中的状态
+
+// 业务编码映射
+const BUSINESS_CODES = {
+  image: 'BUSI_0003',  // 图片改写
+  text: 'BUSI_0004',   // 文字改写
+  expand: 'BUSI_0001', // 扩写
+  shrink: 'BUSI_0002'  // 缩写
+}
+
+
 const open = () => {
   dialogVisible.value = true
+  // 每次打开时更新内容
+  originalContent.value = props.content
+  // 重置其他状态
+  writeMode.value = 'image'
+  writeStyle.value = 'professional'
+  pageTheme.value = props.title
+  customRequirements.value = ''
+  outputContent.value = ''
+  displayContent.value = ''
+  isTyping.value = false
 }
 
 const handleClose = () => {
   dialogVisible.value = false
   rewriteRequirement.value = ''
   rewrittenText.value = ''
+  writeMode.value = 'image'
+  pageTheme.value = props.title // 重置为默认值
+  customRequirements.value = ''
 }
-
-const outputContent = ref('') // 存储完整的生成内容
-const displayContent = ref('') // 用于显示打字机效果的内容
-const isRewriting = ref(false)
-const isTyping = ref(false) // 新增打字机效果进行中的状态
 
 const typewriterEffect = (text: string, speed = 30) => { // 200ms 输出一个字符，相当于每秒5个字符
   return new Promise<void>((resolve) => {
@@ -168,12 +228,13 @@ const handleRewrite = async () => {
     displayContent.value = ''
     
     const params = {
-      business_code: 'BUSI_0003',
+      business_code: BUSINESS_CODES[writeMode.value], // 根据写作模式获取对应的业务编码
       content_param: JSON.stringify({
-        ppt_title: props.title,
+        ppt_title: pageTheme.value,
         ppt_content: props.content,
-        image_url: props.imageUrl,
-        custom_requirements: ''
+        image_url: writeMode.value === 'image' ? props.imageUrl : '',
+        custom_requirements: ['image', 'text'].includes(writeMode.value) ? customRequirements.value : '',
+        write_style: ['image', 'text'].includes(writeMode.value) ? writeStyle.value : '',
       })
     }
 
@@ -241,9 +302,12 @@ defineExpose({
 }
 
 .left-area {
-  width: 520px;
+  width: 320px; // 修改为固定宽度
+  min-width: 320px; // 添加最小宽度确保不会被压缩
   padding: 20px;
   border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
   
   .title {
     font-size: 16px;
@@ -259,6 +323,35 @@ defineExpose({
   
   .rewrite-actions {
     height: 60px; // 给按钮区域固定高度
+    margin-top: auto;
+  }
+
+  .config-item {
+    width: '320px';
+    margin-bottom: 20px;
+    
+    .config-label {
+      font-size: 14px;
+      color: #606266;
+      margin-bottom: 0px;
+    }
+    
+    .preview-image {
+      margin: 10px 0;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 10px;
+    }
+    
+    :deep(.el-radio-group) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      
+      .el-radio {
+        margin-right: 0;
+      }
+    }
   }
 }
 
@@ -289,7 +382,7 @@ defineExpose({
   background-color: rgba(255, 255, 255, 1);
   border-radius: 16px;
   width: 100%;
-  height: 488px;
+  height: 588px;
   margin: 0px 0 0 0px;
 }
 
@@ -322,7 +415,7 @@ defineExpose({
 .main-content {
   background-color: rgba(236, 240, 244, 1);
   width: 100%;
-  height: 444px;
+  height: 554px;
 }
 
 .text_38 {
@@ -461,7 +554,7 @@ defineExpose({
 
 .output-area {
   width: calc(100% - 16px); // 减去左右各8px的边距
-  height: calc(100% - 16px); // 减去上下各8px的边距
+  height: calc(100% - 20px); // 减去上下各8px的边距
   margin: 8px; // 四周统一8px边距
 }
 .output-content {

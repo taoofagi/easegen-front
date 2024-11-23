@@ -893,7 +893,7 @@ const uploadFileObj = reactive({
   extInfo: '{"addMode":true,"docType":1,"pptNotes":true,"pptContent":false,"notesPolish":false}',
   resolveType: 1
 })
-//智讲稿组件begin
+//智能讲稿组件begin
 //添加ref
 const rewriterRef = ref()
 // 计算当前要传入的图片URL
@@ -915,7 +915,7 @@ const openScriptRewriter = () => {
 const handleRewritten = (rewrittenContent) => {
   selectPPT.value.pptRemark = rewrittenContent
 }
-//智讲稿组件end
+//智能讲稿组件end
 const handleExceed = (files) => {
   uploadRef.value!.clearFiles()
   const file = files[0] as UploadRawFile
