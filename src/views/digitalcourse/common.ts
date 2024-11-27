@@ -12,6 +12,9 @@ statusMap.set(4,'不通过')
 statusMap.set(0,'已完成')
 statusMap.set(5,'训练失败')
 
+export function getStatusMap (){
+  return statusMap
+}
 
 export function getButtonTitle (status:number):string {
   return buttonMap.get(status)

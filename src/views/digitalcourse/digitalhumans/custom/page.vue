@@ -8,21 +8,6 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="性别" prop="gender">
-        <el-select
-          v-model="queryParams.gender"
-          placeholder="请选择性别"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -31,51 +16,6 @@
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
-      </el-form-item>
-      <el-form-item label="姿势" prop="posture">
-        <el-select
-          v-model="queryParams.posture"
-          placeholder="请选择姿势"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="类型" prop="type">
-        <el-select
-          v-model="queryParams.type"
-          placeholder="请选择类型"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="请选择状态"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -105,22 +45,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="性别" align="center" prop="gender">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
-        </template>
-      </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="姿势" align="center" prop="posture">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE" :value="scope.row.posture" />
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" align="center" prop="type">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE" :value="scope.row.type" />
-        </template>
-      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -210,6 +135,7 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
+    queryParams.type = 1
     const data = await DigitalHumansApi.getDigitalHumansPage(queryParams)
     list.value = data.list
     total.value = data.total

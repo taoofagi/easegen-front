@@ -17,51 +17,6 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="语言类型" prop="language">
-        <el-select
-          v-model="queryParams.language"
-          placeholder="请选择语言类型"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select
-          v-model="queryParams.gender"
-          placeholder="请选择性别"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="声音类型 " prop="voiceType">
-        <el-select
-          v-model="queryParams.voiceType"
-          placeholder="请选择声音类型 "
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
@@ -72,17 +27,6 @@
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
         />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="queryParams.status">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -118,12 +62,6 @@
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />
         </template>
       </el-table-column>
-      <el-table-column label="性别" align="center" prop="gender">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
-        </template>
-      </el-table-column>
-      <el-table-column label="音质评分" align="center" prop="quality" />
       <el-table-column
         label="创建时间"
         align="center"
@@ -207,6 +145,7 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
+    queryParams.voiceType = 1
     const data = await VoicesApi.getVoicesPage(queryParams)
     list.value = data.list
     total.value = data.total

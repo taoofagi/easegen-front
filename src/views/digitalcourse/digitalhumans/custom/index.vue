@@ -22,16 +22,6 @@
       <el-form-item label="名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入名称" />
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="数字人模式" prop="useModel">
         <el-select v-model="formData.useModel" placeholder="请选择数字人模式">
           <el-option
@@ -48,39 +38,8 @@
       <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
         <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
       </el-form-item>
-      <el-form-item label="抠图标识" prop="matting">
-        <el-select v-model="formData.matting" placeholder="请选择抠图标识">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="姿势" prop="posture">
-        <el-select v-model="formData.posture" placeholder="请选择姿势">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-<!--      <el-form-item label="类型" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择类型">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>-->
     </el-form>
     <div>
-<!--      <el-button v-hasPermi="['humans:custom:submit']" @click="save" type="primary" :disabled="formLoading">存为草稿</el-button>-->
       <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">提 交</el-button>
     </div>
   </div>
@@ -99,12 +58,11 @@ const formData = ref({
   id: undefined,
   expireStatus: undefined,
   finishTime: undefined,
-  gender: undefined,
-  matting: undefined,
+  matting: 0,
   name: undefined,
   code: undefined,
   pictureUrl: undefined,
-  posture: undefined,
+  posture: 1,
   snapshotHeight: undefined,
   snapshotUrl: undefined,
   snapshotWidth: undefined,
@@ -114,9 +72,10 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
   name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
   pictureUrl: [{ required: true, message: '图片URL不能为空', trigger: 'blur' }],
+  useModel: [{ required: true, message: '数字人模式不能为空', trigger: 'blur' }],
+  videoUrl: [{ required: true, message: '视频URL不能为空', trigger: 'blur' }],
   posture: [{ required: true, message: '姿势不能为空', trigger: 'change' }],
   snapshotHeight: [{ required: true, message: '快照高度不能为空', trigger: 'blur' }],
   snapshotUrl: [{ required: true, message: '快照URL不能为空', trigger: 'blur' }],

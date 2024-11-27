@@ -32,21 +32,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select
-          v-model="queryParams.gender"
-          placeholder="请选择性别"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="声音类型 " prop="voiceType">
         <el-select
           v-model="queryParams.voiceType"
@@ -74,15 +59,16 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="queryParams.status">
-          <el-radio
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.value"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
+        <el-select v-model="queryParams.status"
+                   clearable
+                   class="!w-240px">
+          <el-option
+            v-for="e in getStatusMap().keys()"
+            :key="e"
+            :value="e"
+            :label="getStatusLabel(e)"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -118,12 +104,6 @@
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />
         </template>
       </el-table-column>
-      <el-table-column label="性别" align="center" prop="gender">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
-        </template>
-      </el-table-column>
-      <el-table-column label="音质评分" align="center" prop="quality" />
       <el-table-column label="声音类型 " align="center" prop="voiceType">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_TYPE" :value="scope.row.voiceType" />
@@ -144,7 +124,7 @@
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
-            v-if="superAdminProcess(scope.row.status)"
+            v-if="superAdminProcess(scope.row.status,scope.row.voiceType)"
             :disabled="scope.row.status == 3"
             link
             type="primary"
@@ -187,7 +167,7 @@ import VoicesForm from './VoicesForm.vue'
 import AuditForm from './AuditForm.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 const userStore = useUserStoreWithOut() // 用户信息缓存
-import { getStatusLabel } from '../common'
+import {getStatusLabel, getStatusMap} from '../common'
 
 defineOptions({ name: 'Voices' })
 
@@ -215,7 +195,7 @@ const exportLoading = ref(false) // 导出的加载中
 const getList = async () => {
   loading.value = true
   try {
-    const data = await VoicesApi.getVoicesPage(queryParams)
+    const data = await VoicesApi.getVoicesCommonPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -227,8 +207,8 @@ const getList = async () => {
 const memberDelete = (state)=>{
   return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
 }
-const superAdminProcess = (status)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && ![0,4,5].includes(status))
+const superAdminProcess = (status,type)=>{
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status) || (status == 0 && type == 1)))
 }
 
 /** 搜索按钮操作 */

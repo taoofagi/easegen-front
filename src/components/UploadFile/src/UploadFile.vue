@@ -31,7 +31,11 @@
         <div style="font-size: 8px">
           格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b> 的文件
         </div>
+        <div v-if="describe">
+          <b style="color: #f56c6c">说明： {{ describe }}</b>
+        </div>
       </template>
+
       <template #file="row">
         <div v-show="isShowFileList" class="flex items-center">
           <span>{{ row.file.name }}</span>
@@ -89,7 +93,8 @@ const props = defineProps({
   isShowTip: propTypes.bool.def(true), // 是否显示提示
   isShowFileList: propTypes.bool.def(true), // 是否显示提示
   isShowDelete: propTypes.bool.def(true), // 是否显示删除
-  disabled: propTypes.bool.def(false) // 是否禁用上传组件 ==> 非必传（默认为 false）
+  disabled: propTypes.bool.def(false), // 是否禁用上传组件 ==> 非必传（默认为 false）
+  describe: propTypes.bool.def(false)
 })
 
 const getVideoDuration = (file) =>{
@@ -135,10 +140,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
     message.error(`文件格式不正确, 请上传${props.fileType.join('/')}格式!`)
     return false
   }
-  /*if (!isLimit) {
+  if (!isLimit) {
     message.error(`上传文件大小不能超过${props.fileSize}MB!`)
     return false
-  }*/
+  }
   message.success('正在上传文件，请稍候...')
   uploadNumber.value++
 }

@@ -10,41 +10,11 @@
       <el-form-item label="名称" prop="name">
         <el-input disabled v-model="formData.name" placeholder="请输入名称" />
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select disabled v-model="formData.gender" placeholder="请选择性别">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="图片" v-if="formData.useModel == 1" prop="pictureUrl">
         <UploadImg disabled v-model="formData.pictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
         <UploadFile :isShowDelete="false" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
-      </el-form-item>
-      <el-form-item label="抠图标识" prop="matting">
-        <el-select disabled v-model="formData.matting" placeholder="请选择抠图标识">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="姿势" prop="posture">
-        <el-select disabled v-model="formData.posture" placeholder="请选择姿势">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">
         <el-select disabled v-model="formData.type" placeholder="请选择类型">
@@ -62,9 +32,18 @@
       <el-form-item v-if="formData.useModel == 2 && formData.status > 1" label="修复视频" prop="fixVideoUrl">
         <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
       </el-form-item>
+      <el-form-item v-if="formData.status == 0" label="过期时间">
+        <el-date-picker
+          v-model="formData.expireDate"
+          placeholder="过期时间"
+          type="datetime"
+          value-format="x"
+          class="!w-1/1"
+        />
+      </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) }}</el-button>
+      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) || '保存' }}</el-button>
       <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
@@ -100,10 +79,8 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
   name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
   pictureUrl: [{ required: true, message: '图片URL不能为空', trigger: 'blur' }],
-  posture: [{ required: true, message: '姿势不能为空', trigger: 'change' }],
   snapshotHeight: [{ required: true, message: '快照高度不能为空', trigger: 'blur' }],
   snapshotUrl: [{ required: true, message: '快照URL不能为空', trigger: 'blur' }],
   snapshotWidth: [{ required: true, message: '快照宽度不能为空', trigger: 'blur' }],

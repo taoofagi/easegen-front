@@ -8,21 +8,7 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="性别" prop="gender">
-        <el-select
-          v-model="queryParams.gender"
-          placeholder="请选择性别"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+
       <el-form-item label="名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -70,10 +56,10 @@
           class="!w-240px"
         >
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+            v-for="dict in getStatusMap().keys()"
+            :key="dict"
+            :label="getStatusLabel(dict)"
+            :value="dict"
           />
         </el-select>
       </el-form-item>
@@ -137,7 +123,7 @@
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
-            v-if="superAdminProcess(scope.row.status)"
+            v-if="superAdminProcess(scope.row.status,scope.row.type)"
             :disabled="scope.row.status == 3"
             link
             type="primary"
@@ -172,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { getStatusLabel } from '../common'
+import {getStatusLabel, getStatusMap} from '../common'
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
@@ -189,8 +175,8 @@ const { t } = useI18n() // 国际化
 const memberDelete = (state)=>{
   return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
 }
-const superAdminProcess = (status)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && ![0,4,5].includes(status))
+const superAdminProcess = (status,type)=>{
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status) || (status == 0 && type == 1)))
 }
 
 const loading = ref(true) // 列表的加载中
