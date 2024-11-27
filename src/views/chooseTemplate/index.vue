@@ -43,7 +43,7 @@
           <el-upload
             ref="uploadRef"
             class="upload-demo"
-            accept=".pptx"
+            accept=".pptx,.pdf"
             :limit="1"
             :headers="headers"
             :action="`${config.base_url}/infra/file/upload`"
@@ -55,7 +55,7 @@
           >
             <template #trigger>
               <el-button type="primary" :icon="Upload">
-                上传PPT
+                上传PPT/PDF
               </el-button>
 
             </template>
@@ -925,6 +925,11 @@ const handleExceed = (files) => {
 
 // 上传相关的处理函数
 const handleChange = (files) => {
+  // 获取文件扩展名
+  const extension = files.name.split('.').pop().toLowerCase()
+  
+  // 设置文档类型 1:ppt 2:pdf
+  uploadFileObj.docType = extension === 'pdf' ? 2 : 1
   uploadFileObj.filename = files.name
   uploadFileObj.size = files.size
   
@@ -2386,6 +2391,11 @@ onUnmounted(() => {
   background-color: #f2f2f2;
   border-radius: 6px;
 }
+
+.voice-card {
+  z-index: 1000 !important; // 添加更高的z-index确保在最顶层
+}
+
 
 .voice-card :deep(.el-card__body) {
   padding: 0;
