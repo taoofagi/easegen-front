@@ -140,6 +140,14 @@
           >
             删除
           </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="openForm('detail',scope.row.id)"
+            v-hasPermi="['digitalcourse:digital-humans:delete']"
+          >
+            查看
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

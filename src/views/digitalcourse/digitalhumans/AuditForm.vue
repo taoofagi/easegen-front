@@ -14,7 +14,8 @@
         <UploadImg disabled v-model="formData.pictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
-        <UploadFile :isShowDelete="false" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
+        <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
+        <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
       <el-form-item label="类型" prop="type">
         <el-select disabled v-model="formData.type" placeholder="请选择类型">
@@ -30,7 +31,8 @@
         <UploadImg readonly v-model="formData.fixPictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2 && formData.status > 1" label="修复视频" prop="fixVideoUrl">
-        <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
+        <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
+        <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
       <el-form-item v-if="formData.status == 0" label="过期时间">
         <el-date-picker
@@ -53,6 +55,9 @@
 import { getIntDictOptions, getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
 import { getButtonTitle } from '../common'
+import VideoPlayer from "@/components/DiyEditor/components/mobile/VideoPlayer/index.vue";
+import {DiyComponent} from "@/components/DiyEditor/util";
+import {VideoPlayerProperty} from "@/components/DiyEditor/components/mobile/VideoPlayer/config";
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -90,6 +95,23 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 
+const videoProperty = {
+  videoUrl: '',
+  posterUrl: '',
+  autoplay: false,
+  style: {
+    bgType: 'color',
+    bgColor: '#fff',
+    marginBottom: 8,
+    height: 300
+  }
+} as DiyComponent<VideoPlayerProperty>
+
+watch(()=> formData.value.videoUrl,(newVal,oldValue)=>{
+  if (newVal && newVal.length > 0){
+    videoProperty.videoUrl = formData.value.fixVideoUrl || newVal
+  }
+})
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true

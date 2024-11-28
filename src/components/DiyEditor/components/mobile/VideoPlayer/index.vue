@@ -2,6 +2,7 @@
   <div class="w-full" :style="{ height: `${property.style.height}px` }">
     <el-image class="w-full w-full" :src="property.posterUrl" v-if="property.posterUrl" />
     <video
+      :style="{ height: `${property.style.height}px` }"
       v-else
       class="w-full w-full"
       :src="property.videoUrl"

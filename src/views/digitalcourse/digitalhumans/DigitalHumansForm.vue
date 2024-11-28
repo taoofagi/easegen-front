@@ -29,17 +29,19 @@
             v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
             :key="dict.value"
             :label="dict.label"
-            :value="parseInt(dict.value)"
+            :value="Number(dict.value)"
           />
         </el-select>
       </el-form-item>
       <el-form-item v-if="formData.useModel == 1" label="图片" prop="pictureUrl">
-        <UploadImg v-model="formData.pictureUrl" />
+        <UploadImg v-if="formData" v-model="formData.fixPictureUrl" />
+        <UploadImg v-else v-model="formData.pictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
-        <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
+        <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
+        <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
-      <el-form-item label="抠图标识" prop="matting">
+<!--      <el-form-item label="抠图标识" prop="matting">
         <el-select v-model="formData.matting" placeholder="请选择抠图标识">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
@@ -48,7 +50,7 @@
             :value="dict.value"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item label="姿势" prop="posture">
         <el-select v-model="formData.posture" placeholder="请选择姿势">
           <el-option
@@ -79,6 +81,9 @@
 <script setup lang="ts">
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'
+import VideoPlayer from "@/components/DiyEditor/components/mobile/VideoPlayer/index.vue";
+import {DiyComponent} from "@/components/DiyEditor/util";
+import {VideoPlayerProperty} from "@/components/DiyEditor/components/mobile/VideoPlayer/config";
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -104,6 +109,24 @@ const formData = ref({
   useGeneralModel: undefined,
   useModel: undefined,
   status: undefined,
+})
+
+const videoProperty = {
+  videoUrl: '',
+  posterUrl: '',
+  autoplay: false,
+  style: {
+    bgType: 'color',
+    bgColor: '#fff',
+    marginBottom: 8,
+    height: 300
+  }
+} as DiyComponent<VideoPlayerProperty>
+
+watch(()=> formData.value.videoUrl,(newVal,oldValue)=>{
+  if (newVal && newVal.length > 0){
+    videoProperty.videoUrl = formData.value.fixVideoUrl || newVal
+  }
 })
 const formRules = reactive({
   gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],

@@ -9,6 +9,11 @@
     >
       <el-row>
         <el-col :span="12">
+          <el-form-item label="模板名称" prop="templateName">
+            <el-input v-model="formData.templateName" maxlength="50" placeholder="请输入模板名称" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="是否显示背景" prop="showBackground">
             <el-select v-model="formData.showBackground" placeholder="请选择">
               <el-option
@@ -20,6 +25,8 @@
             </el-select>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="是否显示数字人" prop="showDigitalHuman">
             <el-select v-model="formData.showDigitalHuman" placeholder="请选择">
@@ -32,8 +39,6 @@
             </el-select>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="12">
           <el-form-item label="是否显示ppt" prop="showPpt">
             <el-select v-model="formData.showPpt" placeholder="请选择">
@@ -46,49 +51,49 @@
             </el-select>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="ppt宽度" prop="pptW">
             <el-input type="number" v-model="formData.pptW" placeholder="请输入ppt宽" />
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="12">
           <el-form-item label="ppt高度" prop="pptH">
             <el-input type="number" v-model="formData.pptH" placeholder="请输入ppt高" />
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="ppt距离顶部位置" prop="pptX">
             <el-input type="number" v-model="formData.pptX" placeholder="请输入ppt距离顶部位置" />
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="12">
           <el-form-item label="ppt距离左侧位置" prop="pptY">
             <el-input type="number" v-model="formData.pptY" placeholder="请输入ppt距离左侧位置" />
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="数字人宽度" prop="humanW">
             <el-input type="number" v-model="formData.humanW" placeholder="请输入数字人宽" />
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="12">
           <el-form-item label="数字人高度" prop="humanH">
             <el-input type="number" v-model="formData.humanH" placeholder="请输入数字人高" />
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="数字人距离顶部位置" prop="humanX">
             <el-input type="number" v-model="formData.humanX" placeholder="请输入数字人距离顶部位置" />
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="12">
           <el-form-item label="数字人距离左侧位置" prop="humanY">
             <el-input type="number" v-model="formData.humanY" placeholder="请输入数字人距离左侧位置" />
@@ -138,6 +143,7 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   showBackground: undefined,
+  templateName: undefined,
   showDigitalHuman: undefined,
   showPpt: undefined,
   pptW: undefined,
@@ -151,6 +157,7 @@ const formData = ref({
   bgImage: undefined,
 })
 const formRules = reactive({
+  templateName: [{ required: true, message: '模板名称不能为空', trigger: 'blur' }],
   showBackground: [{ required: true, message: '是否展示背景不能为空', trigger: 'blur' }],
   showDigitalHuman: [{ required: true, message: '是否展示数字人不能为空', trigger: 'blur' }],
   showPpt: [{ required: true, message: '是否展示ppt不能为空', trigger: 'blur' }],
