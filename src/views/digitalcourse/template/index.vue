@@ -47,6 +47,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="编号" align="center" prop="id" />
+      <el-table-column label="模板名称" align="center" prop="templateName" />
       <el-table-column label="是否显示背景" align="center" prop="showBackground" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.IS_OR_NOT" :value="scope.row.showBackground" />
