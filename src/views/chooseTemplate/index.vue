@@ -5,14 +5,14 @@
         <div style="font-size: 16px" class="top-icon">
           <ArrowLeft @click="goBack" style="width: 1em; height: 1em; cursor: pointer" />
         </div>
-        <span class="back-text" @click="goBack">返回</span>
+        <span class="back-text" @click="goBack">{{ t('courseCenter.goBack') }}</span>
         <el-input
           v-if="isEditing"
           ref="inputRef"
           v-model="editName"
           style="width: 300px"
           size="small"
-          placeholder="请输入课程名称"
+          :placeholder="t('common.inputText') + t('courseCenter.courseName')"
           @blur="saveEdit"
           @keydown.enter="saveEdit"
         />
@@ -26,19 +26,25 @@
         >
           <span>{{ courseInfo.name }}</span>
         </div>
-        <span>预估时长: {{ videoDuration }}</span>
-        <span>总字数:{{ videoText }}</span>
+        <span>{{ t('courseCenter.estimatedDuration') }}: {{ videoDuration }}</span>
+        <span>{{ t('courseCenter.wordCount') }}:{{ videoText }}</span>
       </div>
       <div class="top-right">
-        <span v-if="saveTime">{{ saveTime }} 已保存</span>
-        <el-button size="small" @click="saveSubmit('save')">保存</el-button>
-        <el-button type="primary" size="small" @click="saveSubmit('')">合成视频</el-button>
+        <span v-if="saveTime">{{ saveTime }} {{ t('courseCenter.saved') }}</span>
+        <el-button size="small" @click="saveSubmit('save')">{{ t('common.save') }}</el-button>
+        <el-button type="primary" size="small" @click="saveSubmit('')">{{
+          t('courseCenter.composeViode')
+        }}</el-button>
       </div>
     </div>
     <div class="template-main">
       <div class="template-box template-left">
         <div class="page">
-          <div>页面({{ PPTArr ? PPTArr.length : 1 }}页)</div>
+          <div
+            >{{ t('courseCenter.page') }}:({{ PPTArr ? PPTArr.length : 1 }}){{
+              t('courseCenter.pageTitle')
+            }}</div
+          >
           <div class="line"></div>
           <el-upload
             ref="uploadRef"
@@ -55,9 +61,8 @@
           >
             <template #trigger>
               <el-button type="primary" :icon="Upload">
-                上传PPT/PDF
+                {{ t('courseCenter.upload') }} PPT/PDF
               </el-button>
-
             </template>
           </el-upload>
         </div>
@@ -94,9 +99,9 @@
                       v-if="element.innerPicture?.src"
                       class="ppt-bg"
                       :style="{
-                        width: element.innerPicture.width  * (thumViewSize.width / 800) + 'px',
+                        width: element.innerPicture.width * (thumViewSize.width / 800) + 'px',
                         height: element.innerPicture.height * (thumViewSize.height / 450) + 'px',
-                        top: element.innerPicture.top  * (thumViewSize.width / 800) + 'px',
+                        top: element.innerPicture.top * (thumViewSize.width / 800) + 'px',
                         left: element.innerPicture.marginLeft * (thumViewSize.height / 450) + 'px',
                         borderColor: element.isActive ? '#0683ee' : ''
                       }"
@@ -108,9 +113,9 @@
                       v-if="element.showDigitalHuman"
                       class="host"
                       :style="{
-                        width: PPTpositon.w  * (thumViewSize.width / 800) + 'px',
-                        height: PPTpositon.h  * (thumViewSize.height / 450) + 'px',
-                        top: PPTpositon.y  * (thumViewSize.width / 800) + 'px',
+                        width: PPTpositon.w * (thumViewSize.width / 800) + 'px',
+                        height: PPTpositon.h * (thumViewSize.height / 450) + 'px',
+                        top: PPTpositon.y * (thumViewSize.width / 800) + 'px',
                         left: PPTpositon.x * (thumViewSize.height / 450) + 'px'
                       }"
                       :src="selectHost?.pictureUrl"
@@ -149,10 +154,10 @@
         </div>
         <div class="left-upload-setting" v-if="!showLeftList">
           <!-- <img src="" alt=""> -->
-          <div>ppt解析中...</div>
+          <div>ppt{{ t('courseCenter.analyzing') }}...</div>
           <el-progress :percentage="percentagePPT" />
-          <el-button @click="cancelAnalyze">取消</el-button>
-          <div>PPT需要上传、解析等步骤处理，请耐心等待。</div>
+          <el-button @click="cancelAnalyze">{{ t('common.cancel') }}</el-button>
+          <div>{{ t('courseCenter.analyzingTitle') }}</div>
         </div>
       </div>
       <!-- 中间主画布 -->
@@ -181,7 +186,7 @@
               />
               <!-- 画中画 -->
               <Vue3DraggableResizable
-                v-if="selectPPT.innerPicture&&selectPPT.innerPicture.src"
+                v-if="selectPPT.innerPicture && selectPPT.innerPicture.src"
                 :parent="true"
                 :initW="selectPPT.innerPicture.width"
                 :initH="selectPPT.innerPicture.height"
@@ -202,11 +207,7 @@
                 @resize-end="print('PPT resize-end')"
                 style="z-index: 3"
               >
-                <el-image
-                  class="ppt-bg"
-                  :src="selectPPT.innerPicture.src"
-                  fit="cover"
-                />
+                <el-image class="ppt-bg" :src="selectPPT.innerPicture.src" fit="cover" />
                 <el-icon
                   v-if="PPTpositon.active"
                   size="20"
@@ -263,14 +264,14 @@
             <div class="flex flex-col">
               <div class="flex flex-col p-10px border-b-solid border-b-1px border-gray-200">
                 <div class="flex items-baseline">
-                  <span class="text-16px">语速</span>
+                  <span class="text-16px">{{ t('courseCenter.speedSpeech') }}</span>
                   <el-button
                     class="ml-10px"
                     type="info"
                     link
                     @click="voiceData.speechRate = voiceData.defaultSpeechRate"
                   >
-                    恢复默认
+                    {{ t('courseCenter.restoreDefault') }}
                   </el-button>
                 </div>
                 <el-slider
@@ -285,14 +286,14 @@
               </div>
               <div class="flex flex-col p-10px">
                 <div class="flex items-baseline">
-                  <span class="text-16px">音量放大</span>
+                  <span class="text-16px">{{ t('courseCenter.enlargeVolume') }}</span>
                   <el-button
                     class="ml-10px"
                     type="info"
                     link
                     @click="voiceData.volume = voiceData.defaultVolume"
                   >
-                    恢复默认
+                    {{ t('courseCenter.restoreDefault') }}
                   </el-button>
                 </div>
                 <el-slider
@@ -309,7 +310,9 @@
           </el-card>
         </div>
         <div class="voice-main">
-          <el-text class="mx-1" type="primary" size="small">口播内容</el-text>
+          <el-text class="mx-1" type="primary" size="small">{{
+            t('courseCenter.oralBroadcastingContent')
+          }}</el-text>
           <div class="voice-item">
             <span
               :class="selectPPT.driverType == item.itemValue ? 'active-item' : ''"
@@ -321,7 +324,7 @@
           </div>
           <div class="media-box">
             <el-button type="primary" :icon="Mic" size="small" @click="openSelect">{{
-              selectPPT.selectAudio ? selectPPT.selectAudio.name : '未选择'
+              selectPPT.selectAudio ? selectPPT.selectAudio.name : t('courseCenter.notSelect')
             }}</el-button>
             <el-button
               type="success"
@@ -339,7 +342,7 @@
               @mouseup="handlePptRemarkSelection"
               :rows="5"
               type="textarea"
-              placeholder="请输入口播内容"
+              :placeholder="t('common.inputText') + t('courseCenter.oralBroadcastingContent')"
               show-word-limit
               maxlength="1200"
               resize="none"
@@ -348,39 +351,41 @@
           <div class="tool-box">
             <div class="tool-btn">
               <!-- 新增智能讲稿按钮 -->
-              <el-button type="primary" size="small" @click="openScriptRewriter">智能讲稿</el-button>
-              <el-button type="primary" @click="openReplaceDialog" size="small">批量替换</el-button>
-              <el-button type="primary" size="small">停顿</el-button>
-              <el-button type="primary" size="small">多音字</el-button>
-              <el-button type="primary" size="small">数字</el-button>
+              <el-button type="primary" size="small" @click="openScriptRewriter">{{
+                t('courseCenter.intelligentSpeech')
+              }}</el-button>
+              <el-button type="primary" @click="openReplaceDialog" size="small">{{
+                t('courseCenter.batchReplace')
+              }}</el-button>
+              <el-button type="primary" size="small">{{ t('courseCenter.pause') }}</el-button>
+              <el-button type="primary" size="small">{{
+                t('courseCenter.polyphonicCharacters')
+              }}</el-button>
+              <el-button type="primary" size="small">{{ t('courseCenter.number') }}</el-button>
               <el-checkbox
                 v-model="checked5"
                 style="margin-left: 10px"
-                label="多音字检测"
+                :label="t('courseCenter.polyphonicCharactersDetection')"
                 size="small"
               />
               <QuestionFilled style="width: 1em; height: 1em" />
               <div></div>
             </div>
-            <el-button type="primary" :icon="VideoPlay" size="small" @click="createAudio"
-              >试听</el-button
-            >
+            <el-button type="primary" :icon="VideoPlay" size="small" @click="createAudio">{{
+              t('courseCenter.tryListening')
+            }}</el-button>
           </div>
           <div class="audio-play" v-if="showAudioPlay">
-            <div>试听中...</div>
-            <el-button @click="pauseAudio">取消试听</el-button>
+            <div>{{ t('courseCenter.listeningTrial') }}...</div>
+            <el-button @click="pauseAudio">{{ t('courseCenter.cancelTrialListening') }}</el-button>
           </div>
         </div>
         <div v-else class="audio-upload" style="position: relative">
           <div class="audio-play" v-if="startAudioPlay">
-            <div>播放中...</div>
-            <el-button @click="cancelAudio">取消播放</el-button>
+            <div>{{ t('courseCenter.playing') }}...</div>
+            <el-button @click="cancelAudio">{{ t('courseCenter.cancelPlayback') }}</el-button>
           </div>
-          <el-tooltip
-            effect="dark"
-            content="支持mp3,wav等格式;1GB以内;时长60分钟以内"
-            placement="top"
-          >
+          <el-tooltip effect="dark" :content="t('courseCenter.toolTip')" placement="top">
             <el-upload
               v-model:file-list="selectPPT.fileList"
               ref="uploadAudioRef"
@@ -396,7 +401,9 @@
               :show-file-list="true"
             >
               <template #trigger>
-                <el-button type="primary" :icon="Upload">上传音频</el-button>
+                <el-button type="primary" :icon="Upload">{{
+                  t('courseCenter.uploadAudio')
+                }}</el-button>
               </template>
             </el-upload>
           </el-tooltip>
@@ -465,15 +472,11 @@
             <div class="list-index" :style="template.isActive ? 'background: #409eff' : ''">
               {{ index + 1 }}
             </div>
-            <el-image
-              class="background"
-              :src="template.previewImage"
-              fit="contain"
-            />
+            <el-image class="background" :src="template.previewImage" fit="contain" />
           </div>
         </div>
         <div class="apply-all">
-          <el-checkbox v-model="applyAllTemplate" label="是否应用所有页面" />
+          <el-checkbox v-model="applyAllTemplate" :label="t('courseCenter.uploadAudio')" />
         </div>
       </div>
       <!-- 背景设置 -->
@@ -481,7 +484,7 @@
         <div class="image-setting">
           <!--          上传图片成功后，将当前场景的背景修改为上传的图片url-->
 
-          <div>上传图片</div>
+          <div>{{ t('courseCenter.uploadImage') }}</div>
           <UploadImg v-model="selectPPT.pictureUrl" :limit="1" />
         </div>
       </div>
@@ -490,24 +493,24 @@
         <div class="image-setting">
           <!--          上传图片成功后，将当前场景的画中画修改为上传的图片url-->
 
-          <div>上传图片</div>
+          <div>{{ t('courseCenter.uploadImage') }}</div>
           <UploadImg v-model="selectPPT.innerPicture.src" :limit="1" />
         </div>
       </div>
       <div class="template-box template-right" v-if="showImageSet">
         <div class="image-setting">
-          <div>图片属性</div>
+          <div>{{ t('courseCenter.imageProperties') }}</div>
           <div class="img-setting">
-            <span class="setting-label">位置</span>
+            <span class="setting-label">{{ t('courseCenter.position') }}</span>
             X <el-input v-model="PPTpositon.x" type="number" :min="20" :max="460" /> Y
             <el-input v-model="PPTpositon.y" type="number" :min="20" :max="180" />
           </div>
           <div class="img-setting">
-            <span class="setting-label">层级</span>
+            <span class="setting-label">{{ t('courseCenter.hierarchicalStructure') }}</span>
             <el-input v-model="PPTpositon.depth" type="number" :min="0" :max="999" />
           </div>
           <div class="img-setting">
-            <span class="setting-label">大小</span>
+            <span class="setting-label">{{ t('courseCenter.size') }}</span>
             W <el-input v-model="PPTpositon.w" type="number" :min="20" :max="760" /> H
             <el-input v-model="PPTpositon.h" type="number" :min="20" :max="360" />
           </div>
@@ -532,13 +535,13 @@
     <mergeWarningDialog ref="warningDialog" />
     <ReplaceDialog ref="replaceDialog" :ppt-arr="PPTArr" @submit="handleReplacement" />
     <!-- 添加智能讲稿组件 -->
-  <Rewriter
-    ref="rewriterRef"
-    :image-url="currentImageUrl"
-    :title="''"
-    :content="selectPPT.pptRemark"
-    @confirm="handleRewritten"
-  />
+    <Rewriter
+      ref="rewriterRef"
+      :image-url="currentImageUrl"
+      :title="''"
+      :content="selectPPT.pptRemark"
+      @confirm="handleRewritten"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -566,6 +569,7 @@ import bgActive from '@/assets/imgs/bg-active.png'
 import innerPicture from '@/assets/imgs/inner-picture.png'
 import innerPictureActive from '@/assets/imgs/inner-picture-active.png'
 import { TemplateApi } from '@/api/digitalcourse/template'
+const { t } = useI18n() // 国际化
 //用户信息
 import { useUserStore } from '@/store/modules/user'
 import {
@@ -615,13 +619,16 @@ const courseInfo = ref({
   pageMode: 2,
   matting: 1,
   width: 1920,
-  height: 1080,
+  height: 1080
 })
 // 当比例改变时更新宽度和高度
-watch(() => courseInfo.value.aspect, (newAspect) => {
-  courseInfo.value.width = newAspect === '16:9' ? 1920 : 1080
-  courseInfo.value.height = newAspect === '16:9' ? 1080 : 1920
-})
+watch(
+  () => courseInfo.value.aspect,
+  (newAspect) => {
+    courseInfo.value.width = newAspect === '16:9' ? 1920 : 1080
+    courseInfo.value.height = newAspect === '16:9' ? 1080 : 1920
+  }
+)
 
 const editName = ref(courseInfo.value.name)
 const viewSize = reactive({
@@ -702,11 +709,11 @@ const selectTemplate = ref([])
 //数字人tab
 const tabs1 = [
   {
-    itemName: '模特',
+    itemName: t('courseCenter.model'),
     itemValue: '0'
   },
   {
-    itemName: '我的',
+    itemName: t('courseCenter.my'),
     itemValue: '1'
   }
 ]
@@ -714,26 +721,26 @@ const tabs1ActiveNum = ref('0')
 const tabs2ActiveNum = ref('')
 const tabs2 = [
   {
-    itemName: '全部',
+    itemName: t('courseCenter.all'),
     itemValue: ''
   },
   {
-    itemName: '男',
+    itemName: t('courseCenter.man'),
     itemValue: '1'
   },
   {
-    itemName: '女',
+    itemName: t('courseCenter.woman'),
     itemValue: '2'
   }
 ]
 const tabs3ActiveNum = ref()
 const tabs3 = [
   {
-    itemName: '站姿',
+    itemName: t('courseCenter.standingPosture'),
     itemValue: '1'
   },
   {
-    itemName: '坐姿',
+    itemName: t('courseCenter.sittingPosture'),
     itemValue: '2'
   }
 ]
@@ -751,18 +758,18 @@ const tabs3Click = (item) => {
 }
 //驱动类型
 const selectDriveType = ref({
-  name: '文本驱动',
+  name: t('courseCenter.textDriven'),
   itemValue: 1,
   isActive: true
 })
 const driveType = reactive([
   {
-    name: '文本驱动',
+    name: t('courseCenter.textDriven'),
     itemValue: 1,
     isActive: true
   },
   {
-    name: '声音驱动',
+    name: t('courseCenter.soundDriven'),
     isActive: false,
     itemValue: 2
   }
@@ -773,25 +780,25 @@ const driveTypeChange = (item) => {
 //右侧设置
 const rightTools = reactive([
   {
-    name: '模板',
+    name: t('courseCenter.template'),
     url: template,
     activeUrl: templateActive,
     isActive: false
   },
   {
-    name: '数字人',
+    name: t('courseCenter.digitalPeople'),
     url: user,
     activeUrl: userActive,
     isActive: false
   },
   {
-    name: '背景',
+    name: t('courseCenter.background'),
     url: bg,
     activeUrl: bgActive,
     isActive: false
   },
   {
-    name: '画中画',
+    name: t('courseCenter.pictureInPicture'),
     url: innerPicture,
     activeUrl: innerPictureActive,
     isActive: false
@@ -805,22 +812,22 @@ const handleChangeTool = (item) => {
       child.isActive = false
     }
   })
-  if (item.name == '背景') {
+  if (item.name == t('courseCenter.background')) {
     showHeadImageTool.value = true
     showTemplateTool.value = false
     showDigitalHumanTool.value = false
     showInnerPictureTool.value = false
-  } else if (item.name == '数字人') {
+  } else if (item.name == t('courseCenter.digitalPeople')) {
     showHeadImageTool.value = false
     showTemplateTool.value = false
     showDigitalHumanTool.value = true
     showInnerPictureTool.value = false
-  } else if (item.name == '模板') {
+  } else if (item.name == t('courseCenter.template')) {
     showHeadImageTool.value = false
     showTemplateTool.value = true
     showDigitalHumanTool.value = false
     showInnerPictureTool.value = false
-  } else if (item.name == '画中画') {
+  } else if (item.name == t('courseCenter.pictureInPicture')) {
     showHeadImageTool.value = false
     showTemplateTool.value = false
     showDigitalHumanTool.value = false
@@ -845,13 +852,12 @@ const selectPPT = ref({
     originWidth: 0,
     originHeight: 0,
     category: 1,
-    depth: 1,//画中画1-100
+    depth: 1, //画中画1-100
     top: 0,
     marginLeft: 0,
     businessId: generateUUID(),
     entityType: 0,
     entityId: '0'
-
   },
   pptRemark: '',
   driverType: 1,
@@ -927,17 +933,15 @@ const handleExceed = (files) => {
 const handleChange = (files) => {
   // 获取文件扩展名
   const extension = files.name.split('.').pop().toLowerCase()
-  
+
   // 设置文档类型 1:ppt 2:pdf
   uploadFileObj.docType = extension === 'pdf' ? 2 : 1
   uploadFileObj.filename = files.name
   uploadFileObj.size = files.size
-  
 }
 
 const uploadExplainRef = ref()
 const handleSuccess = (rawFile) => {
-
   message.success('上传成功！')
   uploadFileObj.url = rawFile.data
   uploadExplainRef.value.open()
@@ -1000,7 +1004,7 @@ const schedulePPT = (id) => {
         }
         percentagePPT.value = parseInt(`${progress * 100}`)
       } else if (res && res.length > 0) {
-        console.log('selectTemplate',selectTemplate.value)
+        console.log('selectTemplate', selectTemplate.value)
         res.forEach((item) => {
           item.isActive = false
           item.isChecked = false
@@ -1011,11 +1015,11 @@ const schedulePPT = (id) => {
           item.businessId = generateUUID()
           item.width = courseInfo.value.width
           item.height = courseInfo.value.height
-          let ppturl = item.pictureUrl;
+          let ppturl = item.pictureUrl
           //是否展示背景 如果展示背景，则背景等于模板背景，否则为空
-          if(selectTemplate.value.showBackground){
+          if (selectTemplate.value.showBackground) {
             item.pictureUrl = selectTemplate.value.bgImage
-          }else{
+          } else {
             item.pictureUrl = ''
           }
           // 如果展示背景，并且展示ppt，则ppt放到画中画
@@ -1023,8 +1027,8 @@ const schedulePPT = (id) => {
           // console.log('selectTemplate.value.pptW',selectTemplate.value.pptW
           // ,'selectTemplate.value.pptH',selectTemplate.value.pptH
           // )
-          if (item.pictureUrl&&selectTemplate.value.showPpt) {
-            item.innerPicture = { 
+          if (item.pictureUrl && selectTemplate.value.showPpt) {
+            item.innerPicture = {
               name: '画中画',
               src: ppturl,
               cover: ppturl,
@@ -1040,13 +1044,11 @@ const schedulePPT = (id) => {
               entityType: 0,
               entityId: '0'
             }
-
-            
-          } 
+          }
           //如果不展示背景，则ppt放到背景，画中画为空
-          else if(!item.pictureUrl&&selectTemplate.value.showPpt){
+          else if (!item.pictureUrl && selectTemplate.value.showPpt) {
             item.pictureUrl = ppturl
-            item.innerPicture = { 
+            item.innerPicture = {
               src: '',
               cover: '',
               width: 0,
@@ -1067,7 +1069,7 @@ const schedulePPT = (id) => {
         PPTArr.value = res
         PPTArr.value[0].isActive = true
         selectPPT.value = PPTArr.value[0]
-        console.log('selectPPT.value',selectPPT.value)
+        console.log('selectPPT.value', selectPPT.value)
         showLeftList.value = true
         clearInterval(schedulePPTTimer.value)
         //轮询保存课程
@@ -1327,40 +1329,40 @@ const saveSubmit = (type) => {
     scenes: [] as any[]
   }
   let thumbnail = ''
-  const { name, pictureUrl, code, type: digitalHumanType } = selectHost.value; // 解构以避免循环引用
-  const digitalHumanComponents = { 
-    name, 
-    src: pictureUrl, 
-    cover: pictureUrl, 
+  const { name, pictureUrl, code, type: digitalHumanType } = selectHost.value // 解构以避免循环引用
+  const digitalHumanComponents = {
+    name,
+    src: pictureUrl,
+    cover: pictureUrl,
     width: PPTpositon.w * scaleRatio.value.width,
     height: PPTpositon.h * scaleRatio.value.height,
     originWidth: PPTpositon.w * scaleRatio.value.width,
     originHeight: PPTpositon.h * scaleRatio.value.height,
-    category: 2, // 1: PPT, 2: 数字人, 3: 其他 
-    depth: componentsInfo.depth, 
+    category: 2, // 1: PPT, 2: 数字人, 3: 其他
+    depth: componentsInfo.depth,
     top: PPTpositon.y * scaleRatio.value.height,
     marginLeft: PPTpositon.x * scaleRatio.value.width,
-    entityId: code, 
-    entityType: digitalHumanType, // 如果是数字人，则是数字人类型 0: 普通, 1: 专属 
-    businessId: generateUUID(), 
-    digitbotType: tabs1ActiveNum.value, 
-    matting: 1, 
-    marker: 1 
-  }; 
+    entityId: code,
+    entityType: digitalHumanType, // 如果是数字人，则是数字人类型 0: 普通, 1: 专属
+    businessId: generateUUID(),
+    digitbotType: tabs1ActiveNum.value,
+    matting: 1,
+    marker: 1
+  }
   let pageNum = 1
   if (PPTArr.value && PPTArr.value.length > 0) {
-    console.log('开始处理PPTArr数据');
+    console.log('开始处理PPTArr数据')
     PPTArr.value.forEach((item, index) => {
-      console.log(`处理第 ${index + 1} 个场景`);
+      console.log(`处理第 ${index + 1} 个场景`)
       try {
-        pageInfo.scenes.push(item.businessId);
+        pageInfo.scenes.push(item.businessId)
         if (pageNum == 1) {
-          thumbnail = item.pictureUrl;
-          pageNum++;
+          thumbnail = item.pictureUrl
+          pageNum++
         }
-        
-        const innerPictureCom = item.innerPicture;
-        console.log('innerPictureCom:', JSON.stringify(innerPictureCom));
+
+        const innerPictureCom = item.innerPicture
+        console.log('innerPictureCom:', JSON.stringify(innerPictureCom))
 
         const formatItem = {
           background: {
@@ -1381,16 +1383,20 @@ const saveSubmit = (type) => {
               ...cloneDeep(digitalHumanComponents), // 深拷贝
               status: item.showDigitalHuman ? 0 : 1
             },
-            ...(item.innerPicture?.src ? [{
-              ...cloneDeep(item.innerPicture),
-              // 保存时放大画中画的尺寸和位置
-              width: item.innerPicture.width * scaleRatio.value.width,
-              height: item.innerPicture.height * scaleRatio.value.height,
-              top: item.innerPicture.top * scaleRatio.value.height,
-              marginLeft: item.innerPicture.marginLeft * scaleRatio.value.width,
-              category: 1,
-              id: undefined
-            }] : [])
+            ...(item.innerPicture?.src
+              ? [
+                  {
+                    ...cloneDeep(item.innerPicture),
+                    // 保存时放大画中画的尺寸和位置
+                    width: item.innerPicture.width * scaleRatio.value.width,
+                    height: item.innerPicture.height * scaleRatio.value.height,
+                    top: item.innerPicture.top * scaleRatio.value.height,
+                    marginLeft: item.innerPicture.marginLeft * scaleRatio.value.width,
+                    category: 1,
+                    id: undefined
+                  }
+                ]
+              : [])
           ],
           driverType: item.driverType,
           duration: '',
@@ -1418,37 +1424,40 @@ const saveSubmit = (type) => {
             name: item.selectAudio && item.selectAudio.name
           },
           businessId: item.businessId
-        };
-        console.log('formatItem:', cloneDeep(formatItem));
-        scenes.push(formatItem);
+        }
+        console.log('formatItem:', cloneDeep(formatItem))
+        scenes.push(formatItem)
       } catch (error) {
-        console.error(`处理第 ${index + 1} 个场景时出错:`, error);
+        console.error(`处理第 ${index + 1} 个场景时出错:`, error)
         //抛出异常
         throw error
       }
-    });
+    })
   }
-  console.log('pageInfo:', JSON.stringify(pageInfo));
-  console.log('thumbnail:', thumbnail);
-  
+  console.log('pageInfo:', JSON.stringify(pageInfo))
+  console.log('thumbnail:', thumbnail)
+
   try {
-    saveSubmitForm.pageInfo = JSON.stringify(pageInfo);
-    saveSubmitForm.thumbnail = thumbnail;
-    saveSubmitForm.scenes = cloneDeep(scenes);
-    console.log('saveSubmitForm:', cloneDeep(saveSubmitForm));
+    saveSubmitForm.pageInfo = JSON.stringify(pageInfo)
+    saveSubmitForm.thumbnail = thumbnail
+    saveSubmitForm.scenes = cloneDeep(scenes)
+    console.log('saveSubmitForm:', cloneDeep(saveSubmitForm))
   } catch (error) {
-    console.error('保存表单数据时出错:', error);
+    console.error('保存表单数据时出错:', error)
   }
 
   if (type == 'save') {
-    pptTemplateApi.coursesSave(stringifySafely(saveSubmitForm)).then((res) => {
-      if (res) {
-        message.success('保存成功！');
-        saveTime.value = getSaveTime();
-      }
-    }).catch((error) => {
-      console.error('保存课程时出错:', error);
-    });
+    pptTemplateApi
+      .coursesSave(stringifySafely(saveSubmitForm))
+      .then((res) => {
+        if (res) {
+          message.success('保存成功！')
+          saveTime.value = getSaveTime()
+        }
+      })
+      .catch((error) => {
+        console.error('保存课程时出错:', error)
+      })
   } else {
     // 校验场景数据
     if (!PPTArr.value || PPTArr.value.length == 0) {
@@ -1480,9 +1489,11 @@ const saveSubmit = (type) => {
           const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
           if (arabicNumberReg.test(item.pptRemark)) {
             // 找出所有连续的阿拉伯数字
-            const matches = item.pptRemark.match(/\d{2,}/g) || [];
-            const numbersStr = matches.length > 0 ? 
-              `(<span style="color: #ff4d4f">${matches.join('、')}</span>)` : '';
+            const matches = item.pptRemark.match(/\d{2,}/g) || []
+            const numbersStr =
+              matches.length > 0
+                ? `(<span style="color: #ff4d4f">${matches.join('、')}</span>)`
+                : ''
             warningStrArr.push(
               `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
             )
@@ -1521,16 +1532,16 @@ const saveSubmit = (type) => {
   }
 }
 function stringifySafely(obj) {
-    const seen = new WeakSet();
-    return JSON.stringify(obj, (key, value) => {
-        if (typeof value === "object" && value !== null) {
-            if (seen.has(value)) {
-                return; // 循环引用时返回 undefined
-            }
-            seen.add(value);
-        }
-        return value;
-    });
+  const seen = new WeakSet()
+  return JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return // 循环引用时返回 undefined
+      }
+      seen.add(value)
+    }
+    return value
+  })
 }
 //定时保存
 const saveTimer = ref()
@@ -1711,7 +1722,7 @@ const getCourseDetail = (id) => {
           ]
         }
         //选择的数字人信息
-        const hostInfo = res.scenes[0].components.find(component => component.category === 2)
+        const hostInfo = res.scenes[0].components.find((component) => component.category === 2)
         hostList.value.forEach((item) => {
           if (item.code == hostInfo.entityId) {
             selectHost.value = item
@@ -1802,9 +1813,9 @@ const applyTemplate = (ppt = null) => {
       }
     } else {
       item.pictureUrl = originalPPT
-      item.innerPicture.src = ""
+      item.innerPicture.src = ''
     }
-    
+
     item.showDigitalHuman = template.showDigitalHuman
   })
   // 数字人位置也需要缩放
@@ -1841,16 +1852,16 @@ const handleReplacement = (replacements) => {
 
 onMounted(async () => {
   let data = await TemplateApi.getTemplatePage(queryParams)
-  TEMPLATE_PRESETS.value = data.list.map(item => {
+  TEMPLATE_PRESETS.value = data.list.map((item) => {
     return {
       ...item,
       showBackground: item.showBackground === 1,
-      showDigitalHuman: item.showDigitalHuman === 1, 
+      showDigitalHuman: item.showDigitalHuman === 1,
       showPpt: item.showPpt === 1
     }
   })
-  if (templates.value.length > 0)selectTemplate.value = cloneDeep(templates.value[0])
-  templates.value = TEMPLATE_PRESETS.value.map(template => cloneDeep(template))
+  if (templates.value.length > 0) selectTemplate.value = cloneDeep(templates.value[0])
+  templates.value = TEMPLATE_PRESETS.value.map((template) => cloneDeep(template))
   selectTemplate.value = cloneDeep(templates.value[0])
   // console.log('onMounted selectTemplate.value',selectTemplate.value)
   await getList()
@@ -2395,7 +2406,6 @@ onUnmounted(() => {
 .voice-card {
   z-index: 1000 !important; // 添加更高的z-index确保在最顶层
 }
-
 
 .voice-card :deep(.el-card__body) {
   padding: 0;

@@ -1,31 +1,36 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="智能讲稿"
+    :title="t('courseCenter.intelligentSpeech')"
     width="80%"
     :before-close="handleClose"
   >
-  <div class="rewriter-container flex-col">
+    <div class="rewriter-container flex-col">
       <div class="content-wrapper flex-col">
         <div class="main-content flex-row">
           <!-- 左侧功能区域 -->
           <div class="left-area flex-col">
             <!-- 智写方式 -->
             <div class="config-item flex items-center">
-              <div class="config-label" style="width: 120px">智写方式：</div>
-              <el-select v-model="writeMode" placeholder="请选择智写方式">
-                <el-option label="图片改写" value="image" />
-                <el-option label="文字改写" value="text" />
-                <el-option label="扩写" value="expand" />
-                <el-option label="缩写" value="shrink" />
+              <div class="config-label" style="width: 120px"
+                >{{ t('courseCenter.smartWritingMethod') }}：</div
+              >
+              <el-select
+                v-model="writeMode"
+                :placeholder="t('common.selectText') + t('courseCenter.smartWritingMethod')"
+              >
+                <el-option :label="t('courseCenter.imageRewriting')" value="image" />
+                <el-option :label="t('courseCenter.textRewriting')" value="text" />
+                <el-option :label="t('courseCenter.expandWritten')" value="expand" />
+                <el-option :label="t('courseCenter.abbreviation')" value="shrink" />
               </el-select>
             </div>
-            
+
             <!-- 图片预览区，仅图片改写时显示 -->
             <div v-if="writeMode === 'image'" class="config-item">
-              <div class="config-label">PPT预览：</div>
+              <div class="config-label">{{ t('courseCenter.PPTReview') }}：</div>
               <div class="preview-image flex-center">
-                <el-image 
+                <el-image
                   :src="imageUrl"
                   :style="{
                     width: '320px',
@@ -38,47 +43,43 @@
                 />
               </div>
             </div>
-            
+
             <!-- 写作风格，仅图片改写和文字改写时显示 -->
             <div v-if="['image', 'text'].includes(writeMode)" class="config-item flex items-center">
-              <div class="config-label" style="width: 80px">风格：</div>
-              <el-select v-model="writeStyle" placeholder="请选择写作风格">
-                <el-option label="专业正式" value="professional" />
-                <el-option label="通俗日常" value="casual" />
-                <el-option label="自信激励" value="inspiring" />
+              <div class="config-label" style="width: 80px">{{ t('courseCenter.style') }}：</div>
+              <el-select
+                v-model="writeStyle"
+                :placeholder="t('common.selectText') + t('courseCenter.writingStyle')"
+              >
+                <el-option :label="t('courseCenter.professionalFormal')" value="professional" />
+                <el-option :label="t('courseCenter.popularDailyLife')" value="casual" />
+                <el-option :label="t('courseCenter.confidenceMotivation')" value="inspiring" />
               </el-select>
             </div>
 
-
             <div v-if="writeMode === 'image'" class="config-item flex items-center">
-              <div class="config-label" style="width: 80px">主题：</div>
-              <el-input 
-                v-model="pageTheme" 
-                placeholder="页面主题（选填）"
-              />
+              <div class="config-label" style="width: 80px">{{ t('courseCenter.theme') }}：</div>
+              <el-input v-model="pageTheme" :placeholder="t('courseCenter.placeholderTheme')" />
             </div>
-            
+
             <!-- 个性化要求，仅图片改写和文字改写时显示 -->
             <div v-if="['image', 'text'].includes(writeMode)" class="config-item flex items-center">
-              <div class="config-label" style="width: 80px">要求：</div>
+              <div class="config-label" style="width: 80px"
+                >{{ t('courseCenter.requirement') }}：</div
+              >
               <el-input
                 v-model="customRequirements"
                 type="textarea"
                 :rows="2"
                 resize="none"
-                placeholder="请输入个性化要求，如语言风格、重点内容等（选填）"
+                :placeholder="t('courseCenter.placeholderRequirement')"
               />
             </div>
-          
 
             <!-- 生成讲稿按钮 -->
-            <div class="rewrite-actions ">
-              <el-button 
-                type="primary" 
-                :loading="isRewriting"
-                @click="handleRewrite"
-              >
-                生成讲稿
+            <div class="rewrite-actions">
+              <el-button type="primary" :loading="isRewriting" @click="handleRewrite">
+                {{ t('courseCenter.generateSpeech') }}
               </el-button>
             </div>
           </div>
@@ -91,7 +92,7 @@
                 :rows="25"
                 resize="none"
                 readonly
-                placeholder="原始内容"
+                :placeholder="t('courseCenter.originalContent')"
               />
             </div>
           </div>
@@ -104,7 +105,11 @@
                 :rows="25"
                 resize="none"
                 readonly
-                :placeholder="isRewriting ? '内容生成中，请耐心等待...' : '改写后的内容'"
+                :placeholder="
+                  isRewriting
+                    ? t('courseCenter.speechContent') + '...'
+                    : t('courseCenter.rewrittenContent')
+                "
               />
             </div>
             <!-- <div class="text-wrapper_17 flex-col">
@@ -117,12 +122,8 @@
         <!-- <div class="text-wrapper_18 flex-col"><span class="text_42">确定使用文案</span></div> -->
         <!-- 底部确认按钮 -->
         <div class="footer-actions flex-row justify-end">
-          <el-button 
-            type="primary" 
-            @click="handleConfirm"
-            :disabled="!outputContent || isTyping"
-          >
-            确定使用讲稿
+          <el-button type="primary" @click="handleConfirm" :disabled="!outputContent || isTyping">
+            {{t('courseCenter.confirmUseScript')}}
           </el-button>
         </div>
       </div>
@@ -134,7 +135,7 @@
 import { ref } from 'vue'
 import { ChatApi } from '@/api/digitalcourse/chat'
 import { ElMessage } from 'element-plus'
-
+const { t } = useI18n() // 国际化
 const props = defineProps({
   imageUrl: {
     type: String,
@@ -156,7 +157,6 @@ const dialogVisible = ref(false)
 const rewriteRequirement = ref('')
 const rewrittenText = ref('')
 
-
 const writeMode = ref('image') // 默认图片改写
 // 使用 props.title 作为 pageTheme 的默认值
 const pageTheme = ref(props.title)
@@ -172,12 +172,11 @@ const isTyping = ref(false) // 新增打字机效果进行中的状态
 
 // 业务编码映射
 const BUSINESS_CODES = {
-  image: 'BUSI_0003',  // 图片改写
-  text: 'BUSI_0004',   // 文字改写
+  image: 'BUSI_0003', // 图片改写
+  text: 'BUSI_0004', // 文字改写
   expand: 'BUSI_0001', // 扩写
-  shrink: 'BUSI_0002'  // 缩写
+  shrink: 'BUSI_0002' // 缩写
 }
-
 
 const open = () => {
   dialogVisible.value = true
@@ -202,12 +201,13 @@ const handleClose = () => {
   customRequirements.value = ''
 }
 
-const typewriterEffect = (text: string, speed = 30) => { // 200ms 输出一个字符，相当于每秒5个字符
+const typewriterEffect = (text: string, speed = 30) => {
+  // 200ms 输出一个字符，相当于每秒5个字符
   return new Promise<void>((resolve) => {
     let index = 0
     displayContent.value = ''
     isTyping.value = true // 开始打字效果时设置状态
-    
+
     const timer = setInterval(() => {
       if (index < text.length) {
         displayContent.value += text[index]
@@ -226,22 +226,24 @@ const handleRewrite = async () => {
     isRewriting.value = true
     outputContent.value = ''
     displayContent.value = ''
-    
+
     const params = {
       business_code: BUSINESS_CODES[writeMode.value], // 根据写作模式获取对应的业务编码
       content_param: JSON.stringify({
         ppt_title: pageTheme.value,
         ppt_content: props.content,
         image_url: writeMode.value === 'image' ? props.imageUrl : '',
-        custom_requirements: ['image', 'text'].includes(writeMode.value) ? customRequirements.value : '',
-        write_style: ['image', 'text'].includes(writeMode.value) ? writeStyle.value : '',
+        custom_requirements: ['image', 'text'].includes(writeMode.value)
+          ? customRequirements.value
+          : '',
+        write_style: ['image', 'text'].includes(writeMode.value) ? writeStyle.value : ''
       })
     }
 
     // 获取完整内容
     const chat = await ChatApi.streamChat(params)
     let fullContent = ''
-    
+
     for await (const chunk of chat.iterateStream()) {
       try {
         if (chunk.choices?.[0]?.delta?.content) {
@@ -251,12 +253,11 @@ const handleRewrite = async () => {
         console.error('处理数据块时出错:', e)
       }
     }
-    
+
     outputContent.value = fullContent // 保存完整内容
-    
+
     // 开始打字机效果
     await typewriterEffect(fullContent)
-    
   } catch (error) {
     console.error('改写失败:', error)
     ElMessage.error('改写失败，请重试')
@@ -280,7 +281,6 @@ const handleConfirm = () => {
   emit('confirm', outputContent.value)
   handleClose()
 }
-
 
 defineExpose({
   open
@@ -308,19 +308,19 @@ defineExpose({
   border-right: 1px solid #eee;
   display: flex;
   flex-direction: column;
-  
+
   .title {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 20px;
     color: #333;
   }
-  
+
   .preview-image {
     flex: 1; // 占据剩余空间
     margin-bottom: 20px;
   }
-  
+
   .rewrite-actions {
     height: 60px; // 给按钮区域固定高度
     margin-top: auto;
@@ -329,25 +329,25 @@ defineExpose({
   .config-item {
     width: '320px';
     margin-bottom: 20px;
-    
+
     .config-label {
       font-size: 14px;
       color: #606266;
       margin-bottom: 0px;
     }
-    
+
     .preview-image {
       margin: 10px 0;
       border: 1px solid #eee;
       border-radius: 4px;
       padding: 10px;
     }
-    
+
     :deep(.el-radio-group) {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
-      
+
       .el-radio {
         margin-right: 0;
       }
@@ -492,7 +492,7 @@ defineExpose({
     height: 32px;
     margin: 0 auto; // 图片水平居中
   }
-  
+
   .text-group_11 {
     text-align: center; // 文字水平居中
   }
@@ -627,11 +627,11 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 80vh;
-  
+
   .preview-image {
     width: 600px;
     margin: 0 auto;
-    
+
     :deep(.el-image) {
       width: 100%;
       display: block;

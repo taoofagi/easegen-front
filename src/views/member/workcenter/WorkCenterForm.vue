@@ -41,6 +41,9 @@
         <uploadFile v-if="!formData.workUrl" drag :limit="1" :modelValue="formData.workUrl" @getDuration="getDuration" v-model="formData.workUrl" :isShowFileList="false" :fileType="fileType"/>
         <video-player v-if="formData.workUrl" :property="videoProperty"/>
       </el-form-item>
+      <el-form-item label="封面" prop="thumbnail">
+        <UploadImg v-model="formData.thumbnail" />
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>

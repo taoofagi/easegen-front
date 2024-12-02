@@ -6,29 +6,29 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
+
     >
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item :label="t('table.createTime')" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           value-format="YYYY-MM-DD HH:mm:ss"
           type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          :start-placeholder="t('table.startTime')"
+          :end-placeholder="t('table.endTime')"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-220px"
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> {{t('table.search')}}</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> {{t('table.reset')}}</el-button>
         <el-button
           type="primary"
           plain
           @click="openForm('create')"
           v-hasPermi="['digitalcourse:template:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" /> {{ t('action.add') }}
         </el-button>
         <el-button
           type="success"
@@ -37,7 +37,7 @@
           :loading="exportLoading"
           v-hasPermi="['digitalcourse:template:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" /> {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -46,19 +46,19 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="编号" align="center" prop="id" />
-      <el-table-column label="模板名称" align="center" prop="templateName" />
-      <el-table-column label="是否显示背景" align="center" prop="showBackground" >
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('template.name')" align="center" prop="templateName" />
+      <el-table-column :label="t('template.isShowBackground')" align="center" prop="showBackground" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.IS_OR_NOT" :value="scope.row.showBackground" />
         </template>
       </el-table-column>
-      <el-table-column label="是否显示数字人" align="center" prop="showDigitalHuman" >
+      <el-table-column :label="t('template.isShowDigitalPeople')" align="center" prop="showDigitalHuman" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.IS_OR_NOT" :value="scope.row.showDigitalHuman" />
         </template>
       </el-table-column>
-      <el-table-column label="是否显示ppt" align="center" prop="showPpt" >
+      <el-table-column :label="t('template.isShowPPt')" align="center" prop="showPpt" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.IS_OR_NOT" :value="scope.row.showPpt" />
         </template>
@@ -72,13 +72,13 @@
       <el-table-column label="数字人距离顶部位置" align="center" prop="humanX" />
       <el-table-column label="数字人距离左侧位置" align="center" prop="humanY" />-->
       <el-table-column
-        label="创建时间"
+        :label="t('table.createTime')"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" align="center" min-width="120px">
+      <el-table-column :label="t('table.action')" align="center" min-width="120px">
         <template #default="scope">
           <el-button
             link
@@ -86,7 +86,7 @@
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['digitalcourse:template:update']"
           >
-            编辑
+            {{ t('action.edit') }}
           </el-button>
           <el-button
             link
@@ -94,7 +94,7 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['digitalcourse:template:delete']"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>

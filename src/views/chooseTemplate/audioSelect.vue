@@ -76,8 +76,8 @@
       </el-tab-pane>
     </el-tabs>
     <template #footer>
-      <el-button @click="audioSelectVisible = false">取 消</el-button>
-      <el-button type="primary" @click="submitForm">确 定</el-button>
+      <el-button @click="audioSelectVisible = false">{{t('common.cancel')}}</el-button>
+      <el-button type="primary" @click="submitForm">{{t('common.ok')}}</el-button>
     </template>
   </el-dialog>
 </template>

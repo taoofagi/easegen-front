@@ -115,6 +115,7 @@ export enum DICT_TYPE {
 
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX = 'system_user_sex',
+  SYSTEM_USER_TYPE = 'system_user_type',
   SYSTEM_MENU_TYPE = 'system_menu_type',
   SYSTEM_ROLE_TYPE = 'system_role_type',
   SYSTEM_DATA_SCOPE = 'system_data_scope',

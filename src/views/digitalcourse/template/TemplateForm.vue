@@ -1,21 +1,21 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <Dialog style="width: 60%;" :title="dialogTitle" v-model="dialogVisible">
     <el-form
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="150px"
+      label-width="200px"
       v-loading="formLoading"
     >
       <el-row>
         <el-col :span="12">
-          <el-form-item label="模板名称" prop="templateName">
-            <el-input v-model="formData.templateName" maxlength="50" placeholder="请输入模板名称" />
+          <el-form-item :label="t('template.name')" prop="templateName">
+            <el-input v-model="formData.templateName" maxlength="50" :placeholder="t('common.inputText') + t('template.name')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="是否显示背景" prop="showBackground">
-            <el-select v-model="formData.showBackground" placeholder="请选择">
+          <el-form-item :label="t('template.isShowBackground')" prop="showBackground">
+            <el-select v-model="formData.showBackground" :placeholder="t('common.selectText') + t('template.isShowBackground')">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.IS_OR_NOT)"
                 :key="dict.value"
@@ -28,8 +28,8 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="是否显示数字人" prop="showDigitalHuman">
-            <el-select v-model="formData.showDigitalHuman" placeholder="请选择">
+          <el-form-item :label="t('template.isShowDigitalPeople')" prop="showDigitalHuman">
+            <el-select v-model="formData.showDigitalHuman" :placeholder="t('common.selectText') + t('template.isShowDigitalPeople')">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.IS_OR_NOT)"
                 :key="dict.value"
@@ -40,8 +40,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="是否显示ppt" prop="showPpt">
-            <el-select v-model="formData.showPpt" placeholder="请选择">
+          <el-form-item :label="t('template.isShowPPt')" prop="showPpt">
+            <el-select v-model="formData.showPpt" :placeholder="t('common.selectText') + t('template.isShowPPt')">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.IS_OR_NOT)"
                 :key="dict.value"
@@ -54,60 +54,60 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="ppt宽度" prop="pptW">
-            <el-input type="number" v-model="formData.pptW" placeholder="请输入ppt宽" />
+          <el-form-item :label="t('template.pptWidth')" prop="pptW">
+            <el-input type="number" v-model="formData.pptW" :placeholder="t('common.inputText') + t('template.pptWidth')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="ppt高度" prop="pptH">
-            <el-input type="number" v-model="formData.pptH" placeholder="请输入ppt高" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="ppt距离顶部位置" prop="pptX">
-            <el-input type="number" v-model="formData.pptX" placeholder="请输入ppt距离顶部位置" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="ppt距离左侧位置" prop="pptY">
-            <el-input type="number" v-model="formData.pptY" placeholder="请输入ppt距离左侧位置" />
+          <el-form-item :label="t('template.pptHeight')" prop="pptH">
+            <el-input type="number" v-model="formData.pptH" :placeholder="t('common.inputText') + t('template.pptHeight')" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="数字人宽度" prop="humanW">
-            <el-input type="number" v-model="formData.humanW" placeholder="请输入数字人宽" />
+          <el-form-item :label="t('template.topPositionPPT')" prop="pptX">
+            <el-input type="number" v-model="formData.pptX" :placeholder="t('common.inputText') + t('template.topPositionPPT')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="数字人高度" prop="humanH">
-            <el-input type="number" v-model="formData.humanH" placeholder="请输入数字人高" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="数字人距离顶部位置" prop="humanX">
-            <el-input type="number" v-model="formData.humanX" placeholder="请输入数字人距离顶部位置" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="数字人距离左侧位置" prop="humanY">
-            <el-input type="number" v-model="formData.humanY" placeholder="请输入数字人距离左侧位置" />
+          <el-form-item :label="t('template.leftPositionPPT')" prop="pptY">
+            <el-input type="number" v-model="formData.pptY" :placeholder="t('common.inputText') + t('template.leftPositionPPT')" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="背景图片" prop="bgImage">
+          <el-form-item :label="t('template.digitalPeopleWidth')" prop="humanW">
+            <el-input type="number" v-model="formData.humanW" :placeholder="t('common.inputText') + t('template.digitalPeopleWidth')" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item :label="t('template.digitalPeopleHeight')" prop="humanH">
+            <el-input type="number" v-model="formData.humanH" :placeholder="t('common.inputText') + t('template.digitalPeopleHeight')" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item :label="t('template.topPositionDigitalPeople')" prop="humanX">
+            <el-input type="number" v-model="formData.humanX" :placeholder="t('common.inputText') + t('template.topPositionDigitalPeople')" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item :label="t('template.leftPositionDigitalPeople')" prop="humanY">
+            <el-input type="number" v-model="formData.humanY" :placeholder="t('common.inputText') + t('template.leftPositionDigitalPeople')" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item :label="t('template.backgroundImage')" prop="bgImage">
             <UploadImg v-model="formData.bgImage" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="预览图片" prop="previewImage">
+          <el-form-item :label="t('template.reviewImage')" prop="previewImage">
             <UploadImg v-model="formData.previewImage" />
           </el-form-item>
         </el-col>
@@ -122,8 +122,8 @@
 
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm" type="primary" :disabled="formLoading">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -157,18 +157,18 @@ const formData = ref({
   bgImage: undefined,
 })
 const formRules = reactive({
-  templateName: [{ required: true, message: '模板名称不能为空', trigger: 'blur' }],
-  showBackground: [{ required: true, message: '是否展示背景不能为空', trigger: 'blur' }],
-  showDigitalHuman: [{ required: true, message: '是否展示数字人不能为空', trigger: 'blur' }],
-  showPpt: [{ required: true, message: '是否展示ppt不能为空', trigger: 'blur' }],
-  pptW: [{ required: true, message: 'ppt宽不能为空', trigger: 'blur' }],
-  pptH: [{ required: true, message: 'ppt高不能为空', trigger: 'blur' }],
-  pptX: [{ required: true, message: 'ppt距离顶部位置不能为空', trigger: 'blur' }],
-  pptY: [{ required: true, message: 'ppt距离左侧位置不能为空', trigger: 'blur' }],
-  humanW: [{ required: true, message: '数字人宽不能为空', trigger: 'blur' }],
-  humanH: [{ required: true, message: '数字人高不能为空', trigger: 'blur' }],
-  humanX: [{ required: true, message: '数字人距离顶部位置不能为空', trigger: 'blur' }],
-  humanY: [{ required: true, message: '数字人距离左侧位置不能为空', trigger: 'blur' }],
+  templateName: [{ required: true, message: t('template.name') + t('common.notEmpty'), trigger: 'blur' }],
+  showBackground: [{ required: true, message: t('template.isShowBackground') + t('common.notEmpty'), trigger: 'blur' }],
+  showDigitalHuman: [{ required: true, message: t('template.isShowDigitalPeople') + t('common.notEmpty'), trigger: 'blur' }],
+  showPpt: [{ required: true, message: t('template.isShowPPt') + t('common.notEmpty'), trigger: 'blur' }],
+  pptW: [{ required: true, message: t('template.pptWidth') + t('common.notEmpty'), trigger: 'blur' }],
+  pptH: [{ required: true, message: t('template.pptHeight') + t('common.notEmpty'), trigger: 'blur' }],
+  pptX: [{ required: true, message: t('template.topPositionPPT') + t('common.notEmpty'), trigger: 'blur' }],
+  pptY: [{ required: true, message: t('template.leftPositionPPT') + t('common.notEmpty'), trigger: 'blur' }],
+  humanW: [{ required: true, message: t('template.digitalPeopleWidth') + t('common.notEmpty'), trigger: 'blur' }],
+  humanH: [{ required: true, message: t('template.digitalPeopleHeight') + t('common.notEmpty'), trigger: 'blur' }],
+  humanX: [{ required: true, message: t('template.topPositionDigitalPeople') + t('common.notEmpty'), trigger: 'blur' }],
+  humanY: [{ required: true, message: t('template.leftPositionDigitalPeople') + t('common.notEmpty'), trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 

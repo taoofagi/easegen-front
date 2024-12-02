@@ -23,10 +23,10 @@
         <el-input v-model="formData.name" placeholder="请输入声音名称" />
       </el-form-item>
       <el-form-item label="头像" prop="avatarUrl">
-        <UploadFile v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
+        <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
       <el-form-item label="上传声音" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav','m4a']" fileSize="20" describe="推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+        <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','ogg','m4a','aac','pcm']" fileSize="10" describe="推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
     </el-form>
     <div>
@@ -42,6 +42,7 @@ import * as VoicesApi from '@/api/digitalcourse/voices'
 const message = useMessage() // 消息弹窗\
 const { t } = useI18n() // 国际化
 import { useRouter } from 'vue-router';
+import * as ConfigApi from "@/api/infra/config";
 const router = useRouter();
 const formLoading = ref(false)
 const formData = ref({
@@ -87,6 +88,13 @@ const submitForm = async () => {
   }
 }
 
+
+onMounted(async ()=>{
+  const data = await ConfigApi.getConfigKey('voices.avatarUrl')
+  if (data && data.length > 0) {
+    formData.value.avatarUrl = data
+  }
+})
 
 const toVoices = () => {
   router.push("/digitalcourse/voices/custom/page")

@@ -1,7 +1,8 @@
 export default {
   common: {
-    inputText: 'Please input',
-    selectText: 'Please select',
+    inputText: 'Please input ',
+    selectText: 'Please select ',
+    notEmpty: ' Not Empty',
     startTimeText: 'Start time',
     endTimeText: 'End time',
     login: 'Login',
@@ -153,7 +154,8 @@ export default {
     login: 'Login',
     home: 'Home',
     analysis: 'Analysis',
-    workplace: 'Workplace'
+    workplace: 'Workplace',
+    Template: 'Template'
   },
   analysis: {
     newUser: 'New user',
@@ -285,7 +287,11 @@ export default {
     hiddenSelections: 'Restore selections',
     showExpandedRows: 'Show expanded rows',
     hiddenExpandedRows: 'Hidden expanded rows',
-    header: 'Header'
+    header: 'Header',
+    search: 'Search',
+    reset: 'Reset',
+    startTime: 'Start Time',
+    endTime: 'End Time'
   },
   action: {
     create: 'Create',
@@ -453,5 +459,10 @@ export default {
     btn_zoom_in: 'Zoom in',
     btn_zoom_out: 'Zoom out',
     preview: 'Preivew'
-  }
+  },
+
+  ...template,
+  ...courseCenter
 }
+import template from './template/en'
+import courseCenter from './courseCenter/en'

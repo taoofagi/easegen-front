@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="批量替换内容"
+    :title="t('courseCenter.batchReplaceContent')"
     v-model="replaceDialogVisible"
     width="600px"
     append-to-body
@@ -11,29 +11,29 @@
       <div v-for="(replacement, index) in replacements" :key="index" class="replacement-row">
         <el-input
           v-model="replacement.from"
-          placeholder="请输入需要替换的内容"
+          :placeholder="t('courseCenter.batchReplaceContentFrom')"
           class="flat-input"
         />
         <el-input
           v-model="replacement.to"
-          placeholder="请输入替换为的内容"
+          :placeholder="t('courseCenter.batchReplaceContentTo')"
           class="flat-input"
         />
-        <el-button type="danger" @click="removeReplacement(index)" class="flat-button delete-button">删除</el-button>
+        <el-button type="danger" @click="removeReplacement(index)" class="flat-button delete-button">{{t('form.delete')}}</el-button>
       </div>
     </div>
-    <el-button class="flat-button add-button" @click="addReplacement">添加新的替换</el-button>
-    <el-button class="flat-button add-button" @click="getPunctuationMarks">替换英文标点符号</el-button>
+    <el-button class="flat-button add-button" @click="addReplacement">{{t('form.AddNewReplacement')}}</el-button>
+    <el-button class="flat-button add-button" @click="getPunctuationMarks">{{t('form.replaceEnglishPunctuationMarks')}}</el-button>
     <template #footer>
-      <el-button class="flat-button cancel-button" @click="replaceDialogVisible = false">取 消</el-button>
-      <el-button type="primary" class="flat-button confirm-button" @click="applyReplacements">确 定</el-button>
+      <el-button class="flat-button cancel-button" @click="replaceDialogVisible = false">{{t('common.cancel')}}</el-button>
+      <el-button type="primary" class="flat-button confirm-button" @click="applyReplacements">{{t('common.ok')}}</el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, toRefs  } from 'vue';
-
+const { t } = useI18n() // 国际化
 const message = useMessage()
 // 接收父组件传递的 props
 const props = defineProps({

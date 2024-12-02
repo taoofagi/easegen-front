@@ -4,8 +4,8 @@
       <div class="group_8 flex-row justify-end cursor-pointer" @click="createPPT">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
-            <span class="text_10">视频课件</span>
-            <span class="text_11">模版式视频，一键生成</span>
+            <span class="text_10"> {{ t('courseCenter.videoCourse') }}</span>
+            <span class="text_11">{{ t('courseCenter.videoCourseTitle') }}</span>
           </div>
           <div class="box_3 flex-row">
             <div class="image-wrapper_2 flex-col">
@@ -15,7 +15,7 @@
                 src="@/assets/digitalcourse/jiantou.png"
               />
             </div>
-            <span class="text_12">去创作</span>
+            <span class="text_12">{{ t('courseCenter.goCreate') }}</span>
           </div>
         </div>
         <img
@@ -27,8 +27,8 @@
       <div class="group_8 flex-row justify-end cursor-pointer" @click="todigitalhumans">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
-            <span class="text_10">数字人形象定制</span>
-            <span class="text_11">提交形象</span>
+            <span class="text_10">{{ t('courseCenter.digitalPeopleImageCustom') }}</span>
+            <span class="text_11">{{ t('courseCenter.submitImage') }}</span>
           </div>
           <div class="box_3 flex-row">
             <div class="image-wrapper_2 flex-col">
@@ -38,7 +38,7 @@
                 src="@/assets/digitalcourse/jiantou.png"
               />
             </div>
-            <span class="text_12">提交形象</span>
+            <span class="text_12">{{ t('courseCenter.submitImage') }}</span>
           </div>
         </div>
         <img
@@ -50,7 +50,7 @@
       <div class="group_8 flex-row justify-end cursor-pointer" @click="tovoice">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
-            <span class="text_10">数字人声音定制</span>
+            <span class="text_10">{{ t('courseCenter.digitalPeopleVoicesCustom') }}</span>
             <span class="text_11"></span>
           </div>
           <div class="box_3 flex-row">
@@ -61,7 +61,7 @@
                 src="@/assets/digitalcourse/jiantou.png"
               />
             </div>
-            <span class="text_12">提交声音</span>
+            <span class="text_12">{{ t('courseCenter.submitVoices') }}</span>
           </div>
         </div>
         <img
@@ -79,12 +79,12 @@
       <!--        <div class="header-text" style="color: #fff;">视频教程</div>-->
       <!--      </a>-->
     </div>
-    <div class="title">我的课程</div>
+    <div class="title">{{ t('courseCenter.myCourses') }}</div>
     <div class="project-list">
       <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
         <div class="img-box">
           <div class="scene-item-box" :style="{ backgroundImage: `url(${item.thumbnail})` }">
-            <div v-if="item.progress" class="item-progress">进度：{{ item.progress }}</div>
+            <div v-if="item.progress" class="item-progress">{{ t('courseCenter.progress') }}：{{ item.progress }}</div>
           </div>
         </div>
         <div class="name-row">

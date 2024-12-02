@@ -2,6 +2,7 @@ export default {
   common: {
     inputText: '请输入',
     selectText: '请选择',
+    notEmpty: '不能为空',
     startTimeText: '开始时间',
     endTimeText: '结束时间',
     login: '登录',
@@ -287,7 +288,11 @@ export default {
     hiddenSelections: '隐藏多选',
     showExpandedRows: '显示展开行',
     hiddenExpandedRows: '隐藏展开行',
-    header: '头部'
+    header: '头部',
+    search: '搜索',
+    reset: '重置',
+    startTime: '开始日期',
+    endTime: '结束日期'
   },
   action: {
     create: '新增',
@@ -449,5 +454,11 @@ export default {
     btn_zoom_out: '缩小',
     preview: '预览'
   },
-  'OAuth 2.0': 'OAuth 2.0' // 避免菜单名是 OAuth 2.0 时，一直 warn 报错
+  'OAuth 2.0': 'OAuth 2.0', // 避免菜单名是 OAuth 2.0 时，一直 warn 报错
+
+  ...template,
+  ...courseCenter
 }
+
+import template from './template/zh'
+import courseCenter from './courseCenter/zh'
