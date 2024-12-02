@@ -8,10 +8,10 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="行业" prop="industry">
+      <el-form-item :label="t('workCenter.industry')" prop="industry">
         <el-select
           v-model="queryParams.industry"
-          placeholder="请选择行业"
+          :placeholder="t('common.selectText')+t('workCenter.industry')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -19,15 +19,15 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_INDUSTRY)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="场景" prop="scene">
+      <el-form-item :label="t('workCenter.scene')" prop="scene">
         <el-select
           v-model="queryParams.scene"
-          placeholder="请选择场景"
+          :placeholder="t('common.selectText')+t('workCenter.scene')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -40,10 +40,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="语种" prop="language">
+      <el-form-item :label="t('workCenter.language')" prop="language">
         <el-select
           v-model="queryParams.language"
-          placeholder="请选择语种"
+          :placeholder="t('common.selectText')+t('workCenter.language')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -51,21 +51,21 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_LANGUAGE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" />{{t('table.search')}}</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> {{t('table.reset')}}</el-button>
         <el-button
           type="primary"
           plain
           @click="openForm('create')"
           v-hasPermi="['member:work-center:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" /> {{ t('action.add') }}
         </el-button>
         <el-button
           type="success"
@@ -74,7 +74,7 @@
           :loading="exportLoading"
           v-hasPermi="['member:work-center:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" /> {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -83,33 +83,33 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="编号" align="center" prop="id" />
-      <el-table-column label="行业" align="center" prop="industry" >
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('workCenter.industry')" align="center" prop="industry" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.MEMBER_INDUSTRY" :value="scope.row.industry" />
         </template>
       </el-table-column>
-      <el-table-column label="场景" align="center" prop="scene">
+      <el-table-column :label="t('workCenter.scene')" align="center" prop="scene">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.MEMBER_SCENE" :value="scope.row.scene" />
         </template>
       </el-table-column>
-      <el-table-column label="语种" align="center" prop="language">
+      <el-table-column :label="t('workCenter.language')" align="center" prop="language">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.MEMBER_LANGUAGE" :value="scope.row.language" />
         </template>
       </el-table-column>
-<!--      <el-table-column label="作品类型" align="center" prop="workType" />-->
-      <el-table-column label="作品时长(秒)" align="center" prop="workDuration" />
-<!--      <el-table-column label="封面地址" align="center" prop="coverUrl" />-->
+<!--      <el-table-column :label="作品类型" align="center" prop="workType" />-->
+      <el-table-column :label="t('workCenter.workDuration')" align="center" prop="workDuration" />
+<!--      <el-table-column :label="封面地址" align="center" prop="coverUrl" />-->
       <el-table-column
-        label="创建时间"
+        :label="t('table.createTime')"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" align="center" min-width="120px">
+      <el-table-column :label="t('table.action')" align="center" min-width="120px">
         <template #default="scope">
           <el-button
             link
@@ -117,7 +117,7 @@
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['member:work-center:update']"
           >
-            编辑
+            {{ t('action.edit') }}
           </el-button>
           <el-button
             link
@@ -125,7 +125,7 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['member:work-center:delete']"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>

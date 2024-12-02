@@ -8,10 +8,10 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="视频名称" prop="name">
+      <el-form-item :label="t('myCourse.videoName')" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入视频名称"
+          :placeholder="t('common.inputText')+t('myCourse.videoName')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -20,11 +20,11 @@
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon icon="ep:search" class="mr-5px" />
-          搜索
+          {{t('table.search')}}
         </el-button>
         <el-button @click="resetQuery">
           <Icon icon="ep:refresh" class="mr-5px" />
-          重置
+          {{t('table.reset')}}
         </el-button>
       </el-form-item>
     </el-form>
@@ -34,57 +34,57 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="视频编码" align="center" prop="id" />
-      <el-table-column label="视频名称" align="center" prop="name" />
-      <el-table-column label="视频时长" align="center" prop="duration">
+      <el-table-column :label="t('myCourse.videoCode')" align="center" prop="id" />
+      <el-table-column :label="t('myCourse.videoName')" align="center" prop="name" />
+      <el-table-column :label="t('myCourse.duration')" align="center" prop="duration">
         <template #default="scope">
           {{ formatDuration(scope.row.duration) }}
         </template>
       </el-table-column>
-      <el-table-column label="课程名称" align="center" prop="courseName">
+      <el-table-column :label="t('myCourse.courseName')" align="center" prop="courseName">
         <template #default="scope">
           <el-link type="primary" @click="goDetail(scope.row.courseId)">{{ scope.row.courseName }}</el-link>
         </template>
       </el-table-column>
       <el-table-column
-        label="创建时间"
+        :label="t('table.createTime')"
         align="center"
         prop="createTime"
         width="120"
         :formatter="dateFormatter"
       />
       <el-table-column
-        label="合成时间"
+        :label="t('myCourse.finishTime')"
         align="center"
         prop="finishTime"
         width="120"
         :formatter="dateFormatter"
       />
-      <el-table-column label="合成进度" align="center" prop="progress">
+      <el-table-column :label="t('myCourse.progress')" align="center" prop="progress">
         <template #default="scope">
           <el-progress :percentage="getProgress(scope.row.status, scope.row.progress)" />
         </template>
       </el-table-column>
-      <el-table-column label="合成耗时" align="center">
+      <el-table-column :label="t('myCourse.SynthesisTime')" align="center">
         <template #default="scope">
           {{ calculateDuration(scope.row.createTime, scope.row.finishTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="失败原因" align="center" prop="errorReason">
+      <el-table-column :label="t('myCourse.errorReason')" align="center" prop="errorReason">
         <template #default="scope">
-          <el-tooltip :content="scope.row.errorReason || '无'" placement="top">
+          <el-tooltip :content="scope.row.errorReason || '--'" placement="top">
             <span>
-              {{ scope.row.errorReason ? (scope.row.errorReason.length > 20 ? scope.row.errorReason.slice(0, 20) + '...' : scope.row.errorReason) : '无' }}
+              {{ scope.row.errorReason ? (scope.row.errorReason.length > 20 ? scope.row.errorReason.slice(0, 20) + '...' : scope.row.errorReason) : '--' }}
             </span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column :label="t('myCourse.status')" align="center" prop="status">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.VIDEO_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="110" fixed="right">
+      <el-table-column :label="t('table.action')" align="center" min-width="110" fixed="right">
         <template #default="scope">
           <template v-if="scope.row.status == 2">
             <el-button
@@ -92,14 +92,14 @@
               type="primary"
               @click="openPreview(scope.row)"
             >
-              预览
+              {{t('myCourse.preview')}}
             </el-button>
             <el-button
               link
               type="primary"
               @click="handleDownload(scope.row.previewUrl,scope.row.courseName)"
             >
-              下载视频
+              {{t('myCourse.downloadVideo')}}
             </el-button>
             <el-button
               v-if="scope.row.subtitlesUrl"
@@ -107,7 +107,7 @@
               type="primary"
               @click="handleDownload(scope.row.subtitlesUrl,scope.row.courseName)"
             >
-              下载字幕
+              {{t('myCourse.downloadSubtitles')}}
             </el-button>
           </template>
           <template v-if=" scope.row.status == 3">
@@ -116,7 +116,7 @@
               type="warning"
               @click="reMegerMedia(scope.row.id)"
             >
-              重新合成
+              {{t('myCourse.resynthesize')}}
             </el-button>
           </template>
           <el-button
@@ -124,7 +124,7 @@
             type="danger"
             @click="handleDelete(scope.row.id)"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>

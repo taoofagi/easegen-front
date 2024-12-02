@@ -7,47 +7,47 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="行业" prop="industry">
-        <el-select v-model="formData.industry" placeholder="请选择行业">
+      <el-form-item :label="t('workCenter.industry')" prop="industry">
+        <el-select v-model="formData.industry" :placeholder="t('common.selectText')+t('workCenter.industry')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_INDUSTRY)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="parseInt(dict.value)"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="场景" prop="scene">
-        <el-select v-model="formData.scene" placeholder="请选择场景">
+      <el-form-item :label="t('workCenter.scene')" prop="scene">
+        <el-select v-model="formData.scene" :placeholder="t('common.selectText')+t('workCenter.scene')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_SCENE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="语种" prop="language">
-        <el-select v-model="formData.language" placeholder="请选择语种">
+      <el-form-item :label="t('workCenter.language')" prop="language">
+        <el-select v-model="formData.language" :placeholder="t('common.selectText')+t('workCenter.language')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_LANGUAGE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="作品上传" prop="workUrl">
+      <el-form-item :label="t('workCenter.workUrl')" prop="workUrl">
         <uploadFile v-if="!formData.workUrl" drag :limit="1" :modelValue="formData.workUrl" @getDuration="getDuration" v-model="formData.workUrl" :isShowFileList="false" :fileType="fileType"/>
         <video-player v-if="formData.workUrl" :property="videoProperty"/>
       </el-form-item>
-      <el-form-item label="封面" prop="thumbnail">
+      <el-form-item :label="t('workCenter.cover')" prop="thumbnail">
         <UploadImg v-model="formData.thumbnail" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm" type="primary" :disabled="formLoading">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>

@@ -462,7 +462,11 @@ export default {
   },
 
   ...template,
+  ...workCenter,
+  ...myCrouse,
   ...courseCenter
 }
 import template from './template/en'
 import courseCenter from './courseCenter/en'
+import workCenter from './workCenter/en'
+import myCrouse from './myCrouse/en'
