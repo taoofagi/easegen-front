@@ -57,6 +57,18 @@
       </el-row>
       <el-row>
         <el-col :span="12">
+          <el-form-item prop="type" label="用户类型">
+            <el-select v-model="formData.type" placeholder="请选择">
+              <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_TYPE)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="用户性别">
             <el-select v-model="formData.sex" placeholder="请选择">
               <el-option
@@ -131,6 +143,7 @@ const formRules = reactive<FormRules>({
   username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
   nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
   password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
+  type: [{ required: true, message: '用户类型不能为空', trigger: 'blur' }],
   email: [
     {
       type: 'email',

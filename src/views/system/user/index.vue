@@ -117,7 +117,12 @@
             :show-overflow-tooltip="true"
           />
           <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
-          <el-table-column label="状态" key="status">
+          <el-table-column label="用户类型" align="center" prop="type" width="120" >
+            <template #default="scope">
+              <dict-tag :type="DICT_TYPE.SYSTEM_USER_TYPE" :value="scope.row.type" />
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" align="center"  key="status">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
