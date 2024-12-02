@@ -8,7 +8,7 @@
           size="small"
           @click="toDisgitalhumans"
         >
-          我的模型
+          {{ t('courseCenter.myModel') }}
         </el-button>
       </el-col>
     </el-row>
@@ -16,14 +16,14 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="100px"
+      label-width="200px"
       v-loading="formLoading"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入名称" />
+      <el-form-item :label="t('courseCenter.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('courseCenter.name')" />
       </el-form-item>
-      <el-form-item label="数字人模式" prop="useModel">
-        <el-select v-model="formData.useModel" placeholder="请选择数字人模式">
+      <el-form-item :label="t('courseCenter.digitalPeopleModel')" prop="useModel">
+        <el-select v-model="formData.useModel" :placeholder="t('common.selectText')+t('courseCenter.digitalPeopleModel')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
             :key="dict.value"
@@ -32,15 +32,15 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 1" label="图片" prop="pictureUrl">
+      <el-form-item v-if="formData.useModel == 1" :label="t('courseCenter.image')" prop="pictureUrl">
         <UploadImg v-model="formData.pictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
+      <el-form-item v-if="formData.useModel == 2" :label="t('courseCenter.video')" prop="videoUrl">
         <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
       </el-form-item>
     </el-form>
     <div>
-      <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">提 交</el-button>
+      <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">{{t('courseCenter.submit')}}</el-button>
     </div>
   </div>
 </template>
@@ -72,16 +72,10 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-  pictureUrl: [{ required: true, message: '图片URL不能为空', trigger: 'blur' }],
-  useModel: [{ required: true, message: '数字人模式不能为空', trigger: 'blur' }],
-  videoUrl: [{ required: true, message: '视频URL不能为空', trigger: 'blur' }],
-  posture: [{ required: true, message: '姿势不能为空', trigger: 'change' }],
-  snapshotHeight: [{ required: true, message: '快照高度不能为空', trigger: 'blur' }],
-  snapshotUrl: [{ required: true, message: '快照URL不能为空', trigger: 'blur' }],
-  snapshotWidth: [{ required: true, message: '快照宽度不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '类型不能为空', trigger: 'change' }],
-  useGeneralModel: [{ required: true, message: '使用通用模型不能为空', trigger: 'change' }]
+  name: [{ required: true, message: t('courseCenter.name')+t('common.notEmpty'), trigger: 'blur' }],
+  pictureUrl: [{ required: true, message: t('courseCenter.image')+t('common.notEmpty'), trigger: 'blur' }],
+  useModel: [{ required: true, message: t('courseCenter.digitalPeopleModel')+t('common.notEmpty'), trigger: 'blur' }],
+  videoUrl: [{ required: true, message: t('courseCenter.video')+t('common.notEmpty'), trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 const submitForm = async (status) => {

@@ -8,7 +8,7 @@
           size="small"
           @click="toVoices"
         >
-          我的模型
+          {{ t('courseCenter.myModel') }}
         </el-button>
       </el-col>
     </el-row>
@@ -16,21 +16,21 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="100px"
+      label-width="200px"
       v-loading="formLoading"
     >
-      <el-form-item label="声音名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入声音名称" />
+      <el-form-item :label="t('courseCenter.voiceName')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('courseCenter.voiceName')" />
       </el-form-item>
-      <el-form-item label="头像" prop="avatarUrl">
+      <el-form-item :label="t('courseCenter.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
-      <el-form-item label="上传声音" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','ogg','m4a','aac','pcm']" fileSize="10" describe="推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+      <el-form-item :label="t('courseCenter.uploadSound')" prop="auditionUrl">
+        <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','ogg','m4a','aac','pcm']" fileSize="10" :describe="t('courseCenter.uploadSoundText')" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
     </el-form>
     <div>
-      <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">提 交</el-button>
+      <el-button v-hasPermi="['humans:custom:submit']" @click="submitForm(1)" type="primary" :disabled="formLoading">{{t('courseCenter.submit')}}</el-button>
     </div>
   </div>
 </template>
@@ -59,13 +59,8 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: '声音名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '声音编码不能为空', trigger: 'blur' }],
-  auditionUrl: [{ required: true, message: '试听URL不能为空', trigger: 'blur' }],
-  // gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
-  // quality: [{ required: true, message: '音质评分不能为空', trigger: 'blur' }],
-  voiceType: [{ required: true, message: '声音类型 不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('courseCenter.voiceName')+t('common.notEmpty'), trigger: 'blur' }],
+  auditionUrl: [{ required: true, message:t('courseCenter.uploadSound')+t('common.notEmpty'), trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 const submitForm = async () => {

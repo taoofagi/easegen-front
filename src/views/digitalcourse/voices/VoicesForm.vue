@@ -11,7 +11,7 @@
         <el-input v-model="formData.name" placeholder="请输入声音名称" />
       </el-form-item>
       <el-form-item label="头像" prop="avatarUrl">
-        <UploadFile v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
+        <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
       <el-form-item label="试听音频" prop="auditionUrl">
         <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>

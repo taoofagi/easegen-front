@@ -11,7 +11,7 @@
         <el-input disabled v-model="formData.name" placeholder="请输入声音名称" />
       </el-form-item>
       <el-form-item label="头像" prop="avatarUrl">
-        <UploadFile :isShowDelete="false"  v-model="formData.avatarUrl" :fileType="['jpg','png']" :limit="1" @on-success="handleFileSuccess('avatar', $event)"/>
+        <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
       <el-form-item label="上传声音" prop="auditionUrl">
         <UploadFile :isShowDelete="false" v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
