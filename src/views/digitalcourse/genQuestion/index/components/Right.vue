@@ -2,7 +2,7 @@
   <el-card class="my-card h-full">
     <template #header>
       <h3 class="m-0 px-7 shrink-0 flex items-center justify-between header-section">
-        <span class="header-title">输入区</span>
+        <span class="header-title">{{ t('genQuestion.rightTitle') }}</span>
         <!-- 展示在右上角 -->
         <!-- 注释掉的复制按钮，可能后续会启用 -->
         <!--        <el-button color="#846af7" v-show="showCopy" @click="copyContent" size="small">-->
@@ -26,7 +26,7 @@
           <template #icon>
             <Icon icon="material-symbols:stop" />
           </template>
-          终止生成
+        {{ t('genQuestion.stopGen') }}
         </el-button>
         <!-- 文本输入区域 -->
         <el-input
@@ -36,7 +36,7 @@
           autosize
           :input-style="{ boxShadow: 'none' }"
           resize="none"
-          placeholder="生成的内容……"
+          :placeholder="t('genQuestion.generatedContent')+'……'"
         />
       </div>
     </div>
@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
-
+const { t } = useI18n() // 国际化
 // 使用消息提示
 const message = useMessage()
 // 使用剪贴板功能

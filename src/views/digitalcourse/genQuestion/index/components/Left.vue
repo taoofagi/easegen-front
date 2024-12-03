@@ -50,18 +50,18 @@
     >
       <div>
         <!-- 题目要求输入框 -->
-        <ReuseLabel :hint-click="() => example('write')" hint="" label="题目要求" />
+        <ReuseLabel :hint-click="() => example('write')" hint="" :label="t('genQuestion.titleRequirements')" />
         <el-input
           v-model="formData.text"
           :maxlength="10000"
           :rows="5"
-          placeholder="请输入题目要求"
+          :placeholder="t('common.inputText')+t('genQuestion.titleRequirements')"
           showWordLimit
           type="textarea"
         />
 
         <!-- 文件上传区域（仅在"依据资料生成"模式下显示） -->
-        <ReuseLabel label="上传文件" v-if="selectedTab === 2" />
+        <ReuseLabel :label="t('genQuestion.uploadFile')" v-if="selectedTab === 2" />
         <template v-if="selectedTab === 2">
           <el-upload
             v-loading="isUploading"
@@ -83,30 +83,30 @@
               <div class="upload-area" style="text-align: center;">
                 <img src="data:image/png;base64,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" alt="Upload Icon" class="upload-icon" style="width: 32px; height: 37px; margin-bottom: 10px;" />
                 <p class="upload-text" style="font-size: 14px; color: #409eff;">
-                  <span class="upload-link" style="color: #409eff; text-decoration: underline;">点击上传</span>，或拖动文档到这里
+                  <span class="upload-link" style="color: #409eff; text-decoration: underline;">{{ t('genQuestion.clickToUpload') }}</span>，{{ t('genQuestion.dragUpload') }}
                 </p>
-                <p class="upload-hint" style="font-size: 12px; color: #999;">支持扩展名：.pdf,.txt,.docx。单个文档大小限制20M</p>
+                <p class="upload-hint" style="font-size: 12px; color: #999;">{{ t('genQuestion.uploadTips') }}</p>
               </div>
             </div>
           </el-upload>
         </template>
 
         <!-- 选择题型 -->
-        <ReuseLabel label="选择题型" />
+        <ReuseLabel :label="t('genQuestion.questionType')" />
         <Tag v-model="formData.questionType" :tags="getIntDictOptions(DICT_TYPE.DIGITALCOURSE_GENQUESTION_QUESTION_TYPE)" />
-        
+
         <!-- 试题难度 -->
-        <ReuseLabel label="试题难度" />
+        <ReuseLabel :label="t('genQuestion.difficulty')" />
         <Tag v-model="formData.difficulty" :tags="getIntDictOptions(DICT_TYPE.DIGITALCOURSE_GENQUESTION_DIFFICULTY)" />
-        
+
         <!-- 生成数量 -->
-        <ReuseLabel label="生成数量" />
+        <ReuseLabel :label="t('genQuestion.numQuestions')" />
         <el-input v-model="formData.numQuestions" type="number" :min="1" :max="50" />
 
         <!-- 重置和生成按钮 -->
         <div class="flex items-center justify-center mt-3">
-          <el-button :disabled="isWriting" @click="reset">重置</el-button>
-          <el-button :loading="isWriting" color="#846af7" @click="submit">生成</el-button>
+          <el-button :disabled="isWriting" @click="reset">{{ t('common.reset') }}</el-button>
+          <el-button :loading="isWriting" color="#846af7" @click="submit">{{ t('action.generate') }}</el-button>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@ import { GenQuestionTypeEnum } from "@/views/digitalcourse/utils/constants";
 import { config } from "@/config/axios/config";
 import { getAccessToken, getTenantId } from "@/utils/auth";
 import { UploadRawFile } from "element-plus";
-
+const { t } = useI18n() // 国际化
 // 使用消息提示
 const message = useMessage()
 
@@ -191,8 +191,8 @@ const tabs: {
   text: string
   value: TabType
 }[] = [
-  { text: '按照要求生成', value: GenQuestionTypeEnum.REQUIRE },
-  { text: '依据资料生成', value: GenQuestionTypeEnum.DOC }
+  { text: t('genQuestion.leftTitle1'), value: GenQuestionTypeEnum.REQUIRE },
+  { text: t('genQuestion.leftTitle2'), value: GenQuestionTypeEnum.DOC }
 ]
 
 // 创建可复用的模板组件
