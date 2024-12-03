@@ -7,20 +7,20 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="声音名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入声音名称" />
+      <el-form-item :label="t('voices.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('voices.name')" />
       </el-form-item>
-      <el-form-item label="头像" prop="avatarUrl">
+      <el-form-item :label="t('voices.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
-      <el-form-item label="试听音频" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav','m4a']" fileSize="20" describe="推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+      <el-form-item :label="t('voices.auditionUrl')" prop="auditionUrl">
+        <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav','m4a']" fileSize="20" :describe="t('voices.fixAuditionUrlTips')" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) }}</el-button>
-      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">{{t('voices.reject')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>
@@ -50,11 +50,10 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: '声音名称不能为空', trigger: 'blur' }],
-  auditionUrl: [{ required: true, message: '试听URL不能为空', trigger: 'blur' }],
-  language: [{ required: true, message: '语言类型不能为空', trigger: 'change' }],
-  voiceType: [{ required: true, message: '声音类型 不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
+  name: [{ required: true, message:  t('voices.name')+t('common.notEmpty'), trigger: 'blur' }],
+  auditionUrl: [{ required: true, message: t('voices.auditionUrl')+t('common.notEmpty'), trigger: 'blur' }],
+  language: [{ required: true, message: t('voices.language')+t('common.notEmpty'), trigger: 'change' }],
+  voiceType: [{ required: true, message: t('voices.language')+t('common.notEmpty'), trigger: 'change' }],
 })
 const formRef = ref() // 表单 Ref
 

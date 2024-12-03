@@ -10,55 +10,55 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="租户名" prop="name">
+      <el-form-item :label="t('tenant.name')" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入租户名"
+          :placeholder="t('common.inputText')+t('tenant.name')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="联系人" prop="contactName">
+      <el-form-item :label="t('tenant.contactName')" prop="contactName">
         <el-input
           v-model="queryParams.contactName"
-          placeholder="请输入联系人"
+          :placeholder="t('common.inputText')+t('tenant.contactName')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="联系手机" prop="contactMobile">
+      <el-form-item :label="t('tenant.mobile')" prop="contactMobile">
         <el-input
           v-model="queryParams.contactMobile"
-          placeholder="请输入联系手机"
+          :placeholder="t('common.inputText')+t('tenant.mobile')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="租户状态" prop="status">
+      <el-form-item :label="t('tenant.status')" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择租户状态"
+          :placeholder="t('common.selectText')+t('tenant.status')"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item :label="t('common.createTime')" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           value-format="YYYY-MM-DD HH:mm:ss"
           type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          :start-placeholder="t('tenant.startCreateTime')"
+          :end-placeholder="t('tenant.endCreateTime')"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
         />
@@ -67,11 +67,11 @@
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon icon="ep:search" class="mr-5px" />
-          搜索
+          {{ t('table.search') }}
         </el-button>
         <el-button @click="resetQuery">
           <Icon icon="ep:refresh" class="mr-5px" />
-          重置
+          {{ t('table.reset') }}
         </el-button>
         <el-button
           type="primary"
@@ -80,7 +80,7 @@
           v-hasPermi="['system:tenant:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" />
-          新增
+          {{ t('action.add') }}
         </el-button>
         <el-button
           type="success"
@@ -90,7 +90,7 @@
           v-hasPermi="['system:tenant:export']"
         >
           <Icon icon="ep:download" class="mr-5px" />
-          导出
+          {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -99,11 +99,11 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="租户编号" align="center" prop="id" />
-      <el-table-column label="租户名" align="center" prop="name" />
-      <el-table-column label="租户套餐" align="center" prop="packageId">
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('tenant.name')" align="center" prop="name" />
+      <el-table-column :label="t('tenant.package')" align="center" prop="packageId">
         <template #default="scope">
-          <el-tag v-if="scope.row.packageId === 0" type="danger">系统租户</el-tag>
+          <el-tag v-if="scope.row.packageId === 0" type="danger">{{ t('tenant.systemTenant') }}</el-tag>
           <template v-else v-for="item in packageList">
             <el-tag type="success" :key="item.id" v-if="item.id === scope.row.packageId">
               {{ item.name }}
@@ -111,34 +111,34 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="联系人" align="center" prop="contactName" />
-      <el-table-column label="联系手机" align="center" prop="contactMobile" />
-      <el-table-column label="账号额度" align="center" prop="accountCount">
+      <el-table-column :label="t('tenant.contactName')" align="center" prop="contactName" />
+      <el-table-column :label="t('tenant.mobile')" align="center" prop="contactMobile" />
+      <el-table-column :label="t('tenant.accountLimit')" align="center" prop="accountCount">
         <template #default="scope">
           <el-tag>{{ scope.row.accountCount }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
-        label="过期时间"
+        :label="t('tenant.expireTime')"
         align="center"
         prop="expireTime"
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="绑定域名" align="center" prop="website" width="180" />
-      <el-table-column label="租户状态" align="center" prop="status">
+      <el-table-column :label="t('tenant.website')" align="center" prop="website" width="180" />
+      <el-table-column :label="t('tenant.status')" align="center" prop="status">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
-        label="创建时间"
+        :label="t('common.createTime')"
         align="center"
         prop="createTime"
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="操作" align="center" min-width="110" fixed="right">
+      <el-table-column :label="t('table.action')" align="center" min-width="110" fixed="right">
         <template #default="scope">
           <el-button
             link
@@ -146,7 +146,7 @@
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['system:tenant:update']"
           >
-            编辑
+            {{t('action.edit')}}
           </el-button>
           <el-button
             link
@@ -154,7 +154,7 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['system:tenant:delete']"
           >
-            删除
+            {{t('action.del')}}
           </el-button>
         </template>
       </el-table-column>

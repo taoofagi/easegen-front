@@ -461,6 +461,8 @@ export default {
   ...myCrouse,
   ...genQuestion,
   ...digitalhumans,
+  ...voices,
+  ...system,
   ...courseCenter
 }
 
@@ -470,3 +472,5 @@ import workCenter from './workCenter/zh'
 import myCrouse from './myCrouse/zh'
 import digitalhumans from './digitalhumans/zh'
 import genQuestion from './genQuestion/zh'
+import voices from './voices/zh'
+import system from './system/zh'

@@ -466,6 +466,8 @@ export default {
   ...myCrouse,
   ...digitalhumans,
   ...genQuestion,
+  ...voices,
+  ...system,
   ...courseCenter
 }
 import template from './template/en'
@@ -474,3 +476,5 @@ import workCenter from './workCenter/en'
 import myCrouse from './myCrouse/en'
 import digitalhumans from './digitalhumans/en'
 import genQuestion from './genQuestion/en'
+import voices from './voices/en'
+import system from './system/en'

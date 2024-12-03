@@ -7,22 +7,22 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="声音名称" prop="name">
-        <el-input disabled v-model="formData.name" placeholder="请输入声音名称" />
+      <el-form-item :label="t('voices.name')" prop="name">
+        <el-input disabled v-model="formData.name" :placeholder="t('common.inputText')+t('voices.name')" />
       </el-form-item>
-      <el-form-item label="头像" prop="avatarUrl">
+      <el-form-item :label="t('voices.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
-      <el-form-item label="上传声音" prop="auditionUrl">
+      <el-form-item :label="t('voices.auditionUrl')" prop="auditionUrl">
         <UploadFile :isShowDelete="false" v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
-      <el-form-item v-if="formData.status > 1" label="修复后音频" prop="fixAuditionUrl">
-        <UploadFile v-model="formData.fixAuditionUrl" :fileType="['mp3','wav','m4a']" describe="推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。" :limit="1" @on-success="handleFileSuccess('fixAuditionUrl', $event)"/>
+      <el-form-item v-if="formData.status > 1" :label="t('voices.fixAuditionUrl')" prop="fixAuditionUrl">
+        <UploadFile v-model="formData.fixAuditionUrl" :fileType="['mp3','wav','m4a']" :describe="t('voices.fixAuditionUrlTips')" :limit="1" @on-success="handleFileSuccess('fixAuditionUrl', $event)"/>
       </el-form-item>
-      <el-form-item v-if="formData.status == 0" label="过期时间">
+      <el-form-item v-if="formData.status == 0" :label="t('voices.expireDate')">
         <el-date-picker
           v-model="formData.expireDate"
-          placeholder="过期时间"
+          :placeholder="t('common.selectText')+t('voices.expireDate')"
           type="datetime"
           value-format="x"
           class="!w-1/1"
@@ -30,9 +30,9 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) || '保存' }}</el-button>
-      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) || t('common.save') }}</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">{{t('voices.reject')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>
@@ -62,12 +62,6 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: '声音名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '声音编码不能为空', trigger: 'blur' }],
-  avatarUrl: [{ required: true, message: '头像不能为空', trigger: 'blur' }],
-  auditionUrl: [{ required: true, message: '试听URL不能为空', trigger: 'blur' }],
-  voiceType: [{ required: true, message: '声音类型 不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 

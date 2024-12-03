@@ -7,57 +7,57 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="声音名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入声音名称" />
+      <el-form-item :label="t('voices.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('voices.name')" />
       </el-form-item>
-      <el-form-item label="头像" prop="avatarUrl">
+      <el-form-item :label="t('voices.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
-      <el-form-item label="试听音频" prop="auditionUrl">
+      <el-form-item :label="t('voices.auditionUrl')" prop="auditionUrl">
         <UploadFile v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
-      <el-form-item label="语言类型" prop="language">
-        <el-select v-model="formData.language" placeholder="请选择语言类型">
+      <el-form-item :label="t('voices.language')" prop="language">
+        <el-select v-model="formData.language" :placeholder="t('common.selectText')+t('voices.language')">
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
+      <el-form-item :label="t('voices.gender')" prop="gender">
+        <el-select v-model="formData.gender" :placeholder="t('common.selectText')+t('voices.gender')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="介绍" prop="introduction">
-        <el-input v-model="formData.introduction" placeholder="请输入介绍" />
+      <el-form-item :label="t('voices.introduction')" prop="introduction">
+        <el-input v-model="formData.introduction" :placeholder="t('common.inputText')+t('voices.introduction')" />
       </el-form-item>
-      <el-form-item label="音质评分" prop="quality">
-        <el-input v-model="formData.quality" placeholder="请输入音质评分" />
+      <el-form-item :label="t('voices.quality')" prop="quality">
+        <el-input v-model="formData.quality" :placeholder="t('common.inputText')+t('voices.quality')" />
       </el-form-item>
-      <el-form-item label="声音类型 " prop="voiceType">
-        <el-select v-model="formData.voiceType" placeholder="请选择声音类型 ">
+      <el-form-item :label="t('voices.voiceType') " prop="voiceType">
+        <el-select v-model="formData.voiceType" :placeholder="t('common.selectText')+t('voices.voiceType') ">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-<!--      <el-form-item label="状态" prop="status">
+<!--      <el-form-item :label="状态" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.value"
+            ::label="dict.value"
           >
             {{ dict.label }}
           </el-radio>
@@ -65,8 +65,8 @@
       </el-form-item>-->
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm" type="primary" :disabled="formLoading">{{t('common.ok')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>
@@ -96,15 +96,13 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: '声音名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '声音编码不能为空', trigger: 'blur' }],
-  avatarUrl: [{ required: true, message: '头像不能为空', trigger: 'blur' }],
-  auditionUrl: [{ required: true, message: '试听URL不能为空', trigger: 'blur' }],
-  language: [{ required: true, message: '语言类型不能为空', trigger: 'change' }],
-  gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
-  quality: [{ required: true, message: '音质评分不能为空', trigger: 'blur' }],
-  voiceType: [{ required: true, message: '声音类型 不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('voices.name')+t('common.notEmpty'), trigger: 'blur' }],
+  avatarUrl: [{ required: true, message: t('voices.avatar')+t('common.notEmpty'), trigger: 'blur' }],
+  auditionUrl: [{ required: true, message: t('voices.auditionUrl')+t('common.notEmpty'), trigger: 'blur' }],
+  language: [{ required: true, message:  t('voices.language')+t('common.notEmpty'), trigger: 'change' }],
+  gender: [{ required: true, message: t('voices.gender')+t('common.notEmpty'), trigger: 'change' }],
+  quality: [{ required: true, message: t('voices.quality')+t('common.notEmpty'), trigger: 'blur' }],
+  voiceType: [{ required: true, message: t('voices.voiceType')+t('common.notEmpty'), trigger: 'change' }],
 })
 const formRef = ref() // 表单 Ref
 

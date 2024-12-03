@@ -7,25 +7,25 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="套餐名" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入套餐名" />
+      <el-form-item :label="t('tenantPackage.packageName')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('tenantPackage.packageName')" />
       </el-form-item>
-      <el-form-item label="菜单权限">
+      <el-form-item :label="t('tenantPackage.menuPermissions')">
         <el-card class="w-full h-400px !overflow-y-scroll" shadow="never">
           <template #header>
-            全选/全不选:
+            {{t('tenantPackage.switch')}}:
             <el-switch
               v-model="treeNodeAll"
-              active-text="是"
-              inactive-text="否"
+              :active-text="t('tenantPackage.yes')"
+              :inactive-text="t('tenantPackage.no')"
               inline-prompt
               @change="handleCheckedTreeNodeAll"
             />
-            全部展开/折叠:
+            {{t('tenantPackage.menuExpand')}}:
             <el-switch
               v-model="menuExpand"
-              active-text="展开"
-              inactive-text="折叠"
+              :active-text="t('tenantPackage.unfold')"
+              :inactive-text="t('tenantPackage.fold')"
               inline-prompt
               @change="handleCheckedTreeExpand"
             />
@@ -34,13 +34,13 @@
             ref="treeRef"
             :data="menuOptions"
             :props="defaultProps"
-            empty-text="加载中，请稍候"
+            :empty-text="t('tenantPackage.treeLoding')"
             node-key="id"
             show-checkbox
           />
         </el-card>
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('common.status')" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -51,13 +51,13 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入备注" />
+      <el-form-item :label="t('form.remark')" prop="remark">
+        <el-input v-model="formData.remark" :placeholder="t('common.inputText')+t('form.remark')" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -86,9 +86,9 @@ const formData = ref({
   status: CommonStatusEnum.ENABLE
 })
 const formRules = reactive({
-  name: [{ required: true, message: '套餐名不能为空', trigger: 'blur' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
-  menuIds: [{ required: true, message: '关联的菜单编号不能为空', trigger: 'blur' }]
+  name: [{ required: true, message: t('tenantPackage.packageName')+t('common.notEmpty'), trigger: 'blur' }],
+  status: [{ required: true, message: t('common.status')+t('common.notEmpty'), trigger: 'blur' }],
+  menuIds: [{ required: true, message: t('tenantPackage.associatedMenu')+t('common.notEmpty'), trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 const menuOptions = ref<any[]>([]) // 树形结构数据

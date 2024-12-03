@@ -1,0 +1,31 @@
+export default {
+  tenant:{
+    name:'租户名',
+    contactName:'联系人',
+    mobile:'联系手机',
+    status:'租户状态',
+    startCreateTime:'开始日期',
+    endCreateTime:'结束日期',
+    package:'租户套餐',
+    systemTenant:'系统租户',
+    accountLimit:'账号额度',
+    expireTime:'过期时间',
+    website:'绑定域名',
+    username:'用户名称',
+    password:'用户密码',
+  },
+  tenantPackage:{
+    packageName:'套餐名',
+    startCreateTime:'开始日期',
+    endCreateTime:'结束日期',
+    menuPermissions:'菜单权限',
+    switch:'全选/全不选',
+    yes:'是',
+    no:'否',
+    menuExpand:'全部展开/折叠',
+    unfold:'展开',
+    fold:'折叠',
+    treeLoding:'加载中，请稍候',
+    associatedMenu:'关联的菜单编号',
+  }
+}

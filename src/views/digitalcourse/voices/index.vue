@@ -8,57 +8,57 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="声音名称" prop="name">
+      <el-form-item :label="t('voices.name')" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入声音名称"
+          :placeholder="t('common.inputText')+t('voices.name')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="语言类型" prop="language">
+      <el-form-item :label="t('voices.language')" prop="language">
         <el-select
           v-model="queryParams.language"
-          placeholder="请选择语言类型"
+          :placeholder="t('common.selectText')+t('voices.language')"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="声音类型 " prop="voiceType">
+      <el-form-item :label="t('voices.voiceType')" prop="voiceType">
         <el-select
           v-model="queryParams.voiceType"
-          placeholder="请选择声音类型 "
+          :placeholder="t('common.selectText')+t('voices.voiceType') "
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item :label="t('table.createTime')" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           value-format="YYYY-MM-DD HH:mm:ss"
           type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          :start-placeholder="t('voices.startCreateTime')"
+          :end-placeholder="t('voices.endCreateTime')"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('voices.status')" prop="status">
         <el-select v-model="queryParams.status"
                    clearable
                    class="!w-240px">
@@ -66,20 +66,20 @@
             v-for="e in getStatusMap().keys()"
             :key="e"
             :value="e"
-            :label="getStatusLabel(e)"
+            ::label="getStatusLabel(e)"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> {{ t('table.search') }}</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" />  {{ t('table.reset') }}</el-button>
         <el-button
           type="primary"
           plain
           @click="openForm('create')"
           v-hasPermi="['digitalcourse:voices:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" /> {{ t('action.add') }}
         </el-button>
         <el-button
           type="success"
@@ -88,7 +88,7 @@
           :loading="exportLoading"
           v-hasPermi="['digitalcourse:voices:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" /> {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -97,31 +97,31 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="声音ID" align="center" prop="id" />
-      <el-table-column label="声音名称" align="center" prop="name" />
-      <el-table-column label="语言类型" align="center" prop="language">
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('voices.name')" align="center" prop="name" />
+      <el-table-column :label="t('voices.language')" align="center" prop="language">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />
         </template>
       </el-table-column>
-      <el-table-column label="声音类型 " align="center" prop="voiceType">
+      <el-table-column :label="t('voices.voiceType') " align="center" prop="voiceType">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_TYPE" :value="scope.row.voiceType" />
         </template>
       </el-table-column>
       <el-table-column
-        label="创建时间"
+        :label="t('table.createTime')"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column :label="t('voices.status')" align="center" prop="status">
         <template #default="scope">
           {{getStatusLabel(scope.row.status)}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column :label="t('table.action')" align="center">
         <template #default="scope">
           <el-button
             v-if="superAdminProcess(scope.row.status,scope.row.voiceType)"
@@ -130,7 +130,7 @@
             type="primary"
             @click="openAuditForm('update', scope.row.id)"
           >
-            处理
+            {{t('voices.handle')}}
           </el-button>
           <el-button
             :disabled="scope.row.status == 3 || memberDelete(scope.row.status)"
@@ -139,7 +139,7 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['digitalcourse:digital-humans:delete']"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>
