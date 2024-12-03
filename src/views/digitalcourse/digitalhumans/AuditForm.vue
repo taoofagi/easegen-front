@@ -7,37 +7,37 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input disabled v-model="formData.name" placeholder="请输入名称" />
+      <el-form-item :label="t('digitalhumans.name')" prop="name">
+        <el-input disabled v-model="formData.name" :placeholder="t('common.inputText') + t('digitalhumans.name')" />
       </el-form-item>
-      <el-form-item label="图片" v-if="formData.useModel == 1" prop="pictureUrl">
+      <el-form-item :label="t('digitalhumans.picture')" v-if="formData.useModel == 1" prop="pictureUrl">
         <UploadImg disabled v-model="formData.pictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
+      <el-form-item v-if="formData.useModel == 2" :label="t('digitalhumans.video')" prop="videoUrl">
         <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
         <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
-      <el-form-item label="类型" prop="type">
-        <el-select disabled v-model="formData.type" placeholder="请选择类型">
+      <el-form-item :label="t('digitalhumans.type')" prop="type">
+        <el-select disabled v-model="formData.type" :placeholder="t('common.selectText') + t('digitalhumans.type')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="修复图片" v-if="formData.useModel == 1 && formData.status > 1" prop="fixPictureUrl">
+      <el-form-item :label="t('digitalhumans.fixPicture')" v-if="formData.useModel == 1 && formData.status > 1" prop="fixPictureUrl">
         <UploadImg readonly v-model="formData.fixPictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2 && formData.status > 1" label="修复视频" prop="fixVideoUrl">
+      <el-form-item v-if="formData.useModel == 2 && formData.status > 1" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
         <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
         <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
-      <el-form-item v-if="formData.status == 0" label="过期时间">
+      <el-form-item v-if="formData.status == 0" :label="t('digitalhumans.expireDate')">
         <el-date-picker
           v-model="formData.expireDate"
-          placeholder="过期时间"
+          :placeholder="t('common.selectText') + t('digitalhumans.expireDate')"
           type="datetime"
           value-format="x"
           class="!w-1/1"
@@ -45,9 +45,9 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) || '保存' }}</el-button>
-      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) || t('common.save') }}</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">{{t('digitalhumans.reject')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>

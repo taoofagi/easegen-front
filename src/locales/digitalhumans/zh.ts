@@ -14,7 +14,7 @@ export default {
     fixVideo:'修复视频',
     fixPicture:'修复图片',
     expireDate:'过期时间',
-    reject:'驳回',
+    reject:'驳 回',
 
     accept:'受 理',
     startTrain:'开始训练',

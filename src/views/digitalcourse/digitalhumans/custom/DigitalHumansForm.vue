@@ -7,76 +7,46 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入名称" />
+      <el-form-item :label="t('digitalhumans.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText') + t('digitalhumans.name')" />
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
+      <el-form-item :label="t('digitalhumans.gender')" prop="gender">
+        <el-select v-model="formData.gender" :placeholder="t('common.selectText')+t('digitalhumans.gender')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="数字人模式" prop="useModel">
-        <el-select v-model="formData.useModel" placeholder="请选择数字人模式">
+      <el-form-item :label="t('digitalhumans.useModel')" prop="useModel">
+        <el-select v-model="formData.useModel" :placeholder="t('common.selectText')+t('digitalhumans.useModel')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="图片" v-if="formData.useModel == 1" prop="pictureUrl">
+      <el-form-item :label="t('digitalhumans.picture')" v-if="formData.useModel == 1" prop="pictureUrl">
         <UploadImg v-model="formData.pictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2" label="视频" prop="fixVideoUrl">
+      <el-form-item v-if="formData.useModel == 2" :label="t('digitalhumans.video')" prop="fixVideoUrl">
         <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
       </el-form-item>
-      <el-form-item label="抠图标识" prop="matting">
-        <el-select v-model="formData.matting" placeholder="请选择抠图标识">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="姿势" prop="posture">
-        <el-select v-model="formData.posture" placeholder="请选择姿势">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="类型" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择类型">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="修复后的图片" v-if="formData.useModel == 1 && formData.status == 2" prop="fixPictureUrl">
+      <el-form-item :label="t('digitalhumans.fixPicture')" v-if="formData.useModel == 1 && formData.status == 2" prop="fixPictureUrl">
         <UploadImg v-model="formData.fixPictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2 && formData.status == 2" label="视频" prop="fixVideoUrl">
+      <el-form-item v-if="formData.useModel == 2 && formData.status == 2" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
         <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="submitForm()" type="primary" :disabled="formLoading">{{ getButtonTitle(formData.status) }}</el-button>
-      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">驳 回</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button v-if="formData.status == 1" @click="submitForm(4)" type="danger" :disabled="formLoading">{{t('digitalhumans.reject')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>
@@ -110,16 +80,8 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  gender: [{ required: true, message: '性别不能为空', trigger: 'change' }],
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-  pictureUrl: [{ required: true, message: '图片URL不能为空', trigger: 'blur' }],
-  posture: [{ required: true, message: '姿势不能为空', trigger: 'change' }],
-  snapshotHeight: [{ required: true, message: '快照高度不能为空', trigger: 'blur' }],
-  snapshotUrl: [{ required: true, message: '快照URL不能为空', trigger: 'blur' }],
-  snapshotWidth: [{ required: true, message: '快照宽度不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '类型不能为空', trigger: 'change' }],
-  useGeneralModel: [{ required: true, message: '使用通用模型不能为空', trigger: 'change' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'change' }],
+  gender: [{ required: true, message: t('digitalhumans.gender')+t('common.notEmpty'), trigger: 'change' }],
+  name: [{ required: true, message: t('digitalhumans.name')+t('common.notEmpty'), trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 
@@ -152,6 +114,7 @@ const submitForm = async (status) => {
     if (formData.value.status == 2) formData.value.status = 3
     if (formData.value.status == 1) formData.value.status = 2
     if (formData.value.status == 4) formData.value.status = 1
+    if (formData.value.status == 5) formData.value.status = 1
     if (status) formData.value.status = 4
     const data = formData.value as unknown as DigitalHumansApi.DigitalHumansVO
     if (formType.value === 'create') {

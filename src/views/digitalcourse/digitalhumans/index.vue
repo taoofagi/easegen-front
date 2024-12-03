@@ -8,71 +8,74 @@
       :inline="true"
       label-width="68px"
     >
-
-      <el-form-item label="名称" prop="name">
+      <el-form-item :label="t('digitalhumans.name')" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入名称"
+          :placeholder="t('common.inputText') + t('digitalhumans.name')"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="姿势" prop="posture">
+      <el-form-item :label="t('digitalhumans.posture')" prop="posture">
         <el-select
           v-model="queryParams.posture"
-          placeholder="请选择姿势"
+          :placeholder="t('common.selectText') + t('digitalhumans.posture')"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="类型" prop="type">
+      <el-form-item :label="t('digitalhumans.type')" prop="type">
         <el-select
           v-model="queryParams.type"
-          placeholder="请选择类型"
+          :placeholder="t('common.selectText') + t('digitalhumans.type')"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('digitalhumans.status')" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择状态"
+          :placeholder="t('common.selectText') + t('digitalhumans.status')"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getStatusMap().keys()"
             :key="dict"
-            :label="getStatusLabel(dict)"
+            ::label="getStatusLabel(dict)"
             :value="dict"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"
+          ><Icon icon="ep:search" class="mr-5px" /> {{ t('table.search') }}</el-button
+        >
+        <el-button @click="resetQuery"
+          ><Icon icon="ep:refresh" class="mr-5px" /> {{ t('table.reset') }}</el-button
+        >
         <el-button
           type="primary"
           plain
           @click="openForm('create')"
           v-hasPermi="['digitalcourse:digital-humans:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" /> {{ t('action.add') }}
         </el-button>
         <el-button
           type="success"
@@ -81,7 +84,7 @@
           :loading="exportLoading"
           v-hasPermi="['digitalcourse:digital-humans:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" /> {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -90,46 +93,48 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="性别" align="center" prop="gender">
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('digitalhumans.gender')" align="center" prop="gender">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="姿势" align="center" prop="posture">
+      <el-table-column :label="t('digitalhumans.name')" align="center" prop="name" />
+      <el-table-column :label="t('digitalhumans.posture')" align="center" prop="posture">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE" :value="scope.row.posture" />
+          <dict-tag
+            :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE"
+            :value="scope.row.posture"
+          />
         </template>
       </el-table-column>
-      <el-table-column label="类型" align="center" prop="type">
+      <el-table-column :label="t('digitalhumans.type')" align="center" prop="type">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE" :value="scope.row.type" />
         </template>
       </el-table-column>
       <el-table-column
-        label="创建时间"
+        :label="t('table.createTime')"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column :label="t('digitalhumans.status')" align="center" prop="status">
         <template #default="scope">
-          {{getStatusLabel(scope.row.status)}}
-
+          {{ getStatusLabel(scope.row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column :label="t('table.action')" align="center">
         <template #default="scope">
           <el-button
-            v-if="superAdminProcess(scope.row.status,scope.row.type)"
+            v-if="superAdminProcess(scope.row.status, scope.row.type)"
             :disabled="scope.row.status == 3"
             link
             type="primary"
             @click="openAuditForm('update', scope.row.id)"
           >
-            处理
+            {{t('digitalhumans.handle')}}
           </el-button>
           <el-button
             :disabled="scope.row.status == 3 || memberDelete(scope.row.status)"
@@ -138,15 +143,15 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['digitalcourse:digital-humans:delete']"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
           <el-button
             link
             type="primary"
-            @click="openForm('detail',scope.row.id)"
+            @click="openForm('detail', scope.row.id)"
             v-hasPermi="['digitalcourse:digital-humans:delete']"
           >
-            查看
+            {{t('digitalhumans.view')}}
           </el-button>
         </template>
       </el-table-column>
@@ -166,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import {getStatusLabel, getStatusMap} from '../common'
+import { getStatusLabel, getStatusMap } from '../common'
 import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
@@ -180,11 +185,15 @@ defineOptions({ name: 'DigitalHumans' })
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
-const memberDelete = (state)=>{
-  return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
+const memberDelete = (state) => {
+  return userStore.getRoles.indexOf('super_admin') < 0 && (state > 1 || state == 0)
 }
-const superAdminProcess = (status,type)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status) || (status == 0 && type == 1)))
+const superAdminProcess = (status, type) => {
+  return (
+    (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) ||
+    (userStore.getRoles.indexOf('super_admin') > -1 &&
+      (![0, 4, 5].includes(status) || (status == 0 && type == 1)))
+  )
 }
 
 const loading = ref(true) // 列表的加载中
@@ -198,7 +207,7 @@ const queryParams = reactive({
   posture: undefined,
   type: undefined,
   useModel: undefined,
-  status: undefined,
+  status: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

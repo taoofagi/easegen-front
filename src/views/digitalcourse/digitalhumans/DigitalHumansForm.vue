@@ -7,74 +7,74 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入名称" />
+      <el-form-item :label="t('digitalhumans.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText') + t('digitalhumans.name')" />
       </el-form-item>
-      <el-form-item label="编码" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入编码" />
+      <el-form-item :label="t('digitalhumans.code')" prop="code">
+        <el-input v-model="formData.code" :placeholder="t('common.inputText') + t('digitalhumans.code')" />
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-select v-model="formData.gender" placeholder="请选择性别">
+      <el-form-item :label="t('digitalhumans.gender')" prop="gender">
+        <el-select v-model="formData.gender" :placeholder="t('common.selectText')+t('digitalhumans.gender')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="数字人模式" prop="useModel">
-        <el-select v-model="formData.useModel" placeholder="请选择数字人模式">
+      <el-form-item :label="t('digitalhumans.useModel')" prop="useModel">
+        <el-select v-model="formData.useModel" :placeholder="t('common.selectText')+t('digitalhumans.useModel')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 1" label="图片" prop="pictureUrl">
+      <el-form-item v-if="formData.useModel == 1" :label="t('digitalhumans.picture')" prop="pictureUrl">
         <UploadImg v-if="formData" v-model="formData.fixPictureUrl" />
         <UploadImg v-else v-model="formData.pictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2" label="视频" prop="videoUrl">
+      <el-form-item v-if="formData.useModel == 2" :label="t('digitalhumans.video')" prop="videoUrl">
         <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
         <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
-<!--      <el-form-item label="抠图标识" prop="matting">
-        <el-select v-model="formData.matting" placeholder="请选择抠图标识">
+<!--      <el-form-item :label="抠图标识" prop="matting">
+        <el-select v-model="formData.matting" :placeholder="请选择抠图标识">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_MATTING)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>-->
-      <el-form-item label="姿势" prop="posture">
-        <el-select v-model="formData.posture" placeholder="请选择姿势">
+      <el-form-item :label="t('digitalhumans.posture')" prop="posture">
+        <el-select v-model="formData.posture" :placeholder="t('common.selectText') + t('digitalhumans.posture')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="类型" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择类型">
+      <el-form-item :label="t('digitalhumans.type')" prop="type">
+        <el-select v-model="formData.type" :placeholder="t('common.selectText') + t('digitalhumans.type')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="submitForm" type="primary" :disabled="formLoading">{{t('common.ok')}}</el-button>
+      <el-button @click="dialogVisible = false">{{t('common.cancel')}}</el-button>
     </template>
   </Dialog>
 </template>
