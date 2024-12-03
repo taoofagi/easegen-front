@@ -5,9 +5,9 @@
 <script>
 import { generateToken } from '@/api/ppt/docmee/index'; // 确保路径正确
 //用户信息
-import { useUserStore } from "@/store/modules/user";
+import {useLocaleStore} from "@/store/modules/locale";
 //用户信息
-const userStore = useUserStore();
+const localeStore = useLocaleStore();
 const sysmessage = useMessage();
 export default {
   name: 'PptIndex',
@@ -21,6 +21,7 @@ export default {
           token: token, // 使用获取到的token
           container: docmeeContainer, // 挂载 iframe 的容器
           page: 'creator', // 选择 'creator' 或 'dashboard'
+          lang: localeStore.getCurrentLocale.lang.indexOf('zh')> -1 ? 'zh':localeStore.getCurrentLocale.lang,
           themeColor: '#001529', // 主题色
           background: 'linear-gradient(140deg, #001529, #3a506b, #5b84b1)', // 背景色
           padding: '40px', // 内边距
