@@ -457,8 +457,16 @@ export default {
   'OAuth 2.0': 'OAuth 2.0', // 避免菜单名是 OAuth 2.0 时，一直 warn 报错
 
   ...template,
+  ...workCenter,
+  ...myCrouse,
+  ...genQuestion,
+  ...digitalhumans,
   ...courseCenter
 }
 
 import template from './template/zh'
 import courseCenter from './courseCenter/zh'
+import workCenter from './workCenter/zh'
+import myCrouse from './myCrouse/zh'
+import digitalhumans from './digitalhumans/zh'
+import genQuestion from './genQuestion/zh'
