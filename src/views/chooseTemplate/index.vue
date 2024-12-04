@@ -1073,7 +1073,10 @@ const schedulePPT = (id) => {
         showLeftList.value = true
         clearInterval(schedulePPTTimer.value)
         //轮询保存课程
-        saveInter()
+        /**
+         * 后端数据库压力过大，暂时停止定时保存
+         */
+        // saveInter()
       }
     })
   }, 2000)
