@@ -7,23 +7,23 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="字典类型" prop="type">
+      <el-form-item :label="t('dict.type')" prop="type">
         <el-input
           v-model="formData.dictType"
           :disabled="typeof formData.id !== 'undefined'"
-          placeholder="请输入参数名称"
+          :placeholder="t('common.inputText')+t('dict.name')"
         />
       </el-form-item>
-      <el-form-item label="数据标签" prop="label">
-        <el-input v-model="formData.label" placeholder="请输入数据标签" />
+      <el-form-item :label="t('dict.dictTag')" prop="label">
+        <el-input v-model="formData.label" :placeholder="t('common.inputText')+t('dict.dictTag')" />
       </el-form-item>
-      <el-form-item label="数据键值" prop="value">
-        <el-input v-model="formData.value" placeholder="请输入数据键值" />
+      <el-form-item :label="t('dict.dictKey')" prop="value">
+        <el-input v-model="formData.value" :placeholder="t('common.inputText')+t('dict.dictKey')" />
       </el-form-item>
-      <el-form-item label="显示排序" prop="sort">
+      <el-form-item :label="t('dict.sort')" prop="sort">
         <el-input-number v-model="formData.sort" :min="0" controls-position="right" />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('dict.status')" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -34,26 +34,26 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="颜色类型" prop="colorType">
+      <el-form-item :label="t('dict.colorType')" prop="colorType">
         <el-select v-model="formData.colorType">
           <el-option
             v-for="item in colorTypeOptions"
             :key="item.value"
-            :label="item.label + '(' + item.value + ')'"
+            ::label="item.label + '(' + item.value + ')'"
             :value="item.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="CSS Class" prop="cssClass">
-        <el-input v-model="formData.cssClass" placeholder="请输入 CSS Class" />
+      <el-form-item :label="t('dict.cssClass')" prop="cssClass">
+        <el-input v-model="formData.cssClass" :placeholder="t('common.inputText')+t('dict.cssClass')" />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
+      <el-form-item :label="t('form.remark')" prop="remark">
+        <el-input v-model="formData.remark" :placeholder="t('common.inputText')+t('dict.remark')" type="textarea" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -83,10 +83,10 @@ const formData = ref({
   remark: ''
 })
 const formRules = reactive({
-  label: [{ required: true, message: '数据标签不能为空', trigger: 'blur' }],
-  value: [{ required: true, message: '数据键值不能为空', trigger: 'blur' }],
-  sort: [{ required: true, message: '数据顺序不能为空', trigger: 'blur' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
+  label: [{ required: true, message: t('dict.dictTag')+t('common.notEmpty'), trigger: 'blur' }],
+  value: [{ required: true, message: t('dict.dictKey')+t('common.notEmpty'), trigger: 'blur' }],
+  sort: [{ required: true, message: t('dict.sort')+t('common.notEmpty'), trigger: 'blur' }],
+  status: [{ required: true, message: t('dict.status')+t('common.notEmpty'), trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
 

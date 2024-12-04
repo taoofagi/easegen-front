@@ -7,17 +7,17 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="字典名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入字典名称" />
+      <el-form-item :label="t('dict.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('dict.name')" />
       </el-form-item>
-      <el-form-item label="字典类型" prop="type">
+      <el-form-item :label="t('dict.type')" prop="type">
         <el-input
           v-model="formData.type"
           :disabled="typeof formData.id !== 'undefined'"
-          placeholder="请输入参数名称"
+          :placeholder="t('common.inputText')+t('dict.type')"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('dict.status')" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -28,13 +28,13 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
+      <el-form-item :label="t('form.remark')" prop="remark">
+        <el-input v-model="formData.remark" :placeholder="t('common.inputText')+t('form.remark')" type="textarea" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -60,8 +60,8 @@ const formData = ref({
   remark: ''
 })
 const formRules = reactive({
-  name: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '字典类型不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('dict.name')+t('common.notEmpty'), trigger: 'blur' }],
+  type: [{ required: true, message: t('dict.type')+t('common.notEmpty'), trigger: 'blur' }],
   status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref

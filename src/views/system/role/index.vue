@@ -11,41 +11,41 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="角色名称" prop="name">
+      <el-form-item :label="t('role.name')" prop="name">
         <el-input
           v-model="queryParams.name"
           class="!w-240px"
           clearable
-          placeholder="请输入角色名称"
+          :placeholder="t('common.inputText')+t('role.name')"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="角色标识" prop="code">
+      <el-form-item :label="t('role.code')" prop="code">
         <el-input
           v-model="queryParams.code"
           class="!w-240px"
           clearable
-          placeholder="请输入角色标识"
+          :placeholder="t('common.inputText')+t('role.code')"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="请选择状态">
+      <el-form-item :label="t('role.status')" prop="status">
+        <el-select v-model="queryParams.status" class="!w-240px" clearable :placeholder="t('common.selectText')+t('role.status')">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item :label="t('common.createTime')" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
-          end-placeholder="结束日期"
-          start-placeholder="开始日期"
+          :end-placeholder="t('role.startCreateTime')"
+          :start-placeholder="t('role.endCreateTime')"
           type="daterange"
           value-format="YYYY-MM-DD HH:mm:ss"
         />
@@ -53,11 +53,11 @@
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon class="mr-5px" icon="ep:search" />
-          搜索
+          {{t('table.search')}}
         </el-button>
         <el-button @click="resetQuery">
           <Icon class="mr-5px" icon="ep:refresh" />
-          重置
+          {{t('table.reset')}}
         </el-button>
         <el-button
           v-hasPermi="['system:role:create']"
@@ -66,7 +66,7 @@
           @click="openForm('create')"
         >
           <Icon class="mr-5px" icon="ep:plus" />
-          新增
+          {{ t('action.add') }}
         </el-button>
         <el-button
           v-hasPermi="['system:role:export']"
@@ -76,7 +76,7 @@
           @click="handleExport"
         >
           <Icon class="mr-5px" icon="ep:download" />
-          导出
+          {{ t('action.export') }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -85,17 +85,17 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column align="center" label="角色编号" prop="id" />
-      <el-table-column align="center" label="角色名称" prop="name" />
-      <el-table-column label="角色类型" align="center" prop="type">
+      <el-table-column align="center" :label="t('table.index')" prop="id" />
+      <el-table-column align="center" :label="t('role.name')" prop="name" />
+      <el-table-column :label="t('role.type')" align="center" prop="type">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SYSTEM_ROLE_TYPE" :value="scope.row.type" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色标识" prop="code" />
-      <el-table-column align="center" label="显示顺序" prop="sort" />
-      <el-table-column align="center" label="备注" prop="remark" />
-      <el-table-column align="center" label="状态" prop="status">
+      <el-table-column align="center" :label="t('role.code')" prop="code" />
+      <el-table-column align="center" :label="t('role.displayOrder')" prop="sort" />
+      <el-table-column align="center" :label="t('form.remark')" prop="remark" />
+      <el-table-column align="center" :label="t('role.status')" prop="status">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
@@ -103,11 +103,11 @@
       <el-table-column
         :formatter="dateFormatter"
         align="center"
-        label="创建时间"
+        :label="t('table.createTime')"
         prop="createTime"
         width="180"
       />
-      <el-table-column :width="300" align="center" label="操作">
+      <el-table-column :width="300" align="center" :label="t('table.action')">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:role:update']"
@@ -115,27 +115,27 @@
             type="primary"
             @click="openForm('update', scope.row.id)"
           >
-            编辑
+            {{ t('action.edit') }}
           </el-button>
           <el-button
             v-hasPermi="['system:permission:assign-role-menu']"
             link
             preIcon="ep:basketball"
-            title="菜单权限"
+            :title="t('role.menuPermissions')"
             type="primary"
             @click="openAssignMenuForm(scope.row)"
           >
-            菜单权限
+            {{t('role.menuPermissions')}}
           </el-button>
           <el-button
             v-hasPermi="['system:permission:assign-role-data-scope']"
             link
             preIcon="ep:coin"
-            title="数据权限"
+            :title="t('role.dataPermissions')"
             type="primary"
             @click="openDataPermissionForm(scope.row)"
           >
-            数据权限
+            {{t('role.dataPermissions')}}
           </el-button>
           <el-button
             v-hasPermi="['system:role:delete']"
@@ -143,7 +143,7 @@
             type="danger"
             @click="handleDelete(scope.row.id)"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>

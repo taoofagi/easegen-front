@@ -9,46 +9,46 @@
     >
       <el-row>
         <el-col :span="12">
-          <el-form-item label="用户昵称" prop="nickname">
-            <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
+          <el-form-item :label="t('user.nickname')" prop="nickname">
+            <el-input v-model="formData.nickname" :placeholder="t('common.inputText')+t('user.nickname')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="归属部门" prop="deptId">
+          <el-form-item :label="t('user.dept')" prop="deptId">
             <el-tree-select
               v-model="formData.deptId"
               :data="deptList"
               :props="defaultProps"
               check-strictly
               node-key="id"
-              placeholder="请选择归属部门"
+              :placeholder="t('common.selectText')+t('user.dept')"
             />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="手机号码" prop="mobile">
-            <el-input v-model="formData.mobile" maxlength="11" placeholder="请输入手机号码" />
+          <el-form-item :label="t('user.mobile')" prop="mobile">
+            <el-input v-model="formData.mobile" maxlength="11" :placeholder="t('common.inputText')+t('user.mobile')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="formData.email" maxlength="50" placeholder="请输入邮箱" />
+          <el-form-item :label="t('user.email')" prop="email">
+            <el-input v-model="formData.email" maxlength="50" :placeholder="t('common.inputText')+t('user.email')" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="用户名称" prop="username">
-            <el-input v-model="formData.username" placeholder="请输入用户名称" />
+          <el-form-item v-if="formData.id === undefined" :label="t('user.username')" prop="username">
+            <el-input v-model="formData.username" :placeholder="t('common.inputText')+t('user.username')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="用户密码" prop="password">
+          <el-form-item v-if="formData.id === undefined" :label="t('user.password')" prop="password">
             <el-input
               v-model="formData.password"
-              placeholder="请输入用户密码"
+              :placeholder="t('common.inputText')+t('user.password')"
               show-password
               type="password"
             />
@@ -57,36 +57,36 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="type" label="用户类型">
-            <el-select v-model="formData.type" placeholder="请选择">
+          <el-form-item prop="type" :label="t('user.type')">
+            <el-select v-model="formData.type" :placeholder="t('common.selectText')+t('user.type')">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_TYPE)"
                 :key="dict.value"
-                :label="dict.label"
+                ::label="dict.label"
                 :value="dict.value"
               />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="用户性别">
-            <el-select v-model="formData.sex" placeholder="请选择">
+          <el-form-item :label="t('user.sex')">
+            <el-select v-model="formData.sex" :placeholder="t('common.selectText')+t('user.sex')">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
                 :key="dict.value"
-                :label="dict.label"
+                ::label="dict.label"
                 :value="dict.value"
               />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="岗位">
-            <el-select v-model="formData.postIds" multiple placeholder="请选择">
+          <el-form-item :label="t('user.post')">
+            <el-select v-model="formData.postIds" multiple :placeholder="t('common.selectText')+t('user.post')">
               <el-option
                 v-for="item in postList"
                 :key="item.id"
-                :label="item.name"
+                ::label="item.name"
                 :value="item.id!"
               />
             </el-select>
@@ -95,15 +95,15 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="备注">
-            <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
+          <el-form-item :label="t('form.remark')">
+            <el-input v-model="formData.remark" :placeholder="t('common.inputText')+t('form.remark')" type="textarea" />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -140,21 +140,21 @@ const formData = ref({
   roleIds: []
 })
 const formRules = reactive<FormRules>({
-  username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
-  password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '用户类型不能为空', trigger: 'blur' }],
+  username: [{ required: true, message: t('user.username')+t('common.notEmpty'), trigger: 'blur' }],
+  nickname: [{ required: true, message: t('user.nickname')+t('common.notEmpty'), trigger: 'blur' }],
+  password: [{ required: true, message: t('user.password')+t('common.notEmpty'), trigger: 'blur' }],
+  type: [{ required: true, message: t('user.type')+t('common.notEmpty'), trigger: 'blur' }],
   email: [
     {
       type: 'email',
-      message: '请输入正确的邮箱地址',
+      message: t('common.inputText')+t('user.correct')+t('form.email'),
       trigger: ['blur', 'change']
     }
   ],
   mobile: [
     {
       pattern: /^(?:(?:\+|00)86)?1(?:3[\d]|4[5-79]|5[0-35-9]|6[5-7]|7[0-8]|8[\d]|9[189])\d{8}$/,
-      message: '请输入正确的手机号码',
+      message: t('common.inputText')+t('user.correct')+t('form.mobile'),
       trigger: 'blur'
     }
   ]

@@ -7,7 +7,7 @@
       :rules="formRules"
       label-width="100px"
     >
-      <el-form-item label="上级菜单">
+      <el-form-item :label="t('menu.parentName')">
         <el-tree-select
           v-model="formData.parentId"
           :data="menuTree"
@@ -17,10 +17,14 @@
           node-key="id"
         />
       </el-form-item>
-      <el-form-item label="菜单名称" prop="name">
-        <el-input v-model="formData.name" clearable placeholder="请输入菜单名称" />
+      <el-form-item :label="t('menu.name')" prop="name">
+        <el-input
+          v-model="formData.name"
+          clearable
+          :placeholder="t('common.inputText') + t('menu.name')"
+        />
       </el-form-item>
-      <el-form-item label="菜单类型" prop="type">
+      <el-form-item :label="t('menu.type')" prop="type">
         <el-radio-group v-model="formData.type">
           <el-radio-button
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_MENU_TYPE)"
@@ -31,37 +35,51 @@
           </el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="formData.type !== 3" label="菜单图标">
+      <el-form-item v-if="formData.type !== 3" :label="t('menu.icon')">
         <IconSelect v-model="formData.icon" clearable />
       </el-form-item>
-      <el-form-item v-if="formData.type !== 3" label="路由地址" prop="path">
+      <el-form-item v-if="formData.type !== 3" :label="t('menu.routePath')" prop="path">
         <template #label>
-          <Tooltip
-            message="访问的路由地址，如：`user`。如需外网地址时，则以 `http(s)://` 开头"
-            title="路由地址"
-          />
+          <Tooltip :routePathTip="t('menu.routePath')" :title="t('menu.routePath')" />
         </template>
-        <el-input v-model="formData.path" clearable placeholder="请输入路由地址" />
+        <el-input
+          v-model="formData.path"
+          clearable
+          :placeholder="t('common.inputText') + t('menu.routePath')"
+        />
       </el-form-item>
-      <el-form-item v-if="formData.type === 2" label="组件地址" prop="component">
-        <el-input v-model="formData.component" clearable placeholder="例如说：system/user/index" />
+      <el-form-item v-if="formData.type === 2" :label="t('menu.componentPath')" prop="component">
+        <el-input
+          v-model="formData.component"
+          clearable
+          :placeholder="t('menu.componentPathPlaceholder')"
+        />
       </el-form-item>
-      <el-form-item v-if="formData.type === 2" label="组件名字" prop="componentName">
-        <el-input v-model="formData.componentName" clearable placeholder="例如说：SystemUser" />
+      <el-form-item
+        v-if="formData.type === 2"
+        :label="t('menu.componentName')"
+        prop="componentName"
+      >
+        <el-input
+          v-model="formData.componentName"
+          clearable
+          :placeholder="t('menu.componentNamePlaceholder')"
+        />
       </el-form-item>
-      <el-form-item v-if="formData.type !== 1" label="权限标识" prop="permission">
+      <el-form-item v-if="formData.type !== 1" :label="t('menu.permission')" prop="permission">
         <template #label>
-          <Tooltip
-            message="Controller 方法上的权限字符，如：@PreAuthorize(`@ss.hasPermission('system:user:list')`)"
-            title="权限标识"
-          />
+          <Tooltip :message="t('menu.permissionTip')" :title="t('menu.permission')" />
         </template>
-        <el-input v-model="formData.permission" clearable placeholder="请输入权限标识" />
+        <el-input
+          v-model="formData.permission"
+          clearable
+          :placeholder="t('common.inputText') + t('menu.permission')"
+        />
       </el-form-item>
-      <el-form-item label="显示排序" prop="sort">
+      <el-form-item :label="t('menu.sort')" prop="sort">
         <el-input-number v-model="formData.sort" :min="0" clearable controls-position="right" />
       </el-form-item>
-      <el-form-item label="菜单状态" prop="status">
+      <el-form-item :label="t('menu.status')" prop="status">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -72,43 +90,37 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="formData.type !== 3" label="显示状态" prop="visible">
+      <el-form-item v-if="formData.type !== 3" :label="t('menu.visible')" prop="visible">
         <template #label>
-          <Tooltip message="选择隐藏时，路由将不会出现在侧边栏，但仍然可以访问" title="显示状态" />
+          <Tooltip :message="t('menu.visibleTip')" :title="t('menu.visible')" />
         </template>
         <el-radio-group v-model="formData.visible">
-          <el-radio key="true" :value="true" border>显示</el-radio>
-          <el-radio key="false" :value="false" border>隐藏</el-radio>
+          <el-radio key="true" :value="true" border>{{ t('menu.display') }}</el-radio>
+          <el-radio key="false" :value="false" border>{{ t('menu.hide') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="formData.type !== 3" label="总是显示" prop="alwaysShow">
+      <el-form-item v-if="formData.type !== 3" :label="t('menu.alwaysDisplay')" prop="alwaysShow">
         <template #label>
-          <Tooltip
-            message="选择不是时，当该菜单只有一个子菜单时，不展示自己，直接展示子菜单"
-            title="总是显示"
-          />
+          <Tooltip :message="t('menu.alwaysDisplayTip')" :title="t('menu.alwaysDisplay')" />
         </template>
         <el-radio-group v-model="formData.alwaysShow">
-          <el-radio key="true" :value="true" border>总是</el-radio>
-          <el-radio key="false" :value="false" border>不是</el-radio>
+          <el-radio key="true" :value="true" border>{{ t('menu.always') }}</el-radio>
+          <el-radio key="false" :value="false" border>{{ t('menu.no') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="formData.type === 2" label="缓存状态" prop="keepAlive">
+      <el-form-item v-if="formData.type === 2" :label="t('menu.cacheStatus')" prop="keepAlive">
         <template #label>
-          <Tooltip
-            message="选择缓存时，则会被 `keep-alive` 缓存，必须填写「组件名称」字段"
-            title="缓存状态"
-          />
+          <Tooltip :message="t('menu.cacheStatusTip')" :title="t('menu.cacheStatus')" />
         </template>
         <el-radio-group v-model="formData.keepAlive">
-          <el-radio key="true" :value="true" border>缓存</el-radio>
-          <el-radio key="false" :value="false" border>不缓存</el-radio>
+          <el-radio key="true" :value="true" border>{{ t('menu.cache') }}</el-radio>
+          <el-radio key="false" :value="false" border>{{ t('menu.notCache') }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button :disabled="formLoading" type="primary" @click="submitForm">{{ t('common.ok') }}</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
     </template>
   </Dialog>
 </template>
@@ -146,10 +158,10 @@ const formData = ref({
   alwaysShow: true
 })
 const formRules = reactive({
-  name: [{ required: true, message: '菜单名称不能为空', trigger: 'blur' }],
-  sort: [{ required: true, message: '菜单顺序不能为空', trigger: 'blur' }],
-  path: [{ required: true, message: '路由地址不能为空', trigger: 'blur' }],
-  status: [{ required: true, message: '状态不能为空', trigger: 'blur' }]
+  name: [{ required: true, message: t('menu.name')+t('common.notEmpty'), trigger: 'blur' }],
+  sort: [{ required: true, message: t('menu.sort')+t('common.notEmpty'), trigger: 'blur' }],
+  path: [{ required: true, message: t('menu.routePath')+t('common.notEmpty'), trigger: 'blur' }],
+  status: [{ required: true, message: t('menu.status')+t('common.notEmpty'), trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 

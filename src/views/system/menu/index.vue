@@ -11,26 +11,26 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="菜单名称" prop="name">
+      <el-form-item :label="t('menu.name')" prop="name">
         <el-input
           v-model="queryParams.name"
           class="!w-240px"
           clearable
-          placeholder="请输入菜单名称"
+          :placeholder="t('common.inputText')+t('menu.name')"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item :label="t('menu.status')" prop="status">
         <el-select
           v-model="queryParams.status"
           class="!w-240px"
           clearable
-          placeholder="请选择菜单状态"
+          :placeholder="t('common.selectText')+t('menu.status')"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
@@ -38,11 +38,11 @@
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon class="mr-5px" icon="ep:search" />
-          搜索
+          {{t('table.search')}}
         </el-button>
         <el-button @click="resetQuery">
           <Icon class="mr-5px" icon="ep:refresh" />
-          重置
+          {{t('table.reset')}}
         </el-button>
         <el-button
           v-hasPermi="['system:menu:create']"
@@ -51,15 +51,15 @@
           @click="openForm('create')"
         >
           <Icon class="mr-5px" icon="ep:plus" />
-          新增
+          {{ t('action.add') }}
         </el-button>
         <el-button plain type="danger" @click="toggleExpandAll">
           <Icon class="mr-5px" icon="ep:sort" />
-          展开/折叠
+          {{t('menu.menuExpand')}}
         </el-button>
         <el-button plain @click="refreshMenu">
           <Icon class="mr-5px" icon="ep:refresh" />
-          刷新菜单缓存
+          {{t('menu.refreshMenuCache')}}
         </el-button>
       </el-form-item>
     </el-form>
@@ -74,17 +74,17 @@
       :default-expand-all="isExpandAll"
       row-key="id"
     >
-      <el-table-column :show-overflow-tooltip="true" label="菜单名称" prop="name" width="250" />
-      <el-table-column align="center" label="图标" prop="icon" width="100">
+      <el-table-column :show-overflow-tooltip="true" :label="t('menu.name')" prop="name" width="250" />
+      <el-table-column align="center" :label="t('menu.icon')" prop="icon" width="100">
         <template #default="scope">
           <Icon :icon="scope.row.icon" />
         </template>
       </el-table-column>
-      <el-table-column label="排序" prop="sort" width="60" />
-      <el-table-column :show-overflow-tooltip="true" label="权限标识" prop="permission" />
-      <el-table-column :show-overflow-tooltip="true" label="组件路径" prop="component" />
-      <el-table-column :show-overflow-tooltip="true" label="组件名称" prop="componentName" />
-      <el-table-column label="状态" prop="status">
+      <el-table-column :label="t('menu.sort')" prop="sort" width="60" />
+      <el-table-column :show-overflow-tooltip="true" :label="t('menu.permission')" prop="permission" />
+      <el-table-column :show-overflow-tooltip="true" :label="t('menu.componentPath')" prop="component" />
+      <el-table-column :show-overflow-tooltip="true" :label="t('menu.componentName')" prop="componentName" />
+      <el-table-column :label="t('menu.status')" prop="status">
         <template #default="scope">
           <el-switch
             class="ml-4px"
@@ -97,7 +97,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" :label="t('table.action')">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:menu:update']"
@@ -105,7 +105,7 @@
             type="primary"
             @click="openForm('update', scope.row.id)"
           >
-            修改
+            {{ t('action.edit') }}
           </el-button>
           <el-button
             v-hasPermi="['system:menu:create']"
@@ -113,7 +113,7 @@
             type="primary"
             @click="openForm('create', undefined, scope.row.id)"
           >
-            新增
+            {{ t('action.add') }}
           </el-button>
           <el-button
             v-hasPermi="['system:menu:delete']"
@@ -121,7 +121,7 @@
             type="danger"
             @click="handleDelete(scope.row.id)"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>
@@ -196,7 +196,7 @@ const toggleExpandAll = () => {
 /** 刷新菜单缓存按钮操作 */
 const refreshMenu = async () => {
   try {
-    await message.confirm('即将更新缓存刷新浏览器！', '刷新菜单缓存')
+    await message.confirm(t('menu.refreshMenuCacheText'), t('menu.refreshMenuCache'))
     // 清空，从而触发刷新
     wsCache.delete(CACHE_KEY.USER)
     wsCache.delete(CACHE_KEY.ROLE_ROUTERS)

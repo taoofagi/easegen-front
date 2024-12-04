@@ -1,6 +1,6 @@
 <template>
   <div class="head-container">
-    <el-input v-model="deptName" class="mb-20px" clearable placeholder="请输入部门名称">
+    <el-input v-model="deptName" class="mb-20px" clearable :placeholder="t('common.inputText')+t('user.dept')">
       <template #prefix>
         <Icon icon="ep:search" />
       </template>
@@ -25,7 +25,7 @@
 import { ElTree } from 'element-plus'
 import * as DeptApi from '@/api/system/dept'
 import { defaultProps, handleTree } from '@/utils/tree'
-
+const { t } = useI18n() // 国际化
 defineOptions({ name: 'SystemUserDeptTree' })
 
 const deptName = ref('')

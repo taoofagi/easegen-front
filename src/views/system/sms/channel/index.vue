@@ -9,51 +9,51 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="短信签名" prop="signature">
+      <el-form-item :label="t('sms.signature')" prop="signature">
         <el-input
           v-model="queryParams.signature"
-          placeholder="请输入短信签名"
+          :lplaceholder="t('common.inputText')+t('sms.signature')"
           clearable
           class="!w-240px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="启用状态" prop="status">
+      <el-form-item :label="t('sms.status')" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择启用状态"
+          :lplaceholder="t('common.selectText')+t('sms.status')"
           class="!w-240px"
           clearable
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            :label="dict.label"
+            ::label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item :label="t('common.createTime')" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           value-format="YYYY-MM-DD HH:mm:ss"
           type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          :start-lplaceholder="t('sms.startCreateTime')"
+          :end-lplaceholder="t('sms.endCreateTime')"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> {{t('table.search')}}</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> {{t('table.reset')}}</el-button>
         <el-button
           type="primary"
           plain
           @click="openForm('create')"
           v-hasPermi="['system:sms-channel:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增</el-button
+          <Icon icon="ep:plus" class="mr-5px" /> {{ t('action.add') }}</el-button
         >
       </el-form-item>
     </el-form>
@@ -62,48 +62,48 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="编号" align="center" prop="id" />
-      <el-table-column label="短信签名" align="center" prop="signature" />
-      <el-table-column label="渠道编码" align="center" prop="code">
+      <el-table-column :label="t('table.index')" align="center" prop="id" />
+      <el-table-column :label="t('sms.signature')" align="center" prop="signature" />
+      <el-table-column :label="t('sms.channelCode')" align="center" prop="code">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SYSTEM_SMS_CHANNEL_CODE" :value="scope.row.code" />
         </template>
       </el-table-column>
-      <el-table-column label="启用状态" align="center" prop="status">
+      <el-table-column :label="t('sms.status')" align="center" prop="status">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
+      <el-table-column :label="t('form.remark')" align="center" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column
-        label="短信 API 的账号"
+        :label="t('sms.apiKey')"
         align="center"
         prop="apiKey"
         :show-overflow-tooltip="true"
         width="180"
       />
       <el-table-column
-        label="短信 API 的密钥"
+        :label="t('sms.apiSecret')"
         align="center"
         prop="apiSecret"
         :show-overflow-tooltip="true"
         width="180"
       />
       <el-table-column
-        label="短信发送回调 URL"
+        :label="t('sms.callbackUrl')"
         align="center"
         prop="callbackUrl"
         :show-overflow-tooltip="true"
         width="180"
       />
       <el-table-column
-        label="创建时间"
+        :label="t('common.createTime')"
         align="center"
         prop="createTime"
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="操作" align="center">
+      <el-table-column :label="t('table.action')" align="center">
         <template #default="scope">
           <el-button
             link
@@ -111,7 +111,7 @@
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['system:sms-channel:update']"
           >
-            编辑
+            {{ t('action.edit') }}
           </el-button>
           <el-button
             link
@@ -119,7 +119,7 @@
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['system:sms-channel:delete']"
           >
-            删除
+            {{ t('action.del') }}
           </el-button>
         </template>
       </el-table-column>
