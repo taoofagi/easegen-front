@@ -86,6 +86,7 @@
 import { ref, reactive, onMounted } from "vue";
 import * as pptTemplateApi from "@/api/pptTemplate";
 import { DICT_TYPE, getIntDictOptions } from "@/utils/dict";
+const { t } = useI18n() // 国际化
 const message = useMessage();
 const audioSelectVisible = ref(false);
 const activeName = ref();
