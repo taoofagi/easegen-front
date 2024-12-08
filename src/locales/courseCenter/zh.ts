@@ -92,7 +92,7 @@ export default {
     placeholderTheme:'页面主题（选填）',
     requirement:'要求',
     placeholderRequirement:'请输入个性化要求，如语言风格、重点内容等（选填）',
-    GenerateSpeech:'生成讲稿',
+    generateSpeech:'生成讲稿',
     originalContent:'原始内容',
     speechContent:'内容生成中，请耐心等待',
     rewrittenContent:'改写后的内容',
@@ -119,9 +119,9 @@ export default {
     submit:'提 交',
     avatar:'头像',
     uploadSound:'上传声音',
-    uploadSoundText:'推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。',
-
-
+    uploadSoundText:'推荐上传10-20s音频，上传支持小于10M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。',
+    modelTrainingConfirmMessage:'存在训练中模型，是否跳转查看？',
+    modelTrainingTitle:'提示',
 
 
   }

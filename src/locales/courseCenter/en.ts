@@ -122,7 +122,8 @@ export default {
     avatar:'avatar',
     uploadSound:'Upload Sound',
     uploadSoundText:'Recommend uploading 10-20s audio files in WAV, MP3, and M4A formats that support files smaller than 20M, to avoid situations such as multi person conversations, obvious noise, reverb, etc.',
-
+    modelTrainingConfirmMessage:'Exist training model, whether to jump to view?',
+    modelTrainingTitle:'Tips',
 
 
 

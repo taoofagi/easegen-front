@@ -99,8 +99,10 @@ const getLanguageList = () => {
     Reflect.set(item, "isActive", false);
   });
   languageList.value = list;
-  selectLanguage.value = list[0];
-  selectLanguage.value.isActive = true;
+  // selectLanguage.value = list[0];
+  // selectLanguage.value.isActive = true;
+  // 移除默认选中
+  selectLanguage.value = { value: '' };
 };
 const audioType = ref();
 const selectAudio = ref();
@@ -113,8 +115,10 @@ const getAudioType = () => {
   });
   audioType.value = list;
   audioTypeCustom.value = list;
-  selectAudio.value = list[0];
-  selectAudio.value.isActive = true;
+  // selectAudio.value = list[0];
+  // selectAudio.value.isActive = true;
+  // 移除默认选中
+  selectAudio.value = { value: '' };
 };
 //获取声音类别
 const voiceTypeList = ref();
@@ -138,8 +142,8 @@ const audioList = ref();
 const getList = async () => {
   loading.value = true;
   try {
-    queryParams.language = selectLanguage.value.value;
-    queryParams.gender = selectAudio.value.value;
+    queryParams.language = selectLanguage.value?.value || '';
+    queryParams.gender = selectAudio.value?.value || '';
     queryParams.voiceType = activeName.value;
     const data = await pptTemplateApi.videlPageList(queryParams);
     data.list.forEach((item) => {

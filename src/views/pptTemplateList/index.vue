@@ -128,6 +128,7 @@ import {
 } from "@element-plus/icons-vue";
 import {auditing as auditHumans} from "@/api/digitalcourse/digitalhumans";
 import {auditing as auditVoices} from "@/api/digitalcourse/voices";
+import { ElMessageBox } from 'element-plus'
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 const router = useRouter();
@@ -145,14 +146,48 @@ const queryParams = reactive({
 
 const todigitalhumans = async () => {
   await auditHumans().then(res=>{
-    if (!res) return
+    if (!res) {
+      // 显示确认对话框
+      ElMessageBox.confirm(
+        t('courseCenter.modelTrainingConfirmMessage'),
+        t('courseCenter.modelTrainingTitle'),
+        {
+          confirmButtonText: t('common.ok'),
+          cancelButtonText: t('common.back'),
+          type: 'warning'
+        }
+      ).then(() => {
+        // 用户点击"是"，跳转到模型列表页
+        router.push('/digitalcourse/digitalhumans/custom/page')
+      }).catch(() => {
+        // 用户点击"否"，不做任何操作
+      })
+      return
+    }
     router.push('/digitalcourse/digitalhumans/custom/index')
   })
 
 }
 const tovoice = async () => {
   await auditVoices().then(res=>{
-    if (!res) return
+    if (!res) {
+      // 显示确认对话框
+      ElMessageBox.confirm(
+        t('courseCenter.modelTrainingConfirmMessage'),
+        t('courseCenter.modelTrainingTitle'),
+        {
+          confirmButtonText: t('common.ok'),
+          cancelButtonText: t('common.back'),
+          type: 'warning'
+        }
+      ).then(() => {
+        // 用户点击"是"，跳转到模型列表页
+        router.push('/digitalcourse/voices/custom/page')
+      }).catch(() => {
+        // 用户点击"否"，不做任何操作
+      })
+      return
+    }
     router.push('/digitalcourse/voices/custom/index')
   })
 }

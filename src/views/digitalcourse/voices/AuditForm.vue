@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="80%">
     <el-form
       ref="formRef"
       :model="formData"
@@ -14,10 +14,47 @@
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
       <el-form-item :label="t('voices.auditionUrl')" prop="auditionUrl">
-        <UploadFile :isShowDelete="false" v-model="formData.auditionUrl" :fileType="['mp3','wav']" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+        <div class="flex flex-col gap-2">
+          <audio 
+              v-if="formData.auditionUrl" 
+              :src="formData.auditionUrl" 
+              controls
+              @error="(e) => console.error('Native audio error:', e)"
+            ></audio>
+        </div>
       </el-form-item>
       <el-form-item v-if="formData.status > 1" :label="t('voices.fixAuditionUrl')" prop="fixAuditionUrl">
-        <UploadFile v-model="formData.fixAuditionUrl" :fileType="['mp3','wav','m4a']" :describe="t('voices.fixAuditionUrlTips')" :limit="1" @on-success="handleFileSuccess('fixAuditionUrl', $event)"/>
+        <div class="flex-col gap-2">
+          <div class="w-fit">
+            <el-button 
+              v-if="formData.status > 1" 
+              type="primary" 
+              @click="useOriginalVoice"
+            >
+              {{ t('voices.useOriginal') }}
+            </el-button>
+          </div>
+          
+          <div class="flex flex-col gap-2">
+            
+            <UploadFile 
+              v-model="formData.fixAuditionUrl" 
+              :fileType="['mp3','wav','m4a']" 
+              :fileSize="10"
+              :describe="t('voices.fixAuditionUrlTips')" 
+              :limit="1" 
+              :disabled="hasFixAuditionFile"
+              @on-success="handleFileSuccess('fixAuditionUrl', $event)"
+            />
+            <audio 
+              v-if="formData.fixAuditionUrl" 
+              :src="formData.fixAuditionUrl" 
+              controls
+              @error="(e) => console.error('Native audio error:', e)"
+            ></audio>
+          </div>
+        </div>
+        
       </el-form-item>
       <el-form-item v-if="formData.status == 0" :label="t('voices.expireDate')">
         <el-date-picker
@@ -40,6 +77,7 @@
 import { getIntDictOptions, getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import * as VoicesApi from '@/api/digitalcourse/voices'
 
+
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -54,12 +92,14 @@ const formData = ref({
   code: undefined,
   avatarUrl: undefined,
   auditionUrl: undefined,
+  fixAuditionUrl: undefined,
   language: undefined,
   gender: undefined,
   introduction: undefined,
   quality: undefined,
   voiceType: undefined,
-  status: undefined,
+  expireDate: undefined,
+  status: undefined as number | undefined,
 })
 const formRules = reactive({
 })
@@ -83,6 +123,16 @@ const open = async (type: string, id?: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+// 检查是否已有文件
+const hasFixAuditionFile = computed(() => !!formData.value.fixAuditionUrl)
+
+
+
+// 使用原始声音
+const useOriginalVoice = () => {
+  formData.value.fixAuditionUrl = formData.value.auditionUrl
+  message.success(t('voices.useOriginalSuccess'))
+}
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async (status) => {
@@ -145,4 +195,25 @@ const handleFileSuccess = (fileType,response) => {
     formData.value.avatarUrl = response.data;
   }
 };
+
 </script>
+
+<style scoped>
+.w-fit {
+  width: fit-content;
+}
+.flex {
+  display: flex;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+
+</style>

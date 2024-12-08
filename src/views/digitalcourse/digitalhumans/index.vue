@@ -192,7 +192,7 @@ const superAdminProcess = (status, type) => {
   return (
     (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) ||
     (userStore.getRoles.indexOf('super_admin') > -1 &&
-      (![0, 4, 5].includes(status) || (status == 0 && type == 1)))
+      (![0, 4, 5].includes(status)))
   )
 }
 

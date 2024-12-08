@@ -6,8 +6,8 @@ export default {
     status:'状态',
     handle:'处理',
     avatar:'头像',
-    auditionUrl:'上传声音',
-    fixAuditionUrl:'修复后音频',
+    auditionUrl:'声音',
+    fixAuditionUrl:'修复后声音',
     fixAuditionUrlTips:'推荐上传10-20s音频，上传支持小于20M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。',
     expireDate:'过期时间',
     reject:'驳 回',
@@ -16,6 +16,9 @@ export default {
     quality:'音质评分',
     startCreateTime:'开始日期',
     endCreateTime:'结束日期',
-    reject:'驳 回',
+    play: "播放",
+    pause: "暂停",
+    useOriginal: "使用原始声音",
+    useOriginalSuccess: "已使用原始声音"
   }
 }

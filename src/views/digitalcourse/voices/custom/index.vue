@@ -19,14 +19,14 @@
       label-width="200px"
       v-loading="formLoading"
     >
-      <el-form-item :label="t('courseCenter.voiceName')" prop="name">
-        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('courseCenter.voiceName')" />
+      <el-form-item :label="t('courseCenter.name')" prop="name">
+        <el-input v-model="formData.name" :placeholder="t('common.inputText')+t('courseCenter.name')" />
       </el-form-item>
       <el-form-item :label="t('courseCenter.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
       <el-form-item :label="t('courseCenter.uploadSound')" prop="auditionUrl">
-        <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','ogg','m4a','aac','pcm']" fileSize="10" :describe="t('courseCenter.uploadSoundText')" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+        <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','m4a']" fileSize="10" :describe="t('courseCenter.uploadSoundText')" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
       </el-form-item>
     </el-form>
     <div>
@@ -59,7 +59,7 @@ const formData = ref({
   status: undefined,
 })
 const formRules = reactive({
-  name: [{ required: true, message: t('courseCenter.voiceName')+t('common.notEmpty'), trigger: 'blur' }],
+  name: [{ required: true, message: t('courseCenter.name')+t('common.notEmpty'), trigger: 'blur' }],
   auditionUrl: [{ required: true, message:t('courseCenter.uploadSound')+t('common.notEmpty'), trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref

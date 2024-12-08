@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <Dialog :title="dialogTitle" v-model="dialogVisible"  width="50%">
     <el-form
       ref="formRef"
       :model="formData"
@@ -9,6 +9,9 @@
     >
       <el-form-item :label="t('digitalhumans.name')" prop="name">
         <el-input disabled v-model="formData.name" :placeholder="t('common.inputText') + t('digitalhumans.name')" />
+      </el-form-item>
+      <el-form-item :label="t('digitalhumans.code')" prop="code">
+        <el-input disabled v-model="formData.code" :placeholder="t('common.inputText') + t('digitalhumans.code')" />
       </el-form-item>
       <el-form-item :label="t('digitalhumans.picture')" v-if="formData.useModel == 1" prop="pictureUrl">
         <UploadImg disabled v-model="formData.pictureUrl" />
@@ -20,7 +23,7 @@
       <el-form-item :label="t('digitalhumans.type')" prop="type">
         <el-select disabled v-model="formData.type" :placeholder="t('common.selectText') + t('digitalhumans.type')">
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
             :key="dict.value"
             ::label="dict.label"
             :value="dict.value"
@@ -31,8 +34,14 @@
         <UploadImg readonly v-model="formData.fixPictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2 && formData.status > 1" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
-        <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
-        <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
+        <div class="flex flex-col gap-2">
+          <el-button v-if="formData.videoUrl && !formData.fixVideoUrl" @click="useOriginalVideo" type="primary">
+            {{ t('digitalhumans.useOriginalVideo') }}
+          </el-button>
+          <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
+          
+        </div>
+        <video-player v-if="formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
       <el-form-item v-if="formData.status == 0" :label="t('digitalhumans.expireDate')">
         <el-date-picker
@@ -189,4 +198,15 @@ const handleFileSuccess = (fileType,response) => {
     formData.value.videoUrl = response.data;
   }
 };
+
+const useOriginalVideo = async () => {
+  formData.value.fixVideoUrl = formData.value.videoUrl;
+  try {
+    await DigitalHumansApi.updateDigitalHumans(formData.value);
+    message.success(t('common.updateSuccess'));
+  } catch (error) {
+    message.error(t('common.updateError'));
+  }
+};
 </script>
+

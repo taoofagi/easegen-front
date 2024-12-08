@@ -13,6 +13,7 @@ export default {
     video:'video',
     fixVideo:'Fix Video',
     fixPicture:'Fix Picture',
+    useOriginalVideo:'Use Original Video',
     expireDate:'Expire Date',
     reject:'Reject',
 

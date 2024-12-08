@@ -36,7 +36,7 @@
         <UploadImg v-model="formData.pictureUrl" />
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2" :label="t('courseCenter.video')" prop="videoUrl">
-        <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('videoUrl', $event)"/>
+        <UploadFile v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" :fileSize="20" @on-success="handleFileSuccess('videoUrl', $event)"/>
       </el-form-item>
     </el-form>
     <div>

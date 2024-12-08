@@ -13,6 +13,7 @@ export default {
     video:'视频',
     fixVideo:'修复视频',
     fixPicture:'修复图片',
+    useOriginalVideo:'使用原视频',
     expireDate:'过期时间',
     reject:'驳 回',
 
