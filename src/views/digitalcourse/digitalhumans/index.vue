@@ -100,6 +100,7 @@
         </template>
       </el-table-column>
       <el-table-column :label="t('digitalhumans.name')" align="center" prop="name" />
+      <el-table-column :label="t('digitalhumans.code')" align="center" prop="code" />
       <el-table-column :label="t('digitalhumans.posture')" align="center" prop="posture">
         <template #default="scope">
           <dict-tag
@@ -111,6 +112,18 @@
       <el-table-column :label="t('digitalhumans.type')" align="center" prop="type">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE" :value="scope.row.type" />
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('digitalhumans.picture')" align="center" prop="pictureUrl">
+        <template #default="scope">
+          <el-image 
+            v-if="scope.row.pictureUrl"
+            :src="scope.row.pictureUrl" 
+            :preview-src-list="[scope.row.pictureUrl]"
+            fit="contain"
+            class="w-[50px] h-[50px] cursor-pointer"
+            :preview-teleported="true"
+          />
         </template>
       </el-table-column>
       <el-table-column

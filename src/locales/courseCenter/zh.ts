@@ -76,7 +76,6 @@ export default {
     AddNewReplacement:'添加新的替换',
     replaceEnglishPunctuationMarks:'替换英文标点符号',
 
-    intelligentSpeech:'智能讲稿',
     smartWritingMethod:'智写方式',
     imageRewriting:'图片改写',
     textRewriting:'文字改写',

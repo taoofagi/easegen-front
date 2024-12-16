@@ -1,6 +1,7 @@
 export default {
   voices:{
     name:'Name',
+    code:'Code',
     language:'Language type',
     voiceType:'Voice Type',
     status:'Status',

@@ -78,6 +78,8 @@ const submitForm = async () => {
       await VoicesApi.updateVoices(data)
       message.success(t('common.updateSuccess'))
     }
+    // 提交成功后跳转到我的模型页面
+    toVoices()
   } finally {
     formLoading.value = false
   }

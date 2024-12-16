@@ -35,11 +35,33 @@
       </el-form-item>
       <el-form-item v-if="formData.useModel == 2 && formData.status > 1" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
         <div class="flex flex-col gap-2">
-          <el-button v-if="formData.videoUrl && !formData.fixVideoUrl" @click="useOriginalVideo" type="primary">
-            {{ t('digitalhumans.useOriginalVideo') }}
-          </el-button>
-          <UploadFile v-model="formData.fixVideoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
-          
+          <div class="flex items-start gap-2">
+            <el-button v-if="formData.videoUrl && !formData.fixVideoUrl" @click="useOriginalVideo" type="primary">
+              {{ t('digitalhumans.useOriginalVideo') }}
+            </el-button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="text-gray-500 text-sm mb-2">{{ t('digitalhumans.transparentBgTip') }}</div>
+            <!-- 添加手动输入视频URL的输入框 -->
+            <el-input
+              v-model="formData.fixVideoUrl"
+              :placeholder="t('digitalhumans.inputVideoUrl')"
+              class="mb-2"
+            >
+              <template #append>
+                <el-button @click="handleManualVideoUrl">{{ t('digitalhumans.confirm') }}</el-button>
+              </template>
+            </el-input>
+            <!-- 保留原有的上传功能 -->
+            <div class="text-gray-500 text-sm">{{ t('digitalhumans.orUploadVideo') }}</div>
+            <UploadFile 
+              v-model="formData.fixVideoUrl" 
+              :fileType="['mp4','mov']" 
+              :limit="1" 
+              :file-size="1024" 
+              @on-success="handleFileSuccess('fixVideoUrl', $event)"
+            />
+          </div>
         </div>
         <video-player v-if="formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
@@ -138,6 +160,29 @@ const open = async (type: string, id?: number) => {
   }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+
+// 处理手动输入的视频URL
+const handleManualVideoUrl = async () => {
+  if (!formData.value.fixVideoUrl) {
+    message.warning(t('digitalhumans.pleaseInputVideoUrl'))
+    return
+  }
+  
+  // 验证URL格式
+  try {
+    new URL(formData.value.fixVideoUrl)
+  } catch (e) {
+    message.error(t('digitalhumans.invalidVideoUrl'))
+    return
+  }
+
+  try {
+    await DigitalHumansApi.updateDigitalHumans(formData.value)
+    message.success(t('common.updateSuccess'))
+  } catch (error) {
+    message.error(t('common.updateError'))
+  }
+}
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调

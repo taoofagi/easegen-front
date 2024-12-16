@@ -59,9 +59,11 @@
         />
       </el-form-item>
       <el-form-item :label="t('voices.status')" prop="status">
-        <el-select v-model="queryParams.status"
-                   clearable
-                   class="!w-240px">
+        <el-select
+            v-model="queryParams.status"
+            clearable
+            class="!w-240px"
+          >
           <el-option
             v-for="e in getStatusMap().keys()"
             :key="e"
@@ -99,6 +101,7 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column :label="t('table.index')" align="center" prop="id" />
       <el-table-column :label="t('voices.name')" align="center" prop="name" />
+      <el-table-column :label="t('voices.code')" align="center" prop="code" />
       <el-table-column :label="t('voices.language')" align="center" prop="language">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />

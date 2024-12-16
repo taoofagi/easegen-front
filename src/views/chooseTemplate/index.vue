@@ -1726,11 +1726,38 @@ const getCourseDetail = (id) => {
         }
         //选择的数字人信息
         const hostInfo = res.scenes[0].components.find((component) => component.category === 2)
-        hostList.value.forEach((item) => {
-          if (item.code == hostInfo.entityId) {
-            selectHost.value = item
-          }
-        })
+        // 先在当前数字人列表中查找
+        let foundHost = hostList.value.find(item => item.code === hostInfo.entityId)
+        
+        // 如果在当前列表中没找到,且当前是公共数字人列表,则切换到我的数字人列表重新获取
+        if (!foundHost && tabs1ActiveNum.value === '0') {
+          // 保存公共数字人列表的第一个数字人作为默认值
+          const defaultPublicHost = hostList.value[0]
+          
+          // 切换到"我的"数字人
+          tabs1ActiveNum.value = '1'
+          // 重新获取数字人列表
+          getList().then(() => {
+            // 在新列表中查找
+            foundHost = hostList.value.find(item => item.code === hostInfo.entityId)
+            
+            // 如果在"我的"数字人中也没找到,则使用默认公共数字人
+            if (!foundHost) {
+              tabs1ActiveNum.value = '0' // 切回公共数字人tab
+              foundHost = defaultPublicHost // 使用之前保存的默认公共数字人
+              message.warning('未找到原数字人,已使用默认公共数字人替代')
+            }
+            
+            // 设置选中的数字人
+            selectHost.value = foundHost || hostList.value[0]
+          })
+        } else {
+          // 设置选中的数字人
+          selectHost.value = foundHost || hostList.value[0]
+        }
+
+        // 设置选中的数字人
+        selectHost.value = foundHost || hostList.value[0]
         if (hostInfo) {
           PPTpositon.w = hostInfo.width / scaleRatio.value.width
           PPTpositon.h = hostInfo.height / scaleRatio.value.height

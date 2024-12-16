@@ -21,5 +21,11 @@ export default {
     startTrain:'开始训练',
     train:'训 练',
     submit:'提 交',
+
+    transparentBgTip:'如需透明背景数字人，请使用DaVinci/AE等工具将用户绿幕视频处理导出为带透明通道的MOV格式视频再上传，如果文件超过20M，手工上传至OSS等支持公网下载服务器，将URL填入视频URL框中',
+    confirm:'确 定',
+    orUploadVideo:'或者上传视频',
+    pleaseInputVideoUrl:'请输入视频URL',
+    invalidVideoUrl:'无效的视频URL',
   }
 }

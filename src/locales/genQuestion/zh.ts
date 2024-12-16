@@ -8,7 +8,7 @@ export default {
     dragUpload:'或拖动文档到这里',
     uploadTips:'支持扩展名：.pdf,.txt,.docx。单个文档大小限制20M',
     questionType:'选择题型',
-    difficulty:'试题难度',
+    difficulty:'难度',
     numQuestions:'生成数量',
 
     rightTitle:'输入区',
@@ -20,7 +20,6 @@ export default {
     exportTestQuestions:'导出试题',
     subject:'题目',
     answer:'答案',
-    difficulty:'难度',
     knowledgePoints:'知识点',
     analysis:'解析',
     right:'正确',

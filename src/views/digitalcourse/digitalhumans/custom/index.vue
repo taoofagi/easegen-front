@@ -114,6 +114,8 @@ const save = async () => {
       await DigitalHumansApi.updateDigitalHumans(data)
       message.success(t('common.updateSuccess'))
     }
+    // 提交成功后跳转到我的模型页面
+    toDisgitalhumans()
   } finally {
     formLoading.value = false
   }

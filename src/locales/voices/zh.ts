@@ -1,6 +1,7 @@
 export default {
   voices:{
     name:'声音名称',
+    code:'声音编码',
     language:'语言类型',
     voiceType:'声音类型',
     status:'状态',
