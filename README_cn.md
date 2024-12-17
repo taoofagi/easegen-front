@@ -10,7 +10,7 @@
 ## 🐶 新手必读
 
 * nodejs > 16.18.0 && pnpm > 8.6.0 (强制使用pnpm)
-* 演示地址【Vue3 + element-plus】：<http://36.103.251.108:48083> 请注册体验
+* 演示地址【Vue3 + element-plus】：<http://1.95.87.0:48083> 请注册体验
 * 启动文档、操作手册：请加入飞书群获取
   ![飞书](public/image/feishu.png)
 * 项目合作&技术交流加微信，备注easegen：
