@@ -1547,15 +1547,15 @@ function stringifySafely(obj) {
   })
 }
 //定时保存
-const saveTimer = ref()
-const saveInter = () => {
-  if (saveTimer.value) {
-    clearInterval(saveTimer.value)
-  }
-  saveTimer.value = setInterval(() => {
-    saveSubmit('save')
-  }, 60000)
-}
+// const saveTimer = ref()
+// const saveInter = () => {
+//   if (saveTimer.value) {
+//     clearInterval(saveTimer.value)
+//   }
+//   saveTimer.value = setInterval(() => {
+//     saveSubmit('save')
+//   }, 60000)
+// }
 //生成试听
 const showAudioPlay = ref(false) //显示试听
 //显示声音驱动的文件播放弹框
@@ -1897,13 +1897,13 @@ onMounted(async () => {
   await getList()
   if (route.query.id) {
     await getCourseDetail(route.query.id)
-    saveInter() // 启动定时保存
+    // saveInter() // 启动定时保存
   } else {
     coursesCreate()
   }
 })
 onUnmounted(() => {
-  clearInterval(saveTimer.value)
+  // clearInterval(saveTimer.value)
   clearInterval(schedulePPTTimer.value)
   if (currentAudioFile.value) {
     currentAudioFile.value.removeEventListener('ended', cancelAudio)
