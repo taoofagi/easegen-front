@@ -55,6 +55,10 @@ Here are the major features and improvements we plan to implement in the future:
 - [ ] Support for real-time digital human teaching
 - [ ] Adding an intelligent assistant
 
+## Architecture Diagram
+
+![easegen_diagram.png](public/image/easegen_diagram.png)
+
 ## Technology Stack
 
 | Framework                                                               | Description         | Version |

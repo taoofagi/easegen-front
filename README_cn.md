@@ -54,6 +54,10 @@
 - [ ] 支持实时数字人讲课功能
 - [ ] 增加智能助理
 
+## 架构图
+
+![easegen_diagram.png](public/image/easegen_diagram.png)
+
 ## 技术栈
 
 | 框架                                                                   | 说明               | 版本     |
