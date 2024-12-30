@@ -1468,7 +1468,14 @@ const saveSubmit = (type) => {
       return false
     }
     let warningStrArr: any = []
-    PPTArr.value.forEach((item, index) => {
+    for (let i = 0; i < PPTArr.value.length; i++) {
+      const item = PPTArr.value[i]
+      // 校验背景宽高
+      if (!item.width || !item.height) {
+        message.warning('背景尺寸无效，请检查宽高设置，或者重新选择模板')
+        return
+      }
+
       if (!item.selectAudio || !item.selectAudio.code) {
         warningStrArr.push(
           `场景<span style="color: red; font-weight: bold;">${index + 1}</span>没有选择声音模型`
@@ -1519,7 +1526,7 @@ const saveSubmit = (type) => {
           )
         }
       }
-    })
+    }
     if (warningStrArr.length > 0) {
       // 使用 \n 换行符连接警告信息，并用 <div> 包裹每条警告
       warningDialog.value.open(warningStrArr.map((warning) => `<div>${warning}</div>`).join(''))
