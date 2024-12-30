@@ -71,6 +71,28 @@
       <el-table-column label="数字人高" align="center" prop="humanH" />
       <el-table-column label="数字人距离顶部位置" align="center" prop="humanX" />
       <el-table-column label="数字人距离左侧位置" align="center" prop="humanY" />-->
+      <el-table-column label="背景图片" align="center" prop="bgImage">
+        <template #default="scope">
+          <el-image 
+            style="width: 100px; height: 60px"
+            :src="scope.row.bgImage"
+            :preview-src-list="[scope.row.bgImage]"
+            fit="cover"
+            preview-teleported
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="预览图片" align="center" prop="previewImage">
+        <template #default="scope">
+          <el-image
+            style="width: 100px; height: 60px"
+            :src="scope.row.previewImage" 
+            :preview-src-list="[scope.row.previewImage]"
+            fit="cover"
+            preview-teleported
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         :label="t('table.createTime')"
         align="center"
