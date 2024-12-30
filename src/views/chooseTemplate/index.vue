@@ -339,7 +339,7 @@
             <el-input
               v-model="selectPPT.pptRemark"
               ref="textareaRef"
-              @mouseup="handlePptRemarkSelection"
+              @select="handlePptRemarkSelection"
               :rows="5"
               type="textarea"
               :placeholder="t('common.inputText') + t('courseCenter.oralBroadcastingContent')"
@@ -1572,15 +1572,9 @@ const handlePptRemarkSelection = () => {
   if (textareaRef.value) {
     const textarea = textareaRef.value.$el.querySelector('textarea')
     if (textarea) {
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      if (start !== end) {
-        selectTextarea.value = textarea.value.substring(start, end)
-        console.log('选中的文本:', selectTextarea.value)
-      } else {
-        selectTextarea.value = ''
-        console.log('没有选中任何文本')
-      }
+      // 使用事件对象中的选中文本
+      selectTextarea.value = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)
+      console.log('选中的文本:', selectTextarea.value)
     }
   }
 }
@@ -1595,13 +1589,13 @@ const createAudio = async () => {
   }
   const params = {
     text: selectTextarea.value,
-    speed: 18,
-    pitch: 17,
-    volume: 45,
+    speed: voiceData.speechRate, //语速
+    pitch: 1, // 音高固定为1
+    volume: voiceData.volume, //音量
     voiceType: 37,
     voiceTypeId: 51,
     voiceId: audioSelectData.value[0].id,
-    smartSpeed: 34
+    smartSpeed: 1 //智能语速 预留
   }
   showAudioPlay.value = true
   pptTemplateApi
@@ -1610,6 +1604,12 @@ const createAudio = async () => {
       if (res && !res.error) {
         // 如果返回结果有效且没有错误，初始化Audio
         currentAudio.value = new Audio(res)
+        // 添加播放结束事件监听
+        currentAudio.value.addEventListener('ended', () => {
+          showAudioPlay.value = false
+          currentAudio.value = null
+        })
+        
         currentAudio.value.play()
       } else {
         // 如果返回结果为空或有错误，关闭弹出框
