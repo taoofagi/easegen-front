@@ -1478,19 +1478,19 @@ const saveSubmit = (type) => {
 
       if (!item.selectAudio || !item.selectAudio.code) {
         warningStrArr.push(
-          `场景<span style="color: red; font-weight: bold;">${index + 1}</span>没有选择声音模型`
+          `场景<span style="color: red; font-weight: bold;">${i + 1}</span>没有选择声音模型`
         )
       }
       if (item.driverType == 1) {
         if (!item.pptRemark) {
           warningStrArr.push(
-            `场景<span style="color: red; font-weight: bold;">${index + 1}</span>无口播内容`
+            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无口播内容`
           )
         } else {
           //判断item.pptRemark超过1200个字，则提示
           if (item.pptRemark.length > 1200) {
             warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容超过1200字，请减少或拆分场景`
+              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容超过1200字，请减少或拆分场景`
             )
           }
           // 正则表达式检查阿拉伯数字和英文标点符号
@@ -1505,24 +1505,24 @@ const saveSubmit = (type) => {
                 ? `(<span style="color: #ff4d4f">${matches.join('、')}</span>)`
                 : ''
             warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
+              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
             )
           }
           // if (punctuationReg.test(item.pptRemark)) {
           //   warningStrArr.push(
-          //     `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
+          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
           //   )
           // }
           if (htmlTagReg.test(item.pptRemark)) {
             warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${index + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
+              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
             )
           }
         }
       } else {
         if (!item.uploadAudioUrl) {
           warningStrArr.push(
-            `场景<span style="color: red; font-weight: bold;">${index + 1}</span>无音频内容`
+            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无音频内容`
           )
         }
       }
