@@ -12,7 +12,7 @@
           <el-option
             v-for="item in getIntDictOptions(DICT_TYPE.SYSTEM_DATA_SCOPE)"
             :key="item.value"
-            ::label="item.label"
+            :label="item.label"
             :value="item.value"
           />
         </el-select>

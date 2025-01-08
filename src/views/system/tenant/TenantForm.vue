@@ -15,7 +15,7 @@
           <el-option
             v-for="item in packageList"
             :key="item.id"
-            ::label="item.name"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>

@@ -27,7 +27,7 @@
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>
@@ -42,7 +42,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_TYPE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>
@@ -68,7 +68,7 @@
             v-for="e in getStatusMap().keys()"
             :key="e"
             :value="e"
-            ::label="getStatusLabel(e)"
+            :label="getStatusLabel(e)"
           />
         </el-select>
       </el-form-item>

@@ -29,7 +29,7 @@
           <el-option
             v-for="item in userList"
             :key="item.id"
-            ::label="item.nickname"
+            :label="item.nickname"
             :value="item.id"
           />
         </el-select>
@@ -45,7 +45,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>

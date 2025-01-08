@@ -39,7 +39,7 @@
           <el-option
             v-for="item in colorTypeOptions"
             :key="item.value"
-            ::label="item.label + '(' + item.value + ')'"
+            :label="item.label + '(' + item.value + ')'"
             :value="item.value"
           />
         </el-select>

@@ -27,7 +27,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>
@@ -42,7 +42,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>
@@ -57,7 +57,7 @@
           <el-option
             v-for="dict in getStatusMap().keys()"
             :key="dict"
-            ::label="getStatusLabel(dict)"
+            :label="getStatusLabel(dict)"
             :value="dict"
           />
         </el-select>
@@ -185,7 +185,7 @@
 
 <script setup lang="ts">
 import { getStatusLabel, getStatusMap } from '../common'
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
+import { getIntDictOptions,getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import * as DigitalHumansApi from '@/api/digitalcourse/digitalhumans'

@@ -12,7 +12,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_INDUSTRY)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="parseInt(dict.value)"
           />
         </el-select>
@@ -22,7 +22,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_SCENE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>
@@ -32,7 +32,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.MEMBER_LANGUAGE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="Number(dict.value)"
           />
         </el-select>

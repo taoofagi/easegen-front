@@ -15,7 +15,7 @@
           <el-option
             v-for="dict in getStrDictOptions(DICT_TYPE.SYSTEM_SMS_CHANNEL_CODE)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>

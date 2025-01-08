@@ -36,7 +36,7 @@
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
-            ::label="dict.label"
+            :label="dict.label"
             :value="dict.value"
           />
         </el-select>

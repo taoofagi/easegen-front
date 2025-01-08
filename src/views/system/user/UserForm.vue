@@ -62,7 +62,7 @@
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_TYPE)"
                 :key="dict.value"
-                ::label="dict.label"
+                :label="dict.label"
                 :value="dict.value"
               />
             </el-select>
@@ -74,7 +74,7 @@
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
                 :key="dict.value"
-                ::label="dict.label"
+                :label="dict.label"
                 :value="dict.value"
               />
             </el-select>
@@ -86,7 +86,7 @@
               <el-option
                 v-for="item in postList"
                 :key="item.id"
-                ::label="item.name"
+                :label="item.name"
                 :value="item.id!"
               />
             </el-select>
