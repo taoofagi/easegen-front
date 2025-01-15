@@ -23,7 +23,7 @@
       <el-form-item :label="t('digitalhumans.type')" prop="type">
         <el-select disabled v-model="formData.type" :placeholder="t('common.selectText') + t('digitalhumans.type')">
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.USE_MODEL)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -45,7 +45,7 @@
             <!-- 添加手动输入视频URL的输入框 -->
             <el-input
               v-model="formData.fixVideoUrl"
-              :placeholder="t('digitalhumans.inputVideoUrl')"
+              :placeholder="t('digitalhumans.pleaseInputVideoUrl')"
               class="mb-2"
             >
               <template #append>
