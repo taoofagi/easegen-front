@@ -112,6 +112,12 @@
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_TYPE" :value="scope.row.voiceType" />
         </template>
       </el-table-column>
+      <!-- 克隆类型 -->
+      <el-table-column :label="t('voices.cloneType')" align="center" prop="type">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_CLONE_TYPE" :value="scope.row.type" />
+        </template>
+      </el-table-column>
       <el-table-column
         :label="t('table.createTime')"
         align="center"
@@ -211,7 +217,11 @@ const memberDelete = (state)=>{
   return userStore.getRoles.indexOf('super_admin') < 0 && ( state > 1 || state == 0)
 }
 const superAdminProcess = (status,type)=>{
-  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status) || (status == 0 && type == 1)))
+  // 判断是否可以处理:
+  // 1. 如果状态是4(已驳回)且不是超级管理员,则可以处理
+  // 2. 如果是超级管理员,则:
+  //    - 状态不是0(已完成)、4(已驳回)、5(已过期)时可以处理
+  return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status)))
 }
 
 /** 搜索按钮操作 */

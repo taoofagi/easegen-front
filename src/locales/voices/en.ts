@@ -20,6 +20,7 @@ export default {
     play: "Play",
     pause: "Pause",
     useOriginal: "Use Original Voice",
-    useOriginalSuccess: "Used Original Voice"
+    useOriginalSuccess: "Used Original Voice",
+    cloneType:'Clone Type'
   }
 }

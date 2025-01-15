@@ -25,8 +25,16 @@
       <el-form-item :label="t('courseCenter.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
+      <!-- 增加克隆类型，redio 1普通 2高级 -->
+      <el-form-item :label="t('courseCenter.cloneType')" prop="type">
+        <el-radio-group v-model="formData.type">
+          <el-radio :label="1">普通</el-radio>
+          <el-radio :label="2">高级</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item :label="t('courseCenter.uploadSound')" prop="auditionUrl">
         <UploadFile v-model="formData.auditionUrl" :fileType="['wav','mp3','m4a']" fileSize="10" :describe="t('courseCenter.uploadSoundText')" :limit="1" @on-success="handleFileSuccess('audition', $event)"/>
+        
       </el-form-item>
     </el-form>
     <div>

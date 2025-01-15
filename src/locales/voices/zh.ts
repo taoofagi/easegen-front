@@ -20,6 +20,7 @@ export default {
     play: "播放",
     pause: "暂停",
     useOriginal: "使用原始声音",
-    useOriginalSuccess: "已使用原始声音"
+    useOriginalSuccess: "已使用原始声音",
+    cloneType:'克隆类型'
   }
 }

@@ -1,5 +1,6 @@
 export default {
   courseCenter:{
+    cloneType:'Clone Type',
     videoCourse: 'Video Courseware',
     videoCourseTitle: 'Template style video, one click generation',
     goCreate: 'Go Create',
@@ -121,7 +122,7 @@ export default {
     submit:'Submit',
     avatar:'avatar',
     uploadSound:'Upload Sound',
-    uploadSoundText:'Recommend uploading 10-20s audio files in WAV, MP3, and M4A formats that support files smaller than 20M, to avoid situations such as multi person conversations, obvious noise, reverb, etc.',
+    uploadSoundText:'Recommend uploading 10-20s audio files in WAV, MP3, and M4A formats that support files smaller than 20M, to avoid situations such as multi person conversations, obvious noise, reverb, etc.\n Basic voice cloning is free, suitable for scenarios with low voice quality requirements for digital humans\n Advanced voice cloning is paid, suitable for scenarios with higher voice quality requirements for digital humans.',
     modelTrainingConfirmMessage:'Exist training model, whether to jump to view?',
     modelTrainingTitle:'Tips',
 

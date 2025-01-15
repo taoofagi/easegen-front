@@ -13,6 +13,19 @@
       <el-form-item :label="t('voices.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
+
+      <!-- 克隆类型 -->
+      <el-form-item :label="t('voices.cloneType')" prop="type">
+        <el-radio-group v-model="formData.type" disabled>
+          <el-radio
+            v-for="dict in getIntDictOptions(DICT_TYPE.DIGITALCOURSE_VOICES_CLONE_TYPE)"
+            :key="dict.value"
+            :label="dict.value"
+          >
+            {{ dict.label }}
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item :label="t('voices.auditionUrl')" prop="auditionUrl">
         <div class="flex flex-col gap-2">
           <audio 

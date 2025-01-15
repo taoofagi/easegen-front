@@ -4,6 +4,7 @@
       ref="uploadRef"
       v-model:file-list="fileList"
       :action="uploadUrl"
+      :accept="acceptFormat"
       :auto-upload="autoUpload"
       :before-upload="beforeUpload"
       :disabled="disabled"
@@ -31,7 +32,7 @@
         <div style="font-size: 8px">
           格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b> 的文件
         </div>
-        <div v-if="describe">
+        <div v-if="describe" class="upload-describe">
           <b style="color: #f56c6c">说明： {{ describe }}</b>
         </div>
       </template>
@@ -223,6 +224,36 @@ const emitUpdateModelValue = () => {
 const emitUpdateDuration = () => {
   emit('getDuration', duration,fileName.value)
 }
+// 计算文件类型的 accept 属性值
+const acceptFormat = computed(() => {
+  return props.fileType.map(type => {
+    // 对常见文件类型进行 MIME type 映射
+    const mimeTypes = {
+      // 图片类型
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      // 音频类型
+      'mp3': 'audio/mpeg',
+      'wav': 'audio/wav',
+      'm4a': 'audio/mp4',
+      // 视频类型
+      'mp4': 'video/mp4',
+      // 文档类型
+      'doc': '.doc',
+      'docx': '.docx',
+      'xls': '.xls',
+      'xlsx': '.xlsx',
+      'pdf': 'application/pdf',
+      'txt': 'text/plain',
+      'ppt': '.ppt',
+      'pptx': '.pptx'
+    }[type.toLowerCase()] || `.${type}`
+
+    return mimeTypes
+  }).join(',')
+})
 </script>
 <style lang="scss" scoped>
 .upload-file-uploader {
@@ -254,5 +285,11 @@ const emitUpdateDuration = () => {
 .file-list-item {
   border: 1px dashed var(--el-border-color-darker);
   border-radius: 8px;
+}
+.upload-describe {
+  b {
+    white-space: pre-line;
+    display: inline-block;
+  }
 }
 </style>
