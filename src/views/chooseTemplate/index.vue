@@ -448,7 +448,17 @@
           >
             <div class="background"></div>
             <div class="host-name">{{ item.name }}</div>
-            <el-image class="ppt-bg" :src="item.pictureUrl" fit="cover" />
+            <el-image 
+              class="ppt-bg" 
+              :src="item.pictureUrl" 
+              :style="{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                maxWidth: '100%',
+                maxHeight: '100%'
+              }"
+            />
           </div>
           <Pagination
             small="true"
