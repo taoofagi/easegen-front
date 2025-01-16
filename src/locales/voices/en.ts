@@ -21,6 +21,7 @@ export default {
     pause: "Pause",
     useOriginal: "Use Original Voice",
     useOriginalSuccess: "Used Original Voice",
-    cloneType:'Clone Type'
+    cloneType:'Clone Type',
+    submitter:'Submitter'
   }
 }

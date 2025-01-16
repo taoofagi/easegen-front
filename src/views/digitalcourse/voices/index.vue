@@ -125,6 +125,13 @@
         :formatter="dateFormatter"
         width="180px"
       />
+      <!-- 添加创建人列 -->
+      <el-table-column
+        :label="t('voices.submitter')"
+        align="center"
+        prop="creatorName"
+        width="120px"
+      />
       <el-table-column :label="t('voices.status')" align="center" prop="status">
         <template #default="scope">
           {{getStatusLabel(scope.row.status)}}
@@ -220,7 +227,7 @@ const superAdminProcess = (status,type)=>{
   // 判断是否可以处理:
   // 1. 如果状态是4(已驳回)且不是超级管理员,则可以处理
   // 2. 如果是超级管理员,则:
-  //    - 状态不是0(已完成)、4(已驳回)、5(已过期)时可以处理
+  //    - 状态不是0(已完成)、4(已驳回)、5(训练失败)时可以处理
   return (status == 4 && userStore.getRoles.indexOf('super_admin') < 0) || (userStore.getRoles.indexOf('super_admin') > -1 && (![0,4,5].includes(status)))
 }
 
