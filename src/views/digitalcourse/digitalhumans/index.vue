@@ -133,6 +133,13 @@
         :formatter="dateFormatter"
         width="180px"
       />
+      <!-- 添加创建人列 -->
+      <el-table-column
+        :label="t('digitalhumans.submitter')"
+        align="center"
+        prop="creatorName"
+        width="120px"
+      />
       <el-table-column :label="t('digitalhumans.status')" align="center" prop="status">
         <template #default="scope">
           {{ getStatusLabel(scope.row.status) }}

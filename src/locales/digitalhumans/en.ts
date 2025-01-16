@@ -27,6 +27,6 @@ export default {
     orUploadVideo:'Or upload video',
     pleaseInputVideoUrl:'Please input video URL',
     invalidVideoUrl:'Invalid video URL',
-    
+    submitter:'Submitter'
   }
 }

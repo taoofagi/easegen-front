@@ -27,5 +27,6 @@ export default {
     orUploadVideo:'或者上传视频',
     pleaseInputVideoUrl:'请输入视频URL',
     invalidVideoUrl:'无效的视频URL',
+    submitter:'提交人'
   }
 }
