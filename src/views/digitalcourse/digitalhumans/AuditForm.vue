@@ -16,7 +16,7 @@
       <el-form-item :label="t('digitalhumans.picture')" v-if="formData.useModel == 1" prop="pictureUrl">
         <UploadImg disabled v-model="formData.pictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2" :label="t('digitalhumans.video')" prop="videoUrl">
+      <el-form-item v-if="formData.useModel == 2 || formData.useModel == 3" :label="t('digitalhumans.video')" prop="videoUrl">
         <UploadFile v-if="!(formData.videoUrl || formData.fixVideoUrl)" v-model="formData.videoUrl" :fileType="['mp4']" :limit="1" @on-success="handleFileSuccess('fixVideoUrl', $event)"/>
         <video-player v-if="formData.videoUrl || formData.fixVideoUrl" :property="videoProperty"/>
       </el-form-item>
@@ -33,7 +33,7 @@
       <el-form-item :label="t('digitalhumans.fixPicture')" v-if="formData.useModel == 1 && formData.status > 1" prop="fixPictureUrl">
         <UploadImg readonly v-model="formData.fixPictureUrl" />
       </el-form-item>
-      <el-form-item v-if="formData.useModel == 2 && formData.status > 1" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
+      <el-form-item v-if="(formData.useModel == 2 || formData.useModel == 3 ) && formData.status > 1" :label="t('digitalhumans.fixVideo')" prop="fixVideoUrl">
         <div class="flex flex-col gap-2">
           <div class="flex items-start gap-2">
             <el-button v-if="formData.videoUrl && !formData.fixVideoUrl" @click="useOriginalVideo" type="primary">

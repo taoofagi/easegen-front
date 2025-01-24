@@ -93,15 +93,15 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column :label="t('table.index')" align="center" prop="id" />
-      <el-table-column :label="t('digitalhumans.gender')" align="center" prop="gender">
+      <el-table-column :label="t('table.index')" align="center" prop="id" width="80" />
+      <el-table-column :label="t('digitalhumans.gender')" align="center" prop="gender" width="80">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SYSTEM_USER_SEX" :value="scope.row.gender" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('digitalhumans.name')" align="center" prop="name" />
-      <el-table-column :label="t('digitalhumans.code')" align="center" prop="code" />
-      <el-table-column :label="t('digitalhumans.posture')" align="center" prop="posture">
+      <el-table-column :label="t('digitalhumans.name')" align="center" prop="name" width="120" />
+      <el-table-column :label="t('digitalhumans.code')" align="center" prop="code" width="120" />
+      <el-table-column :label="t('digitalhumans.posture')" align="center" prop="posture" width="100">
         <template #default="scope">
           <dict-tag
             :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_POSTURE"
@@ -109,12 +109,17 @@
           />
         </template>
       </el-table-column>
-      <el-table-column :label="t('digitalhumans.type')" align="center" prop="type">
+      <el-table-column :label="t('digitalhumans.type')" align="center" prop="type" width="100">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_DIGITALHUMAN_TYPE" :value="scope.row.type" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('digitalhumans.picture')" align="center" prop="pictureUrl">
+      <el-table-column :label="t('digitalhumans.useModel')" align="center" prop="useModel" width="100">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.USE_MODEL" :value="scope.row.useModel" />
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('digitalhumans.picture')" align="center" prop="pictureUrl" width="100">
         <template #default="scope">
           <el-image 
             v-if="scope.row.pictureUrl"
@@ -131,21 +136,20 @@
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
-        width="180px"
+        width="160"
       />
-      <!-- 添加创建人列 -->
       <el-table-column
         :label="t('digitalhumans.submitter')"
         align="center"
         prop="creatorName"
-        width="120px"
+        width="100"
       />
-      <el-table-column :label="t('digitalhumans.status')" align="center" prop="status">
+      <el-table-column :label="t('digitalhumans.status')" align="center" prop="status" width="100">
         <template #default="scope">
           {{ getStatusLabel(scope.row.status) }}
         </template>
       </el-table-column>
-      <el-table-column :label="t('table.action')" align="center">
+      <el-table-column :label="t('table.action')" align="center" fixed="right" width="200">
         <template #default="scope">
           <el-button
             v-if="superAdminProcess(scope.row.status, scope.row.type)"
