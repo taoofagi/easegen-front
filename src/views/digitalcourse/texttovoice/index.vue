@@ -85,7 +85,7 @@
         resize="none"
       />
       <div class="relative mt-2">
-        <span class="absolute bottom-2 right-2 text-gray-400">{{ inputText.length }} / 200</span>
+        <span class="absolute bottom-2 right-2 text-gray-400">{{ inputText.length }} / 1200</span>
         <div class="absolute bottom-2 left-2 flex items-center gap-4">
           <el-button type="primary" size="small" @click="drawerVisible = true">
             <el-icon><MagicStick /></el-icon>
@@ -121,7 +121,7 @@
       v-model="drawerVisible"
       title="AI生成文案"
       direction="rtl"
-      size="320px"
+      size="420px"
       :with-header="false"
       :modal="false"
       :show-close="false"
@@ -134,14 +134,15 @@
             <el-icon><ArrowRight /></el-icon>
           </el-button>
         </div>
-        <el-input v-model="keyword" placeholder="辣椒销售" />
+        <el-input v-model="keyword" placeholder="请输入关键词，多个关键词用“，”隔开" />
         <div class="flex gap-2 mt-4">
           <el-select v-model="wordCount" placeholder="生成字数" style="flex: 1;">
+            <el-option label="生成200个字" value="200" />
             <el-option label="生成400个字" value="400" />
             <el-option label="生成600个字" value="600" />
             <el-option label="生成800个字" value="800" />
           </el-select>
-          <el-button type="primary" @click="generateText">
+          <el-button type="primary" :loading="isGenerating" @click="generateText">
             <el-icon><MagicStick /></el-icon>
             开始生成
           </el-button>
@@ -166,6 +167,7 @@ import AudioSelect from '@/views/chooseTemplate/audioSelect.vue'
 import { MagicStick, ArrowRight, Microphone, Clock, VideoPlay } from '@element-plus/icons-vue'
 import { DICT_TYPE, getDictLabel } from '@/utils/dict'
 import * as pptTemplateApi from '@/api/pptTemplate'
+import { ChatApi } from '@/api/digitalcourse/chat'
 
 const { t } = useI18n() // 国际化
 
@@ -200,8 +202,47 @@ const selectAudio = (data) => {
   audioSelectData.value = data[0]
   console.log("选择的声音",data[0])
 }
-const generateText = () => {
-  generatedText.value = "想要给你的每一餐添加几分激情吗？我们自豪地介绍我们的优质辣椒——来自晨肥沃土地的纯天然馈赠，丰富你的味蕾！无论是清脆可口的生食还是经典炖煮，都能让你体验到那独特的辛辣风味。加入我们，尽享红彤彤、鲜嫩多汁的极品辣椒带来的奇妙夏日滋味！不仅美味诱人，它们还含有丰富维生素C和多种健康益处。即刻点火起锅，让这些小小红星装点你盘中佳肴吧！"
+//AI文案生成
+const isGenerating = ref(false)
+const generateText = async () => {
+  if (!keyword.value) {
+    ElMessage.warning('请输入关键词')
+    return
+  }
+
+  try {
+    isGenerating.value = true
+    generatedText.value = ''
+
+    const params = {
+      business_code: 'BUSI_0011',
+      content_param: JSON.stringify({
+        words: parseInt(wordCount.value),
+        keywords: keyword.value
+      })
+    }
+
+    // 获取完整内容
+    const chat = await ChatApi.streamChat(params)
+    let fullContent = ''
+
+    for await (const chunk of chat.iterateStream()) {
+      try {
+        if (chunk.choices?.[0]?.delta?.content) {
+          fullContent += chunk.choices[0].delta.content
+          generatedText.value = fullContent // 实时更新显示内容
+        }
+      } catch (e) {
+        console.error('处理数据块时出错:', e)
+      }
+    }
+
+  } catch (error) {
+    console.error('生成文案失败:', error)
+    ElMessage.error('生成文案失败，请重试')
+  } finally {
+    isGenerating.value = false
+  }
 }
 
 const useGeneratedText = () => {
@@ -267,6 +308,8 @@ const downloadAudio = () => {
     window.open(audioUrl.value, '_blank')
   }
 }
+
+
 </script>
 
 <style scoped>
