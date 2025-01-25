@@ -7,7 +7,7 @@
     destroy-on-close
     :close-on-click-modal="false"
   >
-    <video width="100%" height="500px" controls :src="videoPath" style="object-fit: fill;">
+    <video width="100%" height="500px" controls :src="videoPath" style="object-fit: contain;">
       <track v-if="subtitlePath" kind="subtitles" :src="subtitlePath" srclang="zh" label="中文" default />
      {{ t('myCourse.videoPlaybackText')}}
     </video>

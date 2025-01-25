@@ -650,14 +650,14 @@ const saveEdit = () => {
 const courseInfo = ref({
   id: 0,
   accountId: userId.value,
-  aspect: '16:9',
+  aspect: '9:16',
   name: '未命名草稿',
   duration: 0,
   status: 0,
-  pageMode: 2,//ppt课件视频
-  matting: 1,
-  width: 1920,
-  height: 1080
+  pageMode: 3,//口播视频
+  matting: 0,
+  width: 1080,
+  height: 1920
 })
 // 当比例改变时更新宽度和高度
 watch(
@@ -670,21 +670,21 @@ watch(
 
 const editName = ref(courseInfo.value.name)
 const viewSize = reactive({
-  width: 800,
-  height: (800 * 9) / 16
+  width: 270,
+  height: (270 * 16) / 9 //448
 })
 const thumViewSize = reactive({
-  width: 152,
-  height: (152 * 9) / 16
+  width: 47,
+  height: (47 * 16) / 9 //84
 })
 const digitalHumanSize = reactive({
-  width: 150,
-  height: 200
+  width: 270,
+  height: (270 * 16) / 9 //448
 })
 // 添加缩放比例计算
 const scaleRatio = computed(() => ({
-  width: courseInfo.value.width / viewSize.width, // 1920/800 = 2.4
-  height: courseInfo.value.height / viewSize.height // 1080/450 = 2.4
+  width: courseInfo.value.width / viewSize.width, // 1080/270 = 4
+  height: courseInfo.value.height / viewSize.height // 1920/480 = 4
 }))
 
 const PPTpositon = reactive({
@@ -1070,14 +1070,14 @@ const schedulePPT = (id) => {
               name: '画中画',
               src: ppturl,
               cover: ppturl,
-              width: selectTemplate.value.pptW,
-              height: selectTemplate.value.pptH,
-              originWidth: selectTemplate.value.pptW,
-              originHeight: selectTemplate.value.pptH,
+              width: 270,
+              height: 270 * 9 / 16,
+              originWidth: 1920,
+              originHeight: 1080,
               category: 1,
               depth: 1,
-              top: selectTemplate.value.pptY,
-              marginLeft: selectTemplate.value.pptX,
+              top: 100,
+              marginLeft: 0,
               businessId: generateUUID(),
               entityType: 0,
               entityId: '0'
@@ -1253,6 +1253,75 @@ const chooseHost = (item) => {
   selectHost.value = item
   // 点击数字人列表中的图像时，修改数字人在ppt的位置
   initHumanPositon(item)
+
+  console.log('初始化数字人场景', item)
+
+  // 新增:如果数字人有pictureUrl,则添加新场景
+  if (item.pictureUrl) {
+    // 创建新场景对象
+    const newScene = {
+      id: generateUUID(),
+      pictureUrl: item.pictureUrl,
+      isActive: false,
+      isChecked: false,
+      driverType: 1,
+      selectAudio: {},
+      uploadAudioUrl: '',
+      fileList: [],
+      businessId: generateUUID(),
+      width: courseInfo.value.width,
+      height: courseInfo.value.height,
+      showDigitalHuman: true,
+      pptRemark: '',
+      backgroundType: 1, // 添加背景类型
+      innerPicture: {
+        src: '',
+        cover: '',
+        width: 0,
+        height: 0,
+        originWidth: 0,
+        originHeight: 0,
+        top: 0,
+        marginLeft: 0,
+        category: 1,
+        depth: 1,
+        businessId: generateUUID(),
+        entityType: 0,
+        entityId: '0'
+      },
+      // 添加声音模型相关配置
+      voice: {
+        voiceId: '',
+        entityId: '',
+        tonePitch: '',
+        voiceType: '',
+        speechRate: '',
+        name: ''
+      },
+      // 添加背景相关配置
+      background: {
+        backgroundType: 1,
+        entityId: '',
+        width: courseInfo.value.width,
+        height: courseInfo.value.height,
+        depth: 0,
+        src: item.pictureUrl,
+        cover: item.pictureUrl,
+        originWidth: courseInfo.value.width,
+        originHeight: courseInfo.value.height,
+        color: '#ffffff',
+        pptRemark: ''
+      },
+      duration: '',
+      orderNo: 1
+    }
+
+    // 将新场景添加到PPTArr数组
+    PPTArr.value = []
+    PPTArr.value.push(newScene)
+    // 自动选中第一个场景
+    selectPPT.value = PPTArr.value[0]
+  }
 }
 // 根据数字人的不同姿势初始化其在ppt的位置
 const initHumanPositon = (data) => {

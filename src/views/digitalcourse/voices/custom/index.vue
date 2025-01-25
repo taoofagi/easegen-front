@@ -25,11 +25,11 @@
       <el-form-item :label="t('courseCenter.avatar')" prop="avatarUrl">
         <UploadImg v-model="formData.avatarUrl" />
       </el-form-item>
-      <!-- 增加克隆类型，redio 1普通 2高级 -->
+      <!-- 增加克隆类型，redio 1极速 2标准 -->
       <el-form-item :label="t('courseCenter.cloneType')" prop="type">
         <el-radio-group v-model="formData.type">
-          <el-radio :label="1">普通</el-radio>
-          <el-radio :label="2">高级</el-radio>
+          <el-radio :label="1">极速</el-radio>
+          <el-radio :label="2">标准</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item :label="t('courseCenter.uploadSound')" prop="auditionUrl">

@@ -1,6 +1,7 @@
 <template>
   <div class="content">
     <div class="header">
+      <!--课件视频-->
       <div class="group_8 flex-row justify-end cursor-pointer" @click="createPPT">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
@@ -24,6 +25,31 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
+      <!--口播视频-->
+      <div class="group_8 flex-row justify-end cursor-pointer" @click="createSpeakVideo">
+        <div class="box_2 flex-col justify-between">
+          <div class="text-group_2 flex-col justify-between">
+            <span class="text_10"> {{ t('courseCenter.speakVideo') }}</span>
+            <span class="text_11">{{ t('courseCenter.speakVideoTitle') }}</span>
+          </div>
+          <div class="box_3 flex-row">
+            <div class="image-wrapper_2 flex-col">
+              <img
+                class="thumbnail_2"
+                referrerpolicy="no-referrer"
+                src="@/assets/digitalcourse/jiantou.png"
+              />
+            </div>
+            <span class="text_12">{{ t('courseCenter.goCreate') }}</span>
+          </div>
+        </div>
+        <img
+          class="image_3"
+          referrerpolicy="no-referrer"
+          src="@/assets/digitalcourse/pptmodel.png"
+        />
+      </div>
+      <!--数字人形象定制-->
       <div class="group_8 flex-row justify-end cursor-pointer" @click="todigitalhumans">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
@@ -47,6 +73,7 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
+      <!--数字人声音定制-->
       <div class="group_8 flex-row justify-end cursor-pointer" @click="tovoice">
         <div class="box_2 flex-col justify-between">
           <div class="text-group_2 flex-col justify-between">
@@ -70,18 +97,10 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
-      <!--      <div class="header-item">-->
-      <!--        <img src="https://console-ai.bokecc.com/static/create_digitbot@2x.5e536992.png" alt="标准模式创作" />-->
-      <!--        <div class="header-text">标准模式创作</div>-->
-      <!--      </div>-->
-      <!--      <a class="header-item" href="https://console-ai.bokecc.com/help/video" target="_blank" rel="noreferrer noopener">-->
-      <!--        <img src="https://console-ai.bokecc.com/static/video_couse@2x.62b27923.png" alt="视频教程" />-->
-      <!--        <div class="header-text" style="color: #fff;">视频教程</div>-->
-      <!--      </a>-->
     </div>
     <div class="title">{{ t('courseCenter.myCourses') }}</div>
     <div class="project-list">
-      <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id)">
+      <div class="project-item" v-for="item in courseList" :key="item.id" @click="detailPPT(item.id,item.pageMode)">
         <div class="img-box">
           <div class="scene-item-box" :style="{ backgroundImage: `url(${item.thumbnail})` }">
             <div v-if="item.progress" class="item-progress">{{ t('courseCenter.progress') }}：{{ item.progress }}</div>
@@ -220,8 +239,17 @@ const createPPT = () => {
   router.push('/chooseTemplate/index');
 };
 
-const detailPPT = (id) => {
-  router.push({ path: '/chooseTemplate/index', query: { id } });
+const createSpeakVideo = () => {
+  router.push('/chooseTemplate/speakvideo');
+};
+
+const detailPPT = (id,pageMode) => {
+  //根据pageMode判断如果是2，则跳转到ppt课件视频，如果是3，则跳转到口播视频
+  if (pageMode === 2) {
+    router.push({ path: '/chooseTemplate/index', query: { id } });
+  } else if (pageMode === 3) {
+    router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
+  }
 };
 
 const deleteItem = async (id) => {
@@ -263,6 +291,8 @@ onUnmounted(() => {
 }
 .header {
   display: flex;
+  flex-wrap: wrap;  // 添加换行
+  gap: 20px;  // 添加间距
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 20px;
@@ -301,15 +331,17 @@ onUnmounted(() => {
         rgba(229, 233, 250, 1) 100%
     );
     border-radius: 16px;
-    width: 422px;
-    height: 150px;
-    margin-left: 17px;
+    width: calc(20% - 16px);  // 修改宽度为20%减去间距
+    aspect-ratio: 1.8;  // 设置宽高比
+    margin-left: 0px;
+    position: relative;  // 添加相对定位
+    overflow: hidden;  // 防止内容溢出
   }
 
   .box_2 {
-    width: 160px;
+    width: 45%;
     height: 104px;
-    margin: 24px 0 0 30px;
+    margin: 24px 0 0 20px;
   }
   .text-group_2 {
     width: 160px;
@@ -320,7 +352,7 @@ onUnmounted(() => {
     height: 29px;
     overflow-wrap: break-word;
     color: rgba(76, 61, 135, 1);
-    font-size: 24px;
+    font-size: 22px;
     font-family: Alimama FangYuanTi VF-Bold-Round;
     font-weight: NaN;
     text-align: left;
@@ -332,7 +364,7 @@ onUnmounted(() => {
     height: 19px;
     overflow-wrap: break-word;
     color: rgba(76, 61, 135, 1);
-    font-size: 16px;
+    font-size: 15px;
     font-family: Alimama FangYuanTi VF-Regular-Round;
     font-weight: NaN;
     text-align: left;
@@ -374,9 +406,10 @@ onUnmounted(() => {
     margin: 7px 24px 0 17px;
   }
   .image_3 {
-    width: 125px;
-    height: 150px;
-    margin-left: 107px;
+    width: 20%;
+    aspect-ratio: 0.75;  // 设置图片宽高比 3:4
+    object-fit: cover;  // 保持图片比例
+    margin-left: auto;
   }
 }
 
