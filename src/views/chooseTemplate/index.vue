@@ -336,7 +336,7 @@
         </div>
         <div v-if="selectPPT.driverType == 1" style="position: relative">
           <div class="middle-textarea">
-            <el-input
+            <!-- <el-input
               v-model="selectPPT.pptRemark"
               ref="textareaRef"
               @select="handlePptRemarkSelection"
@@ -346,7 +346,8 @@
               show-word-limit
               maxlength="1200"
               resize="none"
-            />
+            /> -->
+            <Editor style="height: 196px; overflow-y: hidden;" v-model="selectPPT.pptRemark" :defaultConfig="editorConfig" mode="simple" @on-created="handleCreated" />
           </div>
           <div class="tool-box">
             <div class="tool-btn">
@@ -357,18 +358,28 @@
               <el-button type="primary" @click="openReplaceDialog" size="small">{{
                 t('courseCenter.batchReplace')
               }}</el-button>
-              <el-button type="primary" size="small">{{ t('courseCenter.pause') }}</el-button>
-              <el-button type="primary" size="small">{{
+              <el-button type="primary" size="small" @click="handleWord">{{
                 t('courseCenter.polyphonicCharacters')
               }}</el-button>
-              <el-button type="primary" size="small">{{ t('courseCenter.number') }}</el-button>
-              <el-checkbox
-                v-model="checked5"
-                style="margin-left: 10px"
-                :label="t('courseCenter.polyphonicCharactersDetection')"
-                size="small"
-              />
-              <QuestionFilled style="width: 1em; height: 1em" />
+              <el-dropdown placement="bottom" @command="handleNumber" style="margin: 0 12px;">
+                  <el-button type="primary" size="small">{{ t('courseCenter.number') }}</el-button>
+                  <template #dropdown>
+                      <el-dropdown-menu>
+                          <el-dropdown-item command="读数字">读数字</el-dropdown-item>
+                          <el-dropdown-item command="读数值">读数值</el-dropdown-item>
+                      </el-dropdown-menu>
+                  </template>
+              </el-dropdown>
+              <el-dropdown placement="bottom" @command="handleBreak">
+                  <el-button type="primary" size="small">{{ t('courseCenter.pause') }}</el-button>
+                  <template #dropdown>
+                      <el-dropdown-menu>
+                          <el-dropdown-item command="0.5秒">0.5秒</el-dropdown-item>
+                          <el-dropdown-item command="1秒">1秒</el-dropdown-item>
+                          <el-dropdown-item command="2秒">2秒</el-dropdown-item>
+                      </el-dropdown-menu>
+                  </template>
+              </el-dropdown>
               <div></div>
             </div>
             <el-button type="primary" :icon="VideoPlay" size="small" @click="createAudio">{{
@@ -552,6 +563,12 @@
       :content="selectPPT.pptRemark"
       @confirm="handleRewritten"
     />
+     <!-- 多音字 -->
+     <el-dialog v-model="dialogVisible" title="点击需要纠正的多音字，选择正确的发音" width="500" @close="dialogVisible = false">
+      <el-tag v-for="(item, index) in textList" :key="index" type="primary" effect="dark" style="margin-right: 10px;cursor: pointer;" @click="handleTag(item)">
+          {{ item }}
+      </el-tag>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -596,6 +613,17 @@ import {
 import { generateUUID } from '@/utils'
 import { useRoute, useRouter } from 'vue-router'
 import { cloneDeep } from 'lodash-es'
+// 富文本编辑器
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
+import { Editor } from '@wangeditor/editor-for-vue'
+import { Boot } from '@wangeditor/editor'
+import TitleBlack from './title-black/index.js';  // 这个路径根据你的配置来
+Boot.registerModule(TitleBlack)
+//多音字
+import { polyphonic } from 'pinyin-pro';
+//编辑器内容转换ssml
+import { useEditorHtml } from '@/hooks/web/useEditorHtml';
+const editorHtml = useEditorHtml()
 const router = useRouter() // 路由
 const route = useRoute() //
 //用户信息
@@ -1100,9 +1128,13 @@ watch(
     if (!val) {
       return
     }
-    // 计算总字数
+    // 计算总字数 - 修改为去除SSML标签后再计算长度
     videoText.value = val.reduce((prev, curr) => {
-      return prev + (curr.pptRemark ? curr.pptRemark.length : 0)
+      if (!curr.pptRemark) return prev;
+      
+      // 去除所有SSML标签,只保留文本内容
+      const plainText = curr.pptRemark.replace(/<[^>]+>/g, '');
+      return prev + plainText.length;
     }, 0)
     //视频时长换算
     let videoTime = (videoText.value / 200) * 60
@@ -1389,7 +1421,7 @@ const saveSubmit = (type) => {
             originWidth: item.width,
             originHeight: item.height,
             color: '#ffffff',
-            pptRemark: item.pptRemark
+            pptRemark: editorHtml.elemToHtml(item.pptRemark)
           },
           components: [
             {
@@ -1420,7 +1452,7 @@ const saveSubmit = (type) => {
             speech_rate: voiceData.speechRate,
             volume: voiceData.volume,
             smartSpeed: '',
-            textJson: item.pptRemark
+            textJson: editorHtml.elemToHtml(item.pptRemark),
           },
           audioDriver: {
             fileName: item.fileList && item.fileList[0]?.name,
@@ -1504,30 +1536,30 @@ const saveSubmit = (type) => {
             )
           }
           // 正则表达式检查阿拉伯数字和英文标点符号
-          const arabicNumberReg = /\d{2,}/ // 匹配连续2个及以上阿拉伯数字
+          // const arabicNumberReg = /\d{2,}/ // 匹配连续2个及以上阿拉伯数字
           // const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
-          const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
-          if (arabicNumberReg.test(item.pptRemark)) {
-            // 找出所有连续的阿拉伯数字
-            const matches = item.pptRemark.match(/\d{2,}/g) || []
-            const numbersStr =
-              matches.length > 0
-                ? `(<span style="color: #ff4d4f">${matches.join('、')}</span>)`
-                : ''
-            warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
-            )
-          }
+          // const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
+          // if (arabicNumberReg.test(item.pptRemark)) {
+          //   // 找出所有连续的阿拉伯数字
+          //   const matches = item.pptRemark.match(/\d{2,}/g) || []
+          //   const numbersStr =
+          //     matches.length > 0
+          //       ? `(<span style="color: #ff4d4f">${matches.join('、')}</span>)`
+          //       : ''
+          //   warningStrArr.push(
+          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
+          //   )
+          // }
           // if (punctuationReg.test(item.pptRemark)) {
           //   warningStrArr.push(
           //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
           //   )
           // }
-          if (htmlTagReg.test(item.pptRemark)) {
-            warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
-            )
-          }
+          // if (htmlTagReg.test(item.pptRemark)) {
+          //   warningStrArr.push(
+          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
+          //   )
+          // }
         }
       } else {
         if (!item.uploadAudioUrl) {
@@ -1595,17 +1627,95 @@ const handlePptRemarkSelection = () => {
     }
   }
 }
+//富文本编辑器  -start
+// 编辑器实例，必须用 shallowRef
+const editorRef = shallowRef()
+const editorConfig = { placeholder: '请输入内容...' }
+const handleCreated = (editor) => {
+    editorRef.value = editor // editor 实例
+}
+//停顿
+const handleBreak = (e) => {
+    //节点插入
+    const node = {
+        type: 'title-black',
+        children: [{ text: e }]
+    }
+    editorRef.value.restoreSelection() // 恢复选区
+    editorRef.value.insertNode(node);
+    editorRef.value.move(1);
+}
+//数字
+const handleNumber = (e) => {
+    editorRef.value.focus()
+    selectTextarea.value = editorRef.value.getSelectionText()
+    let reg = /^\d+$/
+    if (!selectTextarea.value || selectTextarea.value.length == 0 || !reg.test(selectTextarea.value)) {
+      message.warning('请先选中需指定读法的数字')
+        return false
+    }
+    //节点插入
+    const node = {
+        type: 'number-value',
+        numberVal: selectTextarea.value,
+        children: [{ text: e }]
+    }
+    editorRef.value.restoreSelection() // 恢复选区
+    editorRef.value.insertNode(node);
+    editorRef.value.move(1);
+}
+//多音字
+const dialogVisible = ref(false)
+const textList = ref([])
+const handleWord = () => {
+    editorRef.value.focus()
+    selectTextarea.value = editorRef.value.getSelectionText()
+    if (!selectTextarea.value) {
+      message.warning('请先选中需指定读法的文本')
+        return false
+    }
+    if (selectTextarea.value.length > 1) {
+      message.warning('只能选择一个字')
+        return false
+    }
+    let textPinyin = polyphonic(selectTextarea.value, { toneType: 'num', type: 'array' })[0];
+    if (textPinyin.length > 1) {
+        textList.value = textPinyin;
+        dialogVisible.value = true
+    } else {
+      message.warning(`${selectTextarea.value}不是多音字`)
+    }
+}
+const handleTag = (name) => {
+    dialogVisible.value = false
+    //节点插入
+    const node = {
+        type: 'text-value',
+        textVal: selectTextarea.value,
+        children: [{ text: name }]
+    }
+    editorRef.value.restoreSelection() // 恢复选区
+    editorRef.value.insertNode(node);
+    editorRef.value.move(1);
+}
 const createAudio = async () => {
   if (!audioSelectData.value || audioSelectData.value.length == 0) {
     message.warning('请选择声音模型！')
     return false
   }
-  if (!selectTextarea.value || selectTextarea.value.length == 0) {
-    message.warning('请划选至少一个汉字')
-    return false
-  }
+  // if (!selectTextarea.value || selectTextarea.value.length == 0) {
+  //   message.warning('请划选至少一个汉字')
+  //   return false
+  // }
+  if (!editorRef.value.getText()) {
+    message.warning('请输入需要试听文本的内容…')
+        return false
+    }
+    // 获取编辑器 HTML 内容
+    const html = editorRef.value.getHtml();
+    const ssllHtml = editorHtml.elemToHtml(html);
   const params = {
-    text: selectTextarea.value,
+    text: ssllHtml,
     speed: voiceData.speechRate, //语速
     pitch: 1, // 音高固定为1
     volume: voiceData.volume, //音量
@@ -1700,7 +1810,7 @@ const getCourseDetail = (id) => {
           item.isActive = false
           item.isChecked = false
           item.pictureUrl = item.background.src
-          item.pptRemark = item.background.pptRemark
+          item.pptRemark = editorHtml.parseElemHtml(item.background.pptRemark);
           item.backgroundType = item.background.backgroundType
           item.width = item.background.width
           item.height = item.background.height

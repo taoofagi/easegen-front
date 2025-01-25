@@ -49,7 +49,10 @@ Here are the major features and improvements we plan to implement in the future:
 - [x] Support for digital human image and voice customization
 - [x] Support for docker quick deployment
 - [x] Support for AI-generated scriptwriting
-- [ ] SSML syntax support for voice
+- [x] Add text dubbing function
+- [x] SSML syntax support for voice
+- [ ] Add digital human rapid cloning mode
+- [ ] Add mouthpiece video synthesis function
 - [ ] Adding lesson plan generation
 - [ ] Convert lesson plans to courseware and generate controllable PPTs
 - [ ] Support for real-time digital human teaching
