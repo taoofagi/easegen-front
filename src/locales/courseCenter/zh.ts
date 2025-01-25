@@ -1,8 +1,10 @@
 export default {
   courseCenter:{
     cloneType:'克隆类型',
-    videoCourse: '视频课件',
+    videoCourse: '课件视频',
     videoCourseTitle: '模版式视频，一键生成',
+    speakVideo: '口播视频',
+    speakVideoTitle: '爆款口播视频，一键生成',
     goCreate: '去创作',
     digitalPeopleImageCustom: '数字人形象定制',
     submitImage: '提交形象',

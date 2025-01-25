@@ -3,6 +3,8 @@ export default {
     cloneType:'Clone Type',
     videoCourse: 'Video Courseware',
     videoCourseTitle: 'Template style video, one click generation',
+    speakVideo: 'Speak Video',
+    speakVideoTitle: 'Blast video, one click generation',
     goCreate: 'Go Create',
     digitalPeopleImageCustom: 'Digital People Image Custom',
     submitImage: 'Submit Image',

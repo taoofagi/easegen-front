@@ -99,6 +99,24 @@
             <el-input type="number" v-model="formData.humanY" :placeholder="t('common.inputText') + t('template.leftPositionDigitalPeople')" />
           </el-form-item>
         </el-col>
+
+        <el-col :span="12">
+          <el-form-item :label="t('template.templateSize')" prop="templateSize">
+            <el-select
+              v-model="formData.templateSize"
+              clearable
+              :placeholder="t('common.selectText') + t('template.templateSize')"
+              class="!w-240px"
+            >
+              <el-option
+                v-for="dict in getStrDictOptions(DICT_TYPE.TEMPLATE_SIZE)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
@@ -129,7 +147,7 @@
 </template>
 <script setup lang="ts">
 import { TemplateApi, TemplateVO } from '@/api/digitalcourse/template'
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 /** 模板 表单 */
 defineOptions({ name: 'TemplateForm' })
 

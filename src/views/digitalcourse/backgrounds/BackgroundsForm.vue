@@ -48,6 +48,22 @@
           />
         </el-select>
       </el-form-item>
+        <el-form-item :label="t('template.templateSize')" prop="templateSize">
+          <el-select
+            v-model="formData.templateSize"
+            clearable
+            :placeholder="t('common.selectText') + t('template.templateSize')"
+            class="!w-240px"
+          >
+            <el-option
+              v-for="dict in getStrDictOptions(DICT_TYPE.TEMPLATE_SIZE)"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+
       <el-form-item label="状态" prop="status">
         <el-select v-model="formData.status" placeholder="请选择状态">
           <el-option
@@ -66,7 +82,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { getIntDictOptions, DICT_TYPE } from '@/utils/dict'
+import { getIntDictOptions, DICT_TYPE ,getStrDictOptions} from '@/utils/dict'
 import * as BackgroundsApi from '@/api/digitalcourse/backgrounds'
 
 const { t } = useI18n() // 国际化

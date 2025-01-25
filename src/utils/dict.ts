@@ -259,6 +259,7 @@ export enum DICT_TYPE {
   DIGITALCOURSE_GENQUESTION_DIFFICULTY = 'digitalcourse_genquestion_difficulty',
   VIDEO_STATUS = 'video_status', //合成视频状态
   USE_MODEL = 'use_model', //合成视频状态
-  MEDIA_TYPE = 'media_type' //媒体类型
+  MEDIA_TYPE = 'media_type', //媒体类型
+  TEMPLATE_SIZE = 'digitalcourse_template_size', // 模板尺寸
 
 }

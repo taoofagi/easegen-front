@@ -10,6 +10,7 @@ export default {
     leftPositionPPT: 'ppt距离左侧位置',
     topPositionDigitalPeople: '数字人距离顶部位置',
     leftPositionDigitalPeople: '数字人距离左侧位置',
+    templateSize: '模板尺寸',
     digitalPeopleWidth: '数字人宽度',
     digitalPeopleHeight: '数字人高度',
     backgroundImage: '背景图片',

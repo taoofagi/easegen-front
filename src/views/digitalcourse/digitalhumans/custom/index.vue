@@ -31,6 +31,24 @@
             :value="parseInt(dict.value)"
           />
         </el-select>
+        <div v-if="formData.useModel === 2" class="tip-text">
+          上传30秒-5分钟绿幕录制视频，支持背景更换，制作您专属的虚拟数字人分身，适用于企业宣传、教育培训、口播视频等各大应用场景，并结合数字人口播技术，可替代真人出镜。！
+          <br/>视频方向：纵向；
+          <br/>文件格式：mp4；
+          <br/>视频编码：.h264；
+          <br/>视频时长：30 秒 ~ 5 分钟；
+          <br/>分辨率：建议分辨率为9：16的720p或 1080p；
+          <br/>文件大小：小于 100MB。
+        </div>
+        <div v-if="formData.useModel === 3" class="tip-text">
+          上传5秒-5分钟的视频，1分钟内即可获取您的免费数字分身！
+          <br/>视频方向：纵向；
+          <br/>文件格式：mp4；
+          <br/>视频编码：.h264；
+          <br/>视频时长：5 秒 ~ 5 分钟；
+          <br/>分辨率：建议分辨率为9：16的720p或 1080p；
+          <br/>文件大小：小于 100MB。
+        </div>
       </el-form-item>
       <el-form-item v-if="formData.useModel == 1" :label="t('courseCenter.image')" prop="pictureUrl">
         <UploadImg v-model="formData.pictureUrl" />

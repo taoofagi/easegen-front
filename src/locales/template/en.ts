@@ -12,6 +12,7 @@ export default {
     leftPositionDigitalPeople: 'Left Position of Digital People',
     digitalPeopleWidth: 'Digital People Width',
     digitalPeopleHeight: 'Digital People Height',
+    templateSize: 'TemplateSize',
     backgroundImage: 'Background Image',
     reviewImage: 'Review Image',
   }
