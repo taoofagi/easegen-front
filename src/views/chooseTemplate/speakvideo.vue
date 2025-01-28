@@ -401,7 +401,7 @@
               v-model:file-list="selectPPT.fileList"
               ref="uploadAudioRef"
               class="upload-demo"
-              accept=".wav,.mp3"
+              accept=".wav,.mp3,.m4a"
               :limit="1"
               :headers="headers"
               :action="`${config.base_url}/infra/file/upload`"
@@ -1256,6 +1256,10 @@ const chooseHost = (item) => {
 
   console.log('初始化数字人场景', item)
 
+  // 更新课程名称为数字人名称
+  courseInfo.value.name = item.name
+  editName.value = item.name
+
   // 新增:如果数字人有pictureUrl,则添加新场景
   if (item.pictureUrl) {
     // 创建新场景对象
@@ -1587,12 +1591,13 @@ const saveSubmit = (type) => {
         return
       }
 
-      if (!item.selectAudio || !item.selectAudio.code) {
-        warningStrArr.push(
-          `场景<span style="color: red; font-weight: bold;">${i + 1}</span>没有选择声音模型`
-        )
-      }
+      
       if (item.driverType == 1) {
+        if (!item.selectAudio || !item.selectAudio.code) {
+          warningStrArr.push(
+            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>没有选择声音模型`
+          )
+        }
         if (!item.pptRemark) {
           warningStrArr.push(
             `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无口播内容`
@@ -1631,6 +1636,7 @@ const saveSubmit = (type) => {
           // }
         }
       } else {
+        console.log('场景数据', item)
         if (!item.uploadAudioUrl) {
           warningStrArr.push(
             `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无音频内容`
