@@ -57,6 +57,7 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column :label="t('table.index')" align="center" prop="id" />
       <el-table-column :label="t('voices.name')" align="center" prop="name" />
+      <el-table-column :label="t('voices.code')" align="center" prop="code" />
       <el-table-column :label="t('voices.language')" align="center" prop="language">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.DIGITALCOURSE_VOICES_LANGUAGE" :value="scope.row.language" />
@@ -86,7 +87,7 @@
             {{t('voices.handle')}}
           </el-button>
           <el-button
-            :disabled="scope.row.status == 3 || memberDelete(scope.row.status)"
+            :disabled="scope.row.status == 1 || scope.row.status == 2 || scope.row.status == 3"
             link
             type="danger"
             @click="handleDelete(scope.row.id)"

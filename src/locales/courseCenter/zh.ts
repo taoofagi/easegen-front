@@ -121,7 +121,7 @@ export default {
     submit:'提 交',
     avatar:'头像',
     uploadSound:'上传声音',
-    uploadSoundText:'推荐上传10-20s音频，上传支持小于10M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。\n 普通声音克隆免费，适合对数字人音质要求不高的场景，\n 高级声音克隆收费，适合对数字人音质要求较高的场景。',
+    uploadSoundText:'推荐上传10-20s音频，上传支持小于10M的wav、mp3、m4a格式文件，避免多人对话、明显杂音、噪音、混响等情况。\n 极速声音克隆免费，适合对数字人音质要求不高的场景，克隆时间短\n 标准声音克隆收费，适合对数字人音质要求较高的场景，克隆时间较长。',
     modelTrainingConfirmMessage:'存在训练中模型，是否跳转查看？',
     modelTrainingTitle:'提示',
 

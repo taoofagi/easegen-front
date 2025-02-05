@@ -1206,6 +1206,7 @@ const getList = async () => {
     queryParams.type = tabs1ActiveNum.value
     queryParams.gender = tabs2ActiveNum.value
     queryParams.posture = tabs3ActiveNum.value
+    queryParams.status = 0
     let data = await pptTemplateApi.pageList(queryParams)
     //如果数字人列表 data为空 则切换type再查询一次
     if (data.list.length == 0) {

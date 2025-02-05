@@ -145,6 +145,7 @@ const getList = async () => {
     queryParams.language = selectLanguage.value?.value || '';
     queryParams.gender = selectAudio.value?.value || '';
     queryParams.voiceType = activeName.value;
+    queryParams.status = 0
     const data = await pptTemplateApi.videlPageList(queryParams);
     data.list.forEach((item) => {
       item.isHover = false;
