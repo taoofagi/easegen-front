@@ -222,9 +222,17 @@ const handleDownload = (url, courseName) => {
   document.body.removeChild(link);
 };
 const goDetail = (id) => {
-  router.push(
-    { path: '/chooseTemplate/index', query: { id }}
-  )
+  pptTemplateApi.coursesDetail(id).then((res) => {
+    if (!res) {
+      message.warning('关联课件视频或口播视频被删除')
+      return
+    }
+    if (res.pageMode === 2 || res.pageMode === 0) {
+      router.push({ path: '/chooseTemplate/index', query: { id } });
+    } else if (res.pageMode === 3) {
+      router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
+    }
+  })
 }
 
 /** 格式化视频时长 */

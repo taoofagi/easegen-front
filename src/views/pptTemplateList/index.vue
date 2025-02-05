@@ -245,7 +245,7 @@ const createSpeakVideo = () => {
 
 const detailPPT = (id,pageMode) => {
   //根据pageMode判断如果是2，则跳转到ppt课件视频，如果是3，则跳转到口播视频
-  if (pageMode === 2) {
+  if (pageMode === 2 || pageMode === 0) {
     router.push({ path: '/chooseTemplate/index', query: { id } });
   } else if (pageMode === 3) {
     router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
