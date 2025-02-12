@@ -1,11 +1,10 @@
-import { DOMElement } from "@wangeditor/editor/dist/editor/src/utils/dom";
-
 export const useEditorHtml = () => {
   return {
     elemToHtml: (html) => {
-      const newHtml = html
-        .replace(/<p>/g, "<speak>")
-        .replace(/<\/p>/g, "</speak>");
+      html = html
+        .replace(/<p>/g, "")
+        .replace(/<\/p>/g, "");
+      const newHtml = `<speak>${html}</speak>`
       // 使用 DOMParser 解析 HTML 内容
       const parser = new DOMParser();
       const doc = parser.parseFromString(newHtml, "text/html");
@@ -23,7 +22,7 @@ export const useEditorHtml = () => {
       const textNodes = doc.querySelectorAll(
         'span[data-w-e-type="text-value"]'
       );
-      titleNodes.forEach((node:any) => {
+      titleNodes.forEach((node) => {
         const newNode = document.createElement("break");
         const time = node.getHTML();
         if (time.trim() == "1秒") {
@@ -35,7 +34,7 @@ export const useEditorHtml = () => {
         }
         node.parentNode.replaceChild(newNode, node);
       });
-      numberNodes.forEach((node:any) => {
+      numberNodes.forEach((node) => {
         const newNode = document.createElement("say-as");
         const number = node.getAttribute("data-number");
         const text = node.getHTML();
@@ -47,7 +46,7 @@ export const useEditorHtml = () => {
         newNode.append(number);
         node.parentNode.replaceChild(newNode, node);
       });
-      textNodes.forEach((node:any) => {
+      textNodes.forEach((node) => {
         const newNode = document.createElement("phoneme");
         const text = node.getAttribute("data-text");
         const textPY = node.getHTML();
@@ -79,8 +78,8 @@ export const useEditorHtml = () => {
       const textNodes = doc.querySelectorAll(
         'phoneme'
       );
-      titleNodes.forEach((node:any) => {
-        const newNode:any = document.createElement("span");
+      titleNodes.forEach((node) => {
+        const newNode = document.createElement("span");
         newNode.setAttribute("data-w-e-is-void",true);
         newNode.setAttribute("data-w-e-is-inline",true);
         newNode.setAttribute("data-w-e-type",'title-black');
@@ -94,8 +93,8 @@ export const useEditorHtml = () => {
         }
         node.parentNode.replaceChild(newNode, node);
       });
-      numberNodes.forEach((node:any) => {
-        const newNode:any = document.createElement("span");
+      numberNodes.forEach((node) => {
+        const newNode = document.createElement("span");
         newNode.setAttribute("data-w-e-is-void",true);
         newNode.setAttribute("data-w-e-is-inline",true);
         newNode.setAttribute("data-w-e-type",'number-value');
@@ -109,8 +108,8 @@ export const useEditorHtml = () => {
         }
         node.parentNode.replaceChild(newNode, node);
       });
-      textNodes.forEach((node:any) => {
-        const newNode:any = document.createElement("span");
+      textNodes.forEach((node) => {
+        const newNode = document.createElement("span");
         newNode.setAttribute("data-w-e-is-void",true);
         newNode.setAttribute("data-w-e-is-inline",true);
         newNode.setAttribute("data-w-e-type",'text-value');
@@ -124,3 +123,4 @@ export const useEditorHtml = () => {
     }
   };
 };
+
