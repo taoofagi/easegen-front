@@ -1335,12 +1335,13 @@ const voiceData = reactive({
   }
 })
 
-const saveSubmit = (type) => {
+const saveSubmit = async (type) => {
   // 检查场景是否为空
   if (!PPTArr.value || PPTArr.value.length === 0) {
     message.warning('场景为空，请先上传PPT！')
-    return
+    return false
   }
+
   //保存课程
   let saveSubmitForm = {
     accountId: courseInfo.value.accountId,
@@ -1493,95 +1494,86 @@ const saveSubmit = (type) => {
   }
 
   if (type == 'save') {
-    pptTemplateApi
-      .coursesSave(stringifySafely(saveSubmitForm))
-      .then((res) => {
-        if (res) {
-          message.success('保存成功！')
-          saveTime.value = getSaveTime()
-        }
-      })
-      .catch((error) => {
-        console.error('保存课程时出错:', error)
-      })
-  } else {
-    // 校验场景数据
-    if (!PPTArr.value || PPTArr.value.length == 0) {
-      message.warning('请先上传ppt!')
+    try {
+      const res = await pptTemplateApi.coursesSave(stringifySafely(saveSubmitForm))
+      if (res) {
+        message.success('保存成功！')
+        saveTime.value = getSaveTime()
+        return true // 返回保存成功标志
+      }
+      return false
+    } catch (error) {
+      console.error('保存课程时出错:', error)
+      message.error('保存失败，请重试')
       return false
     }
-    let warningStrArr: any = []
-    for (let i = 0; i < PPTArr.value.length; i++) {
-      const item = PPTArr.value[i]
-      // 校验背景宽高
-      if (!item.width || !item.height) {
-        message.warning('背景尺寸无效，请检查宽高设置，或者重新选择模板')
+  } else {
+    // 合成视频前先保存
+    try {
+      const saveResult = await saveSubmit('save')
+      if (!saveResult) {
+        message.error('保存失败，请重试后再合成视频')
+        return
+      }
+      
+      // 校验场景数据
+      let warningStrArr: any = []
+      for (let i = 0; i < PPTArr.value.length; i++) {
+        const item = PPTArr.value[i]
+        // 校验背景宽高
+        if (!item.width || !item.height) {
+          message.warning('背景尺寸无效，请检查宽高设置，或者重新选择模板')
+          return
+        }
+
+        if (!item.selectAudio || !item.selectAudio.code) {
+          warningStrArr.push(
+            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>没有选择声音模型`
+          )
+        }
+        if (item.driverType == 1) {
+          // 去除所有HTML标签和SSML标签后再判断内容是否为空
+          const plainText = item.pptRemark ? item.pptRemark.replace(/<[^>]+>/g, '') : ''
+          if (!plainText || plainText.trim() === '') {
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无有效的口播内容`
+            )
+          } else {
+            //判断去除标签后的内容长度是否超过2000字
+            if (plainText.length > 2000) {
+              warningStrArr.push(
+                `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容超过2000字，请减少或拆分场景`
+              )
+            }
+          }
+        } else {
+          if (!item.uploadAudioUrl) {
+            warningStrArr.push(
+              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无音频内容`
+            )
+          }
+        }
+      }
+
+      if (warningStrArr.length > 0) {
+        warningDialog.value.open(warningStrArr.map((warning) => `<div>${warning}</div>`).join(''))
         return
       }
 
-      if (!item.selectAudio || !item.selectAudio.code) {
-        warningStrArr.push(
-          `场景<span style="color: red; font-weight: bold;">${i + 1}</span>没有选择声音模型`
-        )
-      }
-      if (item.driverType == 1) {
-        if (!item.pptRemark) {
-          warningStrArr.push(
-            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无口播内容`
-          )
-        } else {
-          //判断item.pptRemark超过1200个字，则提示
-          if (item.pptRemark.length > 1200) {
-            warningStrArr.push(
-              `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容超过1200字，请减少或拆分场景`
-            )
-          }
-          // 正则表达式检查阿拉伯数字和英文标点符号
-          // const arabicNumberReg = /\d{2,}/ // 匹配连续2个及以上阿拉伯数字
-          // const punctuationReg = /[.,?!:;'"]/ // 匹配英文标点符号
-          // const htmlTagReg = /<[^>]*>/ // 匹配HTML标签
-          // if (arabicNumberReg.test(item.pptRemark)) {
-          //   // 找出所有连续的阿拉伯数字
-          //   const matches = item.pptRemark.match(/\d{2,}/g) || []
-          //   const numbersStr =
-          //     matches.length > 0
-          //       ? `(<span style="color: #ff4d4f">${matches.join('、')}</span>)`
-          //       : ''
-          //   warningStrArr.push(
-          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含连续阿拉伯数字${numbersStr}可能会出现误读，请修改为中文数字`
-          //   )
-          // }
-          // if (punctuationReg.test(item.pptRemark)) {
-          //   warningStrArr.push(
-          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含英文标点符号，可能会出现误读，请修改为全角标点符号`
-          //   )
-          // }
-          // if (htmlTagReg.test(item.pptRemark)) {
-          //   warningStrArr.push(
-          //     `场景<span style="color: red; font-weight: bold;">${i + 1}</span>口播内容包含html标签，可能会出现误读，请修改`
-          //   )
-          // }
+      // 合成视频
+      try {
+        const res = await pptTemplateApi.megerMedia(saveSubmitForm)
+        if (res) {
+          message.success('合成视频任务提交成功，请到我的视频中查看！')
         }
-      } else {
-        if (!item.uploadAudioUrl) {
-          warningStrArr.push(
-            `场景<span style="color: red; font-weight: bold;">${i + 1}</span>无音频内容`
-          )
-        }
+      } catch (error) {
+        console.error('合成视频失败:', error)
+        message.error('合成视频失败，请重试')
       }
+    } catch (error) {
+      console.error('保存或合成过程出错:', error)
+      message.error('操作失败，请重试')
     }
-    if (warningStrArr.length > 0) {
-      // 使用 \n 换行符连接警告信息，并用 <div> 包裹每条警告
-      warningDialog.value.open(warningStrArr.map((warning) => `<div>${warning}</div>`).join(''))
-      return
-    }
-    //合成视频
-    pptTemplateApi.megerMedia(saveSubmitForm).then((res) => {
-      console.log('---------', res)
-      if (res) {
-        message.success('合成视频任务提交成功，请到我的视频中查看！')
-      }
-    })
   }
 }
 function stringifySafely(obj) {
