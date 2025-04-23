@@ -1520,7 +1520,7 @@ const saveSubmit = (type) => {
           duration: '',
           orderNo: index + 1,
           textDriver: {
-            pitch: '',
+            pitch: 1,
             speed: '',
             speech_rate: voiceData.speechRate,
             volume: voiceData.volume,
