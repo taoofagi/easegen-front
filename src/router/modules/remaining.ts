@@ -601,6 +601,29 @@ const remainingRouter: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/digitalcourse',
+    component: Layout,
+    name: 'DigitalCourse',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'choose3DTemplate',
+        component: () => import('@/views/choose3DTemplate/index.vue'),
+        name: 'Choose3DTemplate',
+        meta: {
+          title: '3D数字人课程制作',
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          icon: 'ep:video-camera',
+          activeMenu: '/digitalcourse'
+        }
+      }
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/Error/404.vue'),
     name: '',

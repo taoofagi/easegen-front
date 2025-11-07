@@ -5,6 +5,8 @@ export default {
     videoCourseTitle: 'Template style video, one click generation',
     speakVideo: 'Speak Video',
     speakVideoTitle: 'Blast video, one click generation',
+    '3dVideoCourse': '3D Digital Human Video',
+    '3dVideoCourseTitle': '3D digital human, professional video production',
     goCreate: 'Go Create',
     digitalPeopleImageCustom: 'Digital People Image Custom',
     submitImage: 'Submit Image',

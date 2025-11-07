@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(node --version:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(test:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm dev)",
+      "WebFetch(domain:127.0.0.1)",
+      "Bash(curl:*)",
+      "Bash(api-docs.json)",
+      "Bash(python:*)",
+      "Bash(timeout /t 15)",
+      "Bash(nul)",
+      "Bash(ping:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

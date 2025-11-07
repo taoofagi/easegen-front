@@ -49,6 +49,30 @@
           src="@/assets/digitalcourse/pptmodel.png"
         />
       </div>
+      <!--3D数字人课件视频-->
+      <div class="group_8 flex-row justify-end cursor-pointer" @click="create3DVideo">
+        <div class="box_2 flex-col justify-between">
+          <div class="text-group_2 flex-col justify-between">
+            <span class="text_10"> {{ t('courseCenter.3dVideoCourse') }}</span>
+            <span class="text_11">{{ t('courseCenter.3dVideoCourseTitle') }}</span>
+          </div>
+          <div class="box_3 flex-row">
+            <div class="image-wrapper_2 flex-col">
+              <img
+                class="thumbnail_2"
+                referrerpolicy="no-referrer"
+                src="@/assets/digitalcourse/jiantou.png"
+              />
+            </div>
+            <span class="text_12">{{ t('courseCenter.goCreate') }}</span>
+          </div>
+        </div>
+        <img
+          class="image_3"
+          referrerpolicy="no-referrer"
+          src="@/assets/digitalcourse/pptmodel.png"
+        />
+      </div>
       <!--数字人形象定制-->
       <div class="group_8 flex-row justify-end cursor-pointer" @click="todigitalhumans">
         <div class="box_2 flex-col justify-between">
@@ -241,6 +265,10 @@ const createPPT = () => {
 
 const createSpeakVideo = () => {
   router.push('/chooseTemplate/speakvideo');
+};
+
+const create3DVideo = () => {
+  router.push('/digitalcourse/choose3DTemplate');
 };
 
 const detailPPT = (id,pageMode) => {

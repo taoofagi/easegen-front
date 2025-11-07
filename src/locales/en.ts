@@ -468,7 +468,8 @@ export default {
   ...genQuestion,
   ...voices,
   ...system,
-  ...courseCenter
+  ...courseCenter,
+  ...choose3DTemplate
 }
 import template from './template/en'
 import courseCenter from './courseCenter/en'
@@ -478,3 +479,4 @@ import digitalhumans from './digitalhumans/en'
 import genQuestion from './genQuestion/en'
 import voices from './voices/en'
 import system from './system/en'
+import choose3DTemplate from './choose3DTemplate/en'

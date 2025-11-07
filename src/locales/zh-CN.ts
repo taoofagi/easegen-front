@@ -463,7 +463,8 @@ export default {
   ...digitalhumans,
   ...voices,
   ...system,
-  ...courseCenter
+  ...courseCenter,
+  ...choose3DTemplate
 }
 
 import template from './template/zh'
@@ -474,3 +475,4 @@ import digitalhumans from './digitalhumans/zh'
 import genQuestion from './genQuestion/zh'
 import voices from './voices/zh'
 import system from './system/zh'
+import choose3DTemplate from './choose3DTemplate/zh'

@@ -227,9 +227,19 @@ const goDetail = (id) => {
       message.warning('关联课件视频或口播视频被删除')
       return
     }
-    if (res.pageMode === 2 || res.pageMode === 0) {
+
+    // 判断是否为3D数字人课程
+    // 3D课程的特征：有 pageInfo 字段，且包含 studio、look、voice 等3D资源信息
+    const is3DCourse = res.pageInfo && res.pageInfo.trim() !== '' && res.pageInfo !== '{}'
+
+    if (is3DCourse) {
+      // 3D数字人课程
+      router.push({ path: '/digitalcourse/choose3DTemplate', query: { id } });
+    } else if (res.pageMode === 2 || res.pageMode === 0) {
+      // 2D课程视频
       router.push({ path: '/chooseTemplate/index', query: { id } });
     } else if (res.pageMode === 3) {
+      // 口播视频
       router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
     }
   })

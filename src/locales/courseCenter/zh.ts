@@ -5,6 +5,8 @@ export default {
     videoCourseTitle: '模版式视频，一键生成',
     speakVideo: '口播视频',
     speakVideoTitle: '爆款口播视频，一键生成',
+    '3dVideoCourse': '3D数字人课件视频',
+    '3dVideoCourseTitle': '3D数字人，专业级视频制作',
     goCreate: '去创作',
     digitalPeopleImageCustom: '数字人形象定制',
     submitImage: '提交形象',
