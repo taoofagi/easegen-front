@@ -107,7 +107,7 @@
         </div>
 
         <!-- 场景列表（拖拽排序） -->
-        <div v-if="showLeftList" style="height: calc(100% - 86px)">
+        <div v-if="showLeftList" class="scenes-container">
           <div class="image-list">
             <draggable
               :list="pptScenes"
@@ -332,6 +332,11 @@ import type {
   Look3D,
   Voice3D
 } from './types'
+
+// 3D资源数据
+import studioDataRaw from '@/assets/data/3d场景信息.json'
+import lookDataRaw from '@/assets/data/3d人物信息.json'
+import voiceDataRaw from '@/assets/data/3d音色信息.json'
 
 const route = useRoute()
 const router = useRouter()
@@ -746,11 +751,10 @@ const saveCourse = async () => {
     // 准备保存数据
     // 处理scenes：按照3D数字人课程后端要求组装完整的scene数据
     const scenesToSave = pptScenes.value.map((scene, index) => {
-      // ✅ 确保口播内容有SSML标签
+      // ✅ 3D数字人课程不支持SSML，使用纯文本
       const scriptContent = scene.pptRemark || ''
-      const scriptWithSSML = scriptContent.includes('<speak>')
-        ? scriptContent
-        : `<speak>${scriptContent}</speak>`
+      // 移除所有SSML标签，只保留纯文本
+      const plainTextScript = scriptContent.replace(/<[^>]+>/g, '').trim()
 
       // ✅ 构造完整的components数组（参考2D课程正确参数）
       const components = [
@@ -779,7 +783,7 @@ const saveCourse = async () => {
         {
           businessId: generateUUID(),
           category: 2,  // 数字人
-          cover: selected3DResources.value.look?.half_body_preview_image_oss || '',
+          cover: selected3DResources.value.look?.full_body_preview_image_oss || '',
           depth: 400,
           digitbotType: 1,  // 3D数字人类型
           entityId: selected3DResources.value.look?.name || '',
@@ -791,7 +795,7 @@ const saveCourse = async () => {
           name: selected3DResources.value.look?.cn_name || '数字人',
           originHeight: 1920,
           originWidth: 1080,
-          src: selected3DResources.value.look?.half_body_preview_image_oss || '',
+          src: selected3DResources.value.look?.full_body_preview_image_oss || '',
           status: 0,
           top: 506,
           width: 338
@@ -823,7 +827,7 @@ const saveCourse = async () => {
 
         // ===== textDriver对象（必需）=====
         textDriver: {
-          textJson: scriptWithSSML,  // ✅ 使用SSML包裹的口播文本
+          textJson: plainTextScript,  // ✅ 使用纯文本（3D不支持SSML）
           pitch: 1,  // ✅ 修复：改为1（关键修复！）
           speed: 1.0,
           volume: 1.0,
@@ -843,7 +847,7 @@ const saveCourse = async () => {
           originWidth: course3DInfo.value.width,
           originHeight: course3DInfo.value.height,
           status: 0,
-          pptRemark: scriptWithSSML,  // ✅ 修复：添加口播内容
+          pptRemark: plainTextScript,  // ✅ 使用纯文本口播内容
           color: '#000000'
         },
 
@@ -1090,22 +1094,21 @@ const compose3DVideo = async () => {
       return
     }
 
-    // 3. 拼接所有文本（重要：防止多个<speak>标签）
+    // 3. 拼接所有文本（3D数字人课程不支持SSML，使用纯文本）
     const allText = pptScenes.value
       .map((s) => {
-        // 去除可能已存在的speak标签
-        return s.pptRemark.replace(/<\/?speak>/g, '').trim()
+        // 移除所有HTML/SSML标签，只保留纯文本
+        return s.pptRemark.replace(/<[^>]+>/g, '').trim()
       })
       .join('\n\n')
 
     // 4. 组装合成参数
     // 处理scenes：按照3D数字人课程后端要求组装完整的scene数据
     const scenesToCompose = pptScenes.value.map((scene, index) => {
-      // ✅ 确保口播内容有SSML标签
+      // ✅ 3D数字人课程不支持SSML，使用纯文本
       const scriptContent = scene.pptRemark || ''
-      const scriptWithSSML = scriptContent.includes('<speak>')
-        ? scriptContent
-        : `<speak>${scriptContent}</speak>`
+      // 移除所有SSML标签，只保留纯文本
+      const plainTextScript = scriptContent.replace(/<[^>]+>/g, '').trim()
 
       // ✅ 构造完整的components数组（参考2D课程正确参数）
       const components = [
@@ -1134,7 +1137,7 @@ const compose3DVideo = async () => {
         {
           businessId: generateUUID(),
           category: 2,  // 数字人
-          cover: selected3DResources.value.look?.half_body_preview_image_oss || '',
+          cover: selected3DResources.value.look?.full_body_preview_image_oss || '',
           depth: 400,
           digitbotType: 1,  // 3D数字人类型
           entityId: selected3DResources.value.look?.name || '',
@@ -1146,7 +1149,7 @@ const compose3DVideo = async () => {
           name: selected3DResources.value.look?.cn_name || '数字人',
           originHeight: 1920,
           originWidth: 1080,
-          src: selected3DResources.value.look?.half_body_preview_image_oss || '',
+          src: selected3DResources.value.look?.full_body_preview_image_oss || '',
           status: 0,
           top: 506,
           width: 338
@@ -1178,7 +1181,7 @@ const compose3DVideo = async () => {
 
         // ===== textDriver对象（必需）=====
         textDriver: {
-          textJson: scriptWithSSML,  // ✅ 使用SSML包裹的口播文本
+          textJson: plainTextScript,  // ✅ 使用纯文本（3D不支持SSML）
           pitch: 1,  // ✅ 修复：改为1（关键修复！）
           speed: 1.0,
           volume: 1.0,
@@ -1198,7 +1201,7 @@ const compose3DVideo = async () => {
           originWidth: course3DInfo.value.width,
           originHeight: course3DInfo.value.height,
           status: 0,
-          pptRemark: scriptWithSSML,  // ✅ 修复：添加口播内容
+          pptRemark: plainTextScript,  // ✅ 使用纯文本口播内容
           color: '#000000'
         },
 
@@ -1341,10 +1344,55 @@ onMounted(async () => {
 
         // 恢复场景数据
         if (res.scenes && Array.isArray(res.scenes)) {
-          pptScenes.value = res.scenes
+          // 将后端返回的复杂scene结构转换为前端Scene3D接口
+          pptScenes.value = res.scenes.map((scene: any, index: number) => {
+            // 1. 提取PPT图片URL（从components中找category=1的组件）
+            let pictureUrl = ''
+            if (scene.components && Array.isArray(scene.components)) {
+              const pptComponent = scene.components.find((comp: any) => comp.category === 1)
+              if (pptComponent) {
+                pictureUrl = pptComponent.src || pptComponent.cover || ''
+              }
+            }
+
+            // 2. 提取口播稿（优先从textDriver.textJson，其次从background.pptRemark）
+            let pptRemark = ''
+            if (scene.textDriver && scene.textDriver.textJson) {
+              pptRemark = scene.textDriver.textJson
+            } else if (scene.background && scene.background.pptRemark) {
+              pptRemark = scene.background.pptRemark
+            }
+
+            // 3. 使用orderNo作为排序依据，pageIndex从1开始
+            const pageIndex = scene.orderNo !== undefined ? scene.orderNo : index + 1
+
+            // 4. 计算场景时长（根据口播稿字数估算，按4字/秒）
+            const wordCount = pptRemark.replace(/<[^>]+>/g, '').trim().length
+            const estimatedDuration = Math.ceil(wordCount / 4)
+
+            // 5. 构造符合Scene3D接口的对象
+            return {
+              id: scene.id?.toString() || generateUUID(),
+              pictureUrl: pictureUrl,
+              pptRemark: pptRemark,
+              pageIndex: pageIndex,
+              duration: estimatedDuration,
+              width: scene.background?.width || course3DInfo.value.width,
+              height: scene.background?.height || course3DInfo.value.height,
+              isActive: index === 0,
+              isChecked: false
+            }
+          })
+
+          // 按pageIndex排序（确保顺序正确）
+          pptScenes.value.sort((a, b) => a.pageIndex - b.pageIndex)
+
+          // 选中第一页
           if (pptScenes.value.length > 0) {
             selectScene(pptScenes.value[0])
           }
+
+          console.log('场景数据加载完成，共', pptScenes.value.length, '个场景')
         }
 
         // 恢复3D资源选择
@@ -1363,6 +1411,44 @@ onMounted(async () => {
       }
     } catch (error) {
       console.error('加载课程详情失败:', error)
+    }
+  } else {
+    // 新建模式：自动选择默认的3D资源（每种资源的第一个）
+    try {
+      // 解析3D资源数据
+      const studioData = studioDataRaw as { data: { results: Studio3D[] } }
+      const lookData = lookDataRaw as { data: { results: Look3D[] } }
+      const voiceData = voiceDataRaw as { data: { results: Voice3D[] } }
+
+      // 筛选并选择第一个有效的演播室（enable=true, is_shelf=true, 支持video）
+      const firstStudio = studioData.data.results.find(
+        s => s.enable && s.is_shelf && s.available_ability_type?.includes('video')
+      )
+
+      // 筛选并选择第一个有效的数字人（enable=true, is_shelf=true, 支持video）
+      const firstLook = lookData.data.results.find(
+        l => l.enable && l.is_shelf && l.available_ability_type?.includes('video')
+      )
+
+      // 筛选并选择第一个有效的音色（enable=true, is_shelf=true）
+      const firstVoice = voiceData.data.results.find(
+        v => v.enable && v.is_shelf
+      )
+
+      // 设置默认选择
+      selected3DResources.value = {
+        studio: firstStudio || null,
+        look: firstLook || null,
+        voice: firstVoice || null
+      }
+
+      console.log('已自动选择默认3D资源：', {
+        studio: firstStudio?.studio_chinese_name,
+        look: firstLook?.cn_name,
+        voice: firstVoice?.cn_name
+      })
+    } catch (error) {
+      console.error('加载默认3D资源失败:', error)
     }
   }
 })
@@ -1585,6 +1671,7 @@ watch(
     gap: 16px;
     padding: 16px;
     overflow: hidden;
+    min-height: 0;
 
     .template-box {
       background: #fff;
@@ -1598,16 +1685,26 @@ watch(
       width: 240px;
       display: flex;
       flex-direction: column;
+      min-height: 0;
 
       .page {
         padding: 16px;
         border-bottom: 1px solid #e4e7ed;
+        flex-shrink: 0;
 
         .line {
           margin: 12px 0;
           height: 1px;
           background: #e4e7ed;
         }
+      }
+
+      .scenes-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
       }
 
       .image-list {
@@ -1711,6 +1808,7 @@ watch(
       .page-btn {
         padding: 12px;
         border-top: 1px solid #e4e7ed;
+        flex-shrink: 0;
       }
 
       .left-upload-setting {
@@ -1744,9 +1842,11 @@ watch(
       display: flex;
       flex-direction: column;
       padding: 16px;
+      min-height: 0;
 
       .middle-top {
         margin-bottom: 16px;
+        flex-shrink: 0;
       }
 
       .main-box {
@@ -1754,6 +1854,7 @@ watch(
         display: flex;
         align-items: center;
         justify-content: center;
+        min-height: 300px;
 
         .main-image-box {
           border: 1px solid #e4e7ed;
@@ -1787,6 +1888,7 @@ watch(
         gap: 24px;
         border: 1px solid #e4e7ed;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        flex-shrink: 0;
 
         .info-row {
           display: flex;
@@ -1815,7 +1917,9 @@ watch(
         margin-top: 16px;
         display: flex;
         flex-direction: column;
-        height: 240px;
+        flex: 0 0 auto;
+        min-height: 180px;
+        max-height: 300px;
         background: #fff;
         border-radius: 8px;
         border: 1px solid #e4e7ed;
@@ -1829,6 +1933,7 @@ watch(
           justify-content: space-between;
           align-items: center;
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          flex-shrink: 0;
 
           .script-title {
             font-size: 14px;
@@ -1838,7 +1943,7 @@ watch(
 
         .script-editor-wrapper {
           flex: 1;
-          overflow: hidden;
+          overflow: auto;
           display: flex;
           flex-direction: column;
         }
@@ -1852,6 +1957,7 @@ watch(
       flex-direction: column;
       background: #fff;
       border-left: 1px solid #e4e7ed;
+      min-height: 0;
 
       .config-title {
         padding: 16px;
@@ -1860,6 +1966,7 @@ watch(
         color: #303133;
         background: linear-gradient(135deg, #f9f5ff 0%, #fff 100%);
         border-bottom: 2px solid #7c3aed;
+        flex-shrink: 0;
       }
 
       .config-collapse {

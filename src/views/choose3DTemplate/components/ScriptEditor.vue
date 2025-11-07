@@ -18,7 +18,7 @@
       <el-input
         v-model="localContent"
         type="textarea"
-        :rows="12"
+        :rows="8"
         :placeholder="placeholder"
         :maxlength="maxLength"
         show-word-limit
@@ -115,6 +115,7 @@ const handleInput = () => {
   padding: 16px;
   background: #fff;
   border-radius: 8px;
+  min-height: 0;
 
   .editor-header {
     display: flex;
@@ -123,6 +124,7 @@ const handleInput = () => {
     margin-bottom: 12px;
     padding-bottom: 12px;
     border-bottom: 1px solid #e4e7ed;
+    flex-shrink: 0;
 
     h3 {
       margin: 0;
@@ -153,13 +155,14 @@ const handleInput = () => {
   .editor-body {
     flex: 1;
     margin-bottom: 12px;
+    min-height: 0;
 
     :deep(.el-textarea) {
       height: 100%;
 
       .el-textarea__inner {
-        height: 100%;
-        min-height: auto;
+        height: 100% !important;
+        min-height: 120px;
         resize: none;
         font-size: 14px;
         line-height: 1.6;
@@ -174,6 +177,7 @@ const handleInput = () => {
 
   .editor-footer {
     min-height: 40px;
+    flex-shrink: 0;
 
     .el-alert {
       margin: 0;
