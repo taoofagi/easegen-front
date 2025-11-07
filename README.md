@@ -41,6 +41,62 @@ If this project has helped you, remember to Star and follow, which would be grea
 
 [![Bilibili Video](public/image/demo_course.png)](https://www.bilibili.com/video/av113088116297160/)
 
+## ✨ Core Features
+
+### 📱 2D Digital Human Course Creation
+- **Course Template System**: Multiple preset templates for quick course creation
+- **Intelligent Script Generation**: AI-powered automatic course narration generation
+- **Digital Human Customization**: Personalized appearance and voice customization
+- **PPT Integration**: Automatic PPT parsing and digital human lecture video generation
+- **Text Dubbing**: Text-to-speech with multiple voice options
+- **SSML Syntax**: Fine-grained voice control (pitch, pause, speed, etc.)
+
+### 🎬 3D Digital Human Course Creation (NEW)
+Powered by MoFa XingYun 3D digital human engine, providing ultra-realistic digital human video course creation capabilities.
+
+**Key Features:**
+- **3D Studio Scenes**
+  - Various style studio scenes (minimalist, business, conference, etc.)
+  - 1-screen/3-screen multiple layout options
+  - Customizable backgrounds and lighting effects
+
+- **Ultra-realistic Digital Humans**
+  - 3D hyper-realistic character models
+  - Multiple gender, age, and style options
+  - Natural facial expressions and body movements
+  - Full-body and half-body modes supported
+
+- **Advanced Voice Synthesis**
+  - Multi-language support (Chinese, English, etc.)
+  - Various voice styles (gentle, energetic, professional, etc.)
+  - SSML tag support
+  - Fine-tuned control of pitch, speed, and volume
+
+- **Intelligent Courseware Integration**
+  - Automatic PPT parsing and layout
+  - Picture-in-picture mode for courseware display
+  - Auto-sync narration content with PPT pages
+  - Drag-and-drop sorting and batch management
+
+- **Comprehensive Validation System**
+  - 3D resource configuration check (studio, character, voice)
+  - Script content validation (empty, too short, too long)
+  - Real-time configuration status indicators
+  - User-friendly error messages and operation guides
+
+- **User Experience Optimization**
+  - Real-time preview
+  - Batch scene management
+  - Auto-save
+  - Detailed debug logging
+  - Bilingual support (Chinese/English)
+
+### 🤖 AI Intelligent Assistance
+- **Intelligent Courseware Generation**: Auto-generate PPT courseware from documents
+- **AI Question Generation**: Intelligently generate questions based on course content
+- **Document Parsing**: Smart parsing of multiple document formats
+- **Script Optimization**: AI-assisted optimization of lecture text
+
 ## 🗺️ Development Roadmap
 
 Here are the major features and improvements we plan to implement in the future:
