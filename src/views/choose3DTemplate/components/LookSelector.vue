@@ -251,6 +251,7 @@ const getAgeLabel = (age: string) => {
 
         .preview-btn-wrapper {
           opacity: 1;
+          transform: translate(-50%, -50%) scale(1.05);
         }
       }
 
@@ -292,16 +293,20 @@ const getAgeLabel = (age: string) => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          opacity: 0;
-          transition: opacity 0.3s;
+          opacity: 0.8;
+          transition: all 0.3s;
 
           .preview-btn {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             border: none;
             color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
 
             &:hover {
-              background: rgba(124, 58, 237, 0.9);
+              background: rgba(124, 58, 237, 0.95);
+              transform: scale(1.15);
+              box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
             }
           }
         }

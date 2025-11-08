@@ -271,13 +271,29 @@ const create3DVideo = () => {
   router.push('/digitalcourse/choose3DTemplate');
 };
 
-const detailPPT = (id,pageMode) => {
-  //根据pageMode判断如果是2，则跳转到ppt课件视频，如果是3，则跳转到口播视频
-  if (pageMode === 2 || pageMode === 0) {
-    router.push({ path: '/chooseTemplate/index', query: { id } });
-  } else if (pageMode === 3) {
-    router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
-  }
+const detailPPT = (id, pageMode) => {
+  // 先获取课程详情，判断是否为3D课程
+  pptTemplateApi.coursesDetail(id).then((res) => {
+    if (!res) {
+      message.warning('关联课件视频或口播视频被删除')
+      return
+    }
+
+    // 判断是否为3D数字人课程
+    // 3D课程的特征：有 pageInfo 字段，且包含 studio、look、voice 等3D资源信息
+    const is3DCourse = res.pageInfo && res.pageInfo.trim() !== '' && res.pageInfo !== '{}'
+
+    if (is3DCourse) {
+      // 3D数字人课程
+      router.push({ path: '/digitalcourse/choose3DTemplate', query: { id } });
+    } else if (pageMode === 2 || pageMode === 0) {
+      // 2D课程视频
+      router.push({ path: '/chooseTemplate/index', query: { id } });
+    } else if (pageMode === 3) {
+      // 口播视频
+      router.push({ path: '/chooseTemplate/speakvideo', query: { id } });
+    }
+  })
 };
 
 const deleteItem = async (id) => {
