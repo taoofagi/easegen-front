@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 数字人课程播放器</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- 1. 左侧边栏：课程列表 -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span>我的课程</span>
+            <button class="icon-button refresh-btn" id="refreshBtn" aria-label="刷新课程">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                    <path d="M14.5 3.5a7.5 7.5 0 11-11 6.5h3M3.5 3.5v6h6"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="section-title">最近课程</div>
+
+        <!-- 课程列表 -->
+                <div class="course-list" id="courseList">
+                    <!-- 骨架屏 -->
+                    <div class="skeleton-container" id="skeletonLoader">
+                        <div class="course-card course-card--skeleton">
+                            <div class="course-card__thumbnail">
+                                <div class="skeleton skeleton--thumbnail"></div>
+                            </div>
+                            <div class="course-card__content">
+                                <div class="skeleton skeleton--title"></div>
+                                <div class="skeleton skeleton--id"></div>
+                                <div class="course-card__meta">
+                                    <div class="skeleton skeleton--badge"></div>
+                                    <div class="skeleton skeleton--badge"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-card course-card--skeleton">
+                            <div class="course-card__thumbnail">
+                                <div class="skeleton skeleton--thumbnail"></div>
+                            </div>
+                            <div class="course-card__content">
+                                <div class="skeleton skeleton--title"></div>
+                                <div class="skeleton skeleton--id"></div>
+                                <div class="course-card__meta">
+                                    <div class="skeleton skeleton--badge"></div>
+                                    <div class="skeleton skeleton--badge"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-card course-card--skeleton">
+                            <div class="course-card__thumbnail">
+                                <div class="skeleton skeleton--thumbnail"></div>
+                            </div>
+                            <div class="course-card__content">
+                                <div class="skeleton skeleton--title"></div>
+                                <div class="skeleton skeleton--id"></div>
+                                <div class="course-card__meta">
+                                    <div class="skeleton skeleton--badge"></div>
+                                    <div class="skeleton skeleton--badge"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </nav>
+
+    <!-- 2. 中间区域：主舞台 (PPT + 控制) -->
+    <main class="main-stage">
+        <!-- 顶部导航 -->
+        <header class="top-bar">
+            <div class="breadcrumb">
+                <span id="courseBreadcrumb">选择课程开始</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span id="systemStatus">就绪</span>
+            </div>
+        </header>
+
+        <!-- 视频/PPT 播放区 -->
+        <div class="video-wrapper" id="pptContainer">
+                    <!-- 空状态 -->
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">
+                            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                <rect x="10" y="15" width="60" height="50" rx="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M20 30h40M20 40h30M20 50h35" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">准备开始</h3>
+                        <p class="empty-description">选择课程后即可开始播放</p>
+                    </div>
+
+            <!-- PPT 显示 -->
+            <div class="ppt-display" id="pptDisplay" style="display: none;">
+                <img class="ppt-image" id="pptImage" alt="课程幻灯片">
+
+                <!-- 字幕覆盖层 -->
+                <div class="subtitle-overlay">
+                    <div class="subtitle-text" id="segmentText">课程讲解文本将显示在这里...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部控制栏 -->
+        <div class="control-deck">
+            <button class="icon-button" id="previousBtn" aria-label="上一段">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+                </svg>
+            </button>
+
+            <button class="play-btn" id="playBtn" aria-label="播放">
+                <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg class="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                    <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+                </svg>
+            </button>
+
+            <button class="icon-button" id="nextBtn" aria-label="下一段">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+                </svg>
+            </button>
+
+            <div class="progress-container">
+                <span class="time-text">(<span id="currentTime">01</span> / <span id="totalTime">10</span>)</span>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <button class="icon-button" id="volumeBtn" aria-label="音量">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                </svg>
+            </button>
+
+            <button class="icon-button" id="fullscreenBtn" aria-label="全屏">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- 3. 右侧面板：数字人设置 -->
+    <aside class="inspector">
+        <!-- 上部留空区域 (1/3) -->
+        <div class="inspector-spacer"></div>
+
+        <!-- 数字讲师区域 (2/3) -->
+        <div class="inspector-content">
+            <div class="inspector-header">
+                <div class="inspector-title">数字讲师</div>
+            </div>
+
+            <!-- 数字人预览区 -->
+            <div class="digital-human-preview" id="avatarContainer">
+            <div id="digital-human"></div>
+
+            <!-- 加载状态 -->
+            <div class="avatar-loading" id="avatarLoading">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">数字人加载中...</p>
+            </div>
+
+            <div class="avatar-placeholder">
+                <!-- 这里可以放置实际的数字人模型 -->
+            </div>
+        </div>
+
+            <!-- 底部参数调整区已移除 - SDK 不支持这些功能 -->
+        </div>
+    </aside>
+
+    <!-- Toast 通知 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- 引入 Xmov SDK -->
+    <script src="https://media.youyan.xyz/youling-lite-sdk/index.umd.0.1.0-alpha.63.js"></script>
+
+    <!-- Xmov SDK 加载检测 -->
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        if (typeof XmovAvatar === 'undefined') {
+            console.error('❌ Xmov SDK 加载失败');
+            const container = document.getElementById('avatarContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #ff3b30;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" style="margin: 0 auto; opacity: 0.8;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        <h3 style="margin-top: 16px; font-size: 18px; font-weight: 600;">数字人 SDK 加载失败</h3>
+                        <p style="margin-top: 8px; color: #86868B; font-size: 14px;">请检查网络连接或联系管理员</p>
+                        <button onclick="location.reload()" style="
+                            margin-top: 24px;
+                            padding: 12px 24px;
+                            background: #007AFF;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 500;
+                            transition: opacity 0.2s;
+                        " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">重新加载</button>
+                    </div>
+                `;
+            }
+        } else {
+            console.log('✅ Xmov SDK 加载成功');
+        }
+    });
+    </script>
+
+    <!-- 引入本地 JS -->
+    <script src="js/config.js"></script>
+    <script src="js/xmov-manager.js"></script>
+    <script src="js/course-player.js"></script>
+    <script src="js/ui-controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -3,6 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
+    <!-- 临时禁用 AVATAR SDK 日志 - 必须在所有其他脚本之前执行 -->
+    <script>
+      (function() {
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalInfo = console.info;
+
+        console.log = function(...args) {
+          const message = args[0]?.toString() || '';
+          if (message.includes('[AVATAR SDK]') || message.includes('[TTSA]')) {
+            return;
+          }
+          originalLog.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+          const message = args[0]?.toString() || '';
+          if (message.includes('[AVATAR SDK]') || message.includes('[TTSA]')) {
+            return;
+          }
+          originalWarn.apply(console, args);
+        };
+
+        console.info = function(...args) {
+          const message = args[0]?.toString() || '';
+          if (message.includes('[AVATAR SDK]') || message.includes('[TTSA]')) {
+            return;
+          }
+          originalInfo.apply(console, args);
+        };
+      })();
+    </script>
       <script src="/docmee-ui-sdk-iframe.min.js"></script>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

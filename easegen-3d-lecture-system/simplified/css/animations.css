@@ -1,0 +1,428 @@
+/* ===================================
+   动画效果 - 苹果风格动画
+   =================================== */
+
+/* ========== 通用动画 ========== */
+
+/* 淡入 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 淡出 */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* 从下方淡入 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 从上方淡入 */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 从左侧滑入 */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 从右侧滑入 */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 向右滑出 */
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+
+/* 缩放进入 */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========== 组件特定动画 ========== */
+
+/* 脉冲效果（状态圆点） */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* 旋转（加载动画） */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 波形动画 */
+@keyframes waveform {
+    0%, 100% {
+        height: 4px;
+    }
+    50% {
+        height: 20px;
+    }
+}
+
+/* 骨架屏闪光 */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* PPT 切换动画 */
+@keyframes slideInPPT {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 弹跳效果 */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* 摇晃效果 */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* ========== 页面加载动画 ========== */
+.course-card {
+    animation: fadeInUp 0.6s var(--ease-out) both;
+}
+
+.course-card:nth-child(1) { animation-delay: 0.1s; }
+.course-card:nth-child(2) { animation-delay: 0.15s; }
+.course-card:nth-child(3) { animation-delay: 0.2s; }
+.course-card:nth-child(4) { animation-delay: 0.25s; }
+.course-card:nth-child(5) { animation-delay: 0.3s; }
+
+/* ========== PPT 切换动画 ========== */
+.ppt-image {
+    animation: slideInPPT 0.5s var(--ease-out);
+}
+
+/* ========== 按钮点击动画 ========== */
+@keyframes buttonPress {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.control-button:active:not(:disabled),
+.icon-button:active:not(:disabled) {
+    animation: buttonPress 0.2s var(--ease-out);
+}
+
+/* ========== 进度条动画 ========== */
+.progress-fill {
+    transition: width 0.3s var(--ease-out);
+}
+
+.mini-progress-bar {
+    transition: width 0.5s var(--ease-out);
+}
+
+/* ========== Toast 动画 ========== */
+.toast {
+    animation: slideInRight 0.3s var(--ease-out);
+}
+
+.toast.removing {
+    animation: slideOutRight 0.3s var(--ease-out) forwards;
+}
+
+/* ========== Hover 效果动画 ========== */
+.course-card,
+.control-button,
+.icon-button {
+    transition: all var(--duration-normal) var(--ease-out);
+}
+
+/* ========== 主题切换动画 ========== */
+body {
+    transition: background var(--duration-slow) var(--ease-out);
+}
+
+* {
+    transition: color var(--duration-fast) var(--ease-out),
+                background-color var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out);
+}
+
+/* ========== 减弱动画（无障碍） ========== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== 特殊效果动画 ========== */
+
+/* 光晕效果 */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 122, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(0, 122, 255, 0.6);
+    }
+}
+
+.control-button.primary.playing {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* 呼吸效果 */
+@keyframes breathe {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* 涟漪效果 */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* 点击涟漪效果 */
+.ripple-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-effect::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: scale(0);
+    opacity: 0;
+}
+
+.ripple-effect:active::after {
+    animation: ripple 0.6s ease-out;
+}
+
+/* ========== 页面过渡效果 ========== */
+.page-transition-enter {
+    animation: fadeInUp 0.4s var(--ease-out);
+}
+
+.page-transition-leave {
+    animation: fadeOut 0.3s var(--ease-out);
+}
+
+/* ========== 模态框动画 ========== */
+@keyframes modalBackdropFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalContentSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-backdrop {
+    animation: modalBackdropFadeIn 0.2s var(--ease-out);
+}
+
+.modal-content {
+    animation: modalContentSlideUp 0.3s var(--ease-out);
+}
+
+/* ========== 加载动画变体 ========== */
+@keyframes spinBounce {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.loading-spinner.bounce {
+    animation: spinBounce 1.2s ease-in-out infinite;
+}
+
+/* ========== 文本动画 ========== */
+@keyframes textShine {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.text-shine {
+    background: linear-gradient(90deg, var(--text-primary), var(--accent), var(--text-primary));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textShine 3s linear infinite;
+}
+
+/* ========== 数字滚动动画 ========== */
+@keyframes numberCount {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.number-animate {
+    display: inline-block;
+    animation: numberCount 0.5s var(--ease-out);
+}
+
+/* ========== Smooth 类（快速应用） ========== */
+.smooth-enter {
+    animation: fadeInUp 0.4s var(--ease-out);
+}
+
+.smooth-exit {
+    animation: fadeOut 0.3s var(--ease-out);
+}
+
+.smooth-scale {
+    animation: scaleIn 0.3s var(--ease-out);
+}
+
+.smooth-slide-left {
+    animation: slideInLeft 0.4s var(--ease-out);
+}
+
+.smooth-slide-right {
+    animation: slideInRight 0.4s var(--ease-out);
+}

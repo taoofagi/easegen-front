@@ -1,0 +1,151 @@
+/* ===================================
+   基础样式 - 重置与全局样式
+   =================================== */
+
+/* ========== CSS Reset ========== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    font-weight: var(--font-regular);
+    line-height: var(--leading-normal);
+    color: var(--text-primary);
+    background: var(--bg-app);
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    transition: background var(--duration-slow) var(--ease-out);
+}
+
+/* 深色模式背景 */
+.dark-mode body {
+    background: #1a1a2e;
+}
+
+/* ========== 滚动条样式 ========== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: var(--radius-full);
+    transition: background var(--duration-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Firefox 滚动条 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-tertiary) transparent;
+}
+
+/* ========== 选择文本样式 ========== */
+::selection {
+    background: var(--accent);
+    color: var(--text-inverse);
+}
+
+/* ========== 焦点样式 ========== */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline-offset: 4px;
+}
+
+/* ========== 图片 ========== */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ========== 按钮重置 ========== */
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/* ========== 输入框重置 ========== */
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+/* ========== 链接重置 ========== */
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--duration-fast);
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+/* ========== 主容器 - 移除旧样式 ========== */
+/* 旧的 .app-container 样式已移除，使用新的三栏flex布局 */
+
+/* ========== 毛玻璃效果 ========== */
+.glass-effect {
+    background: var(--bg-primary);
+    backdrop-filter: blur(var(--blur-md)) saturate(var(--saturation));
+    -webkit-backdrop-filter: blur(var(--blur-md)) saturate(var(--saturation));
+    border: 1px solid var(--border-light);
+}
+
+/* ========== 工具类 ========== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

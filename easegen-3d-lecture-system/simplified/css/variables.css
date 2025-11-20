@@ -1,0 +1,200 @@
+/* ===================================
+   CSS 变量 - 苹果设计系统
+   =================================== */
+
+:root {
+    /* ========== 颜色系统 - Apple Studio 浅色模式 ========== */
+
+    /* 背景色 - Apple 高级灰 */
+    --bg-app: #F5F5F7;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: rgba(255, 255, 255, 0.5);
+    --bg-overlay: rgba(0, 0, 0, 0.4);
+    --bg-surface: #FFFFFF;
+    --bg-surface-translucent: rgba(255, 255, 255, 0.8);
+
+    /* 表面色 */
+    --surface: #FFFFFF;
+    --surface-hover: rgba(0, 0, 0, 0.03);
+    --surface-active: rgba(0, 0, 0, 0.05);
+
+    /* 文本色 */
+    --text-primary: #1D1D1F;
+    --text-secondary: #86868B;
+    --text-tertiary: #D2D2D7;
+    --text-inverse: #ffffff;
+
+    /* 强调色 - Apple Blue */
+    --accent: #007AFF;
+    --accent-hover: #0062CC;
+    --accent-active: #004fc4;
+    --primary: #007AFF;
+    --primary-hover: #0062CC;
+
+    /* 状态色 */
+    --success: #34c759;
+    --warning: #ff9500;
+    --error: #ff3b30;
+    --info: #5ac8fa;
+
+    /* 边框色 */
+    --border-light: #E5E5EA;
+    --border-medium: rgba(0, 0, 0, 0.12);
+    --border-heavy: rgba(0, 0, 0, 0.18);
+
+    /* 分割线 */
+    --divider: #E5E5EA;
+
+    /* ========== 排版系统 ========== */
+
+    /* 字体家族 */
+    --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                    'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+
+    /* 字号 */
+    --text-xs: 11px;
+    --text-sm: 13px;
+    --text-base: 15px;
+    --text-lg: 17px;
+    --text-xl: 22px;
+    --text-2xl: 28px;
+    --text-3xl: 34px;
+
+    /* 字重 */
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+
+    /* 行高 */
+    --leading-tight: 1.2;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+
+    /* ========== 间距系统 ========== */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    /* ========== 圆角系统 ========== */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+
+    /* ========== 阴影系统 ========== */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.16);
+
+    /* ========== 毛玻璃效果 ========== */
+    --blur-sm: 10px;
+    --blur-md: 20px;
+    --blur-lg: 40px;
+    --saturation: 180%;
+
+    /* ========== 动画曲线 ========== */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+    --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* ========== 过渡时长 ========== */
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+
+    /* ========== Z-index 层级 ========== */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal-backdrop: 400;
+    --z-modal: 500;
+    --z-toast: 600;
+    --z-tooltip: 700;
+}
+
+/* ========== 深色模式 ========== */
+.dark-mode {
+    /* 背景色 */
+    --bg-primary: rgba(28, 28, 30, 0.85);
+    --bg-secondary: rgba(44, 44, 46, 0.85);
+    --bg-tertiary: rgba(58, 58, 60, 0.7);
+    --bg-overlay: rgba(0, 0, 0, 0.6);
+
+    /* 表面色 */
+    --surface: rgba(58, 58, 60, 0.6);
+    --surface-hover: rgba(72, 72, 74, 0.8);
+    --surface-active: rgba(99, 99, 102, 0.9);
+
+    /* 文本色 */
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --text-tertiary: #86868b;
+    --text-inverse: #1d1d1f;
+
+    /* 强调色 */
+    --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --accent-active: #0070e0;
+
+    /* 状态色 */
+    --success: #30d158;
+    --warning: #ff9f0a;
+    --error: #ff453a;
+    --info: #64d2ff;
+
+    /* 边框色 */
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-heavy: rgba(255, 255, 255, 0.22);
+
+    /* 分割线 */
+    --divider: rgba(255, 255, 255, 0.1);
+
+    /* 阴影系统（深色模式下更深） */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+/* ========== 响应式断点 ========== */
+@custom-media --mobile (max-width: 640px);
+@custom-media --tablet (max-width: 1024px);
+@custom-media --desktop (min-width: 1025px);
+
+/* ========== 减弱动画（尊重用户偏好） ========== */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --duration-fast: 1ms;
+        --duration-normal: 1ms;
+        --duration-slow: 1ms;
+    }
+}
+
+/* ========== 高对比度模式 ========== */
+@media (prefers-contrast: high) {
+    :root {
+        --border-light: rgba(0, 0, 0, 0.2);
+        --border-medium: rgba(0, 0, 0, 0.3);
+        --border-heavy: rgba(0, 0, 0, 0.4);
+    }
+
+    .dark-mode {
+        --border-light: rgba(255, 255, 255, 0.2);
+        --border-medium: rgba(255, 255, 255, 0.3);
+        --border-heavy: rgba(255, 255, 255, 0.4);
+    }
+}
