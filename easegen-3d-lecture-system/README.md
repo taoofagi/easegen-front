@@ -49,7 +49,7 @@
 - 📚 **知识库管理** - 自定义课程知识库
 - 🎥 **OBS 推流** - 支持直播推流到各平台
 
-**实现位置**：`Fay/`、`XmovAvatarSDK/`、`course_player_with_avatar.html`
+**实现位置**：规划中，文件和目录尚未创建
 
 **适用场景**：
 - 直播课程
@@ -142,11 +142,30 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### ⚙️ 配置环境变量
+
+在启动服务前，必须先配置环境变量：
+
+```bash
+# 1. 进入后端目录
+cd easegen-3d-lecture-system/simplified/backend
+
+# 2. 复制配置模板
+cp .env.example .env
+
+# 3. 编辑 .env 文件，填入真实配置
+# 必须配置以下参数：
+#   - EASEGEN_API_KEY（从 EaseGen 管理后台获取）
+#   - XMOV_APP_ID（从 Xmov 平台获取）
+#   - XMOV_APP_SECRET（从 Xmov 平台获取）
+```
+
 ### ▶️ 启动服务
 
 #### 前提条件
 
-确保 **EaseGen 后端服务**运行在 `http://127.0.0.1:48080`
+- ✅ 已配置 `.env` 文件
+- ✅ **EaseGen 后端服务**运行在 `http://127.0.0.1:48080`
 
 #### 启动后端服务
 
@@ -288,19 +307,23 @@ easegen-3d-lecture-system/
 │           ├── easegen_client.py      # EaseGen API 客户端
 │           └── course_service.py      # 课程服务层
 │
-├── Fay/                               # 🚧 第二阶段：Fay 数字人框架（规划中）
-├── XmovAvatarSDK/                     # 🚧 第二阶段：Xmov 配置服务（规划中）
-├── course_player_with_avatar.html     # 🚧 第二阶段：完整版主界面（规划中）
+├── XmovAvatarSDK/                     # Xmov SDK 工具和辅助脚本
+│   ├── start_with_env.py              # 环境变量启动脚本
+│   └── templates/                     # 模板文件
 │
-├── simplified-design/                 # 设计文档和原型
-├── temp/                              # 临时文件
+├── docs/                              # 技术文档目录
+│   ├── 架构设计方案.md                # 系统架构设计
+│   └── PPT讲解系统实现方案-v2.md      # 完整技术方案（包含两阶段设计）
 │
-└── 文档/
-    ├── CLAUDE.md                      # Claude Code 开发指南
-    ├── README.md                      # 本文件
-    ├── easegenapi接口文档.md          # EaseGen API 文档
-    ├── Fay修改总结.md                 # Fay 集成文档（第二阶段）
-    └── PPT讲解系统实现方案-v2.md      # 完整技术方案（第二阶段）
+├── CLAUDE.md                          # Claude Code 开发指南
+├── README.md                          # 本文件（项目说明）
+├── easegenapi接口文档.md              # EaseGen API 接口文档
+└── .gitignore                         # Git 忽略规则
+
+# 🚧 第二阶段规划（尚未实现）：
+# ├── Fay/                             # Fay 数字人框架（待创建）
+# ├── course_player_with_avatar.html   # 完整版主界面（待创建）
+# └── PPTLecturePlayer/                # 播放控制服务（待创建）
 ```
 
 ---
@@ -385,16 +408,29 @@ simplified/index.html
 
 ### 后端配置
 
-**文件**：`simplified/backend/app.py`
+**配置文件**：`simplified/backend/.env`（需要自己创建，参考 `.env.example`）
 
-```python
-# 端口配置
-PORT = 7000
+```bash
+# Flask 配置
+DEBUG=True
+PORT=7000
 
 # EaseGen API 配置
-EASEGEN_API_BASE = "http://127.0.0.1:48080/admin-api"
-EASEGEN_API_KEY = "your_api_key_here"
+EASEGEN_API_URL=http://127.0.0.1:48080/admin-api
+EASEGEN_API_KEY=your_api_key_here
+
+# Xmov SDK 配置
+XMOV_APP_ID=your_xmov_app_id_here
+XMOV_APP_SECRET=your_xmov_app_secret_here
+
+# 日志配置
+LOG_LEVEL=INFO
 ```
+
+**配置管理**：`simplified/backend/config.py`
+- 所有配置通过环境变量加载
+- 不允许硬编码敏感信息
+- 配置缺失时应用将无法启动（安全设计）
 
 ### 前端配置
 
@@ -425,13 +461,17 @@ const CONFIG = {
 
 ### Xmov SDK 配置
 
-**SDK 加载**：通过 CDN 自动加载（`index.html` 第 191 行）
+**SDK 加载**：通过 CDN 自动加载
 
 ```html
+<!-- 在 index.html 中引入 -->
 <script src="https://media.youyan.xyz/youling-lite-sdk/index.umd.0.1.0-alpha.63.js"></script>
 ```
 
-**配置参数**：在 `js/xmov-manager.js` 中设置
+**配置参数**：
+- Xmov APP_ID 和 APP_SECRET 配置在后端 `.env` 文件中
+- 前端通过 API (`/api/xmov-config`) 获取配置
+- SDK 初始化在 `js/xmov-manager.js` 中完成
 
 ---
 
