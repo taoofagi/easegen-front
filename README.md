@@ -43,40 +43,53 @@ If this project has helped you, remember to Star and follow, which would be grea
 
 ## ✨ Core Features
 
-### 📱 2D Digital Human Course Creation
-- **Course Template System**: Multiple preset templates for quick course creation
-- **Intelligent Script Generation**: AI-powered automatic course narration generation
-- **Digital Human Customization**: Personalized appearance and voice customization
-- **PPT Integration**: Automatic PPT parsing and digital human lecture video generation
-- **Text Dubbing**: Text-to-speech with multiple voice options
-- **SSML Syntax**: Fine-grained voice control (pitch, pause, speed, etc.)
-
-### 🎬 3D Digital Human Course Creation (NEW)
-Support for creating 3D digital human video courses with PPT presentations.
+### 🎬 3D Digital Human Course Creation ⭐ Featured
+Create professional video courses with 3D digital humans and PPT presentations.
 
 **Main Features:**
 - **3D Scene Selection**
   - Multiple studio scene options (minimalist, business, conference, etc.)
   - Support for 16:9 and 9:16 aspect ratios
+  - Professional virtual studio backgrounds
 
 - **3D Digital Human Selection**
   - Multiple 3D digital human character models
   - Different genders, ages, and styles available
+  - Realistic facial expressions and lip-sync
 
 - **Voice Selection**
-  - Multiple voice options
+  - Multiple voice options with natural TTS
   - Support for Chinese and other languages
+  - Customizable voice parameters
 
 - **PPT Upload & Parsing**
   - Automatic PPT/PDF upload and parsing
   - Extract slides and narration content
   - Drag-and-drop sorting and scene management
+  - Smart content extraction
 
 - **Video Composition**
   - Combine 3D scenes, digital humans, voices, and PPT slides
   - Generate 3D digital human narrated PPT videos
   - Content validation before composition
   - Automatic saving functionality
+  - High-quality video output
+
+- **Course Playback System**
+  - Real-time 3D digital human presentation
+  - Synchronized PPT slides with narration
+  - Interactive playback controls (play, pause, skip)
+  - Progress tracking and navigation
+  - See [easegen-3d-lecture-system](./easegen-3d-lecture-system/) for details
+
+### 📱 2D Digital Human Features
+- **Course Template System**: Multiple preset templates for quick course creation
+- **Intelligent Script Generation**: AI-powered automatic course narration generation
+- **Digital Human Customization**: Personalized appearance and voice customization
+- **Text Dubbing**: Text-to-speech with multiple voice options
+- **SSML Syntax**: Fine-grained voice control (pitch, pause, speed, etc.)
+
+> ⚠️ **Note**: 2D digital human video composition feature is temporarily unavailable and under maintenance.
 
 ### 🤖 AI Intelligent Assistance
 - **Intelligent Courseware Generation**: Auto-generate PPT courseware from documents
@@ -87,6 +100,8 @@ Support for creating 3D digital human video courses with PPT presentations.
 ## 🗺️ Development Roadmap
 
 Here are the major features and improvements we plan to implement in the future:
+
+**Completed Features:**
 - [x] Support for course templates
 - [x] Support for intelligent script generation
 - [x] Support for digital human image and voice customization
@@ -94,12 +109,27 @@ Here are the major features and improvements we plan to implement in the future:
 - [x] Support for AI-generated scriptwriting
 - [x] Add text dubbing function
 - [x] SSML syntax support for voice
+- [x] **3D Digital Human Course Creation** ⭐
+  - [x] 3D scene selection
+  - [x] 3D digital human selection
+  - [x] Voice selection
+  - [x] PPT upload and parsing
+  - [x] Video composition
+  - [x] Course playback system
+
+**Planned Features:**
 - [ ] Add digital human rapid cloning mode
+- [ ] Restore 2D digital human video synthesis
 - [ ] Add mouthpiece video synthesis function
 - [ ] Adding lesson plan generation
 - [ ] Convert lesson plans to courseware and generate controllable PPTs
 - [ ] Support for real-time digital human teaching
 - [ ] Adding an intelligent assistant
+- [ ] **3D Course Interactive Features** (Phase 2)
+  - [ ] Intelligent interruption
+  - [ ] Knowledge base Q&A
+  - [ ] Context-aware dialogue
+  - [ ] OBS streaming integration
 
 ## Architecture Diagram
 
